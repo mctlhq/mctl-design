@@ -10,7 +10,7 @@ const brand = {
   brandTarget: '_self',
 };
 
-const fontBase = '"Helvetica Neue", Inter, system-ui, sans-serif';
+const fontBase = '"JetBrains Mono", ui-monospace, SFMono-Regular, monospace';
 const fontCode = '"JetBrains Mono", ui-monospace, "SFMono-Regular", monospace';
 
 export const mctlDark = create({

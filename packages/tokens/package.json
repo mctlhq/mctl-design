@@ -1,6 +1,6 @@
 {
   "name": "@mctlhq/tokens",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "MCTL design tokens — colors, surfaces, accents, typography, spacing",
   "license": "Apache-2.0",
   "type": "module",

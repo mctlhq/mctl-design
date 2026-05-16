@@ -27,7 +27,7 @@ const preview: Preview = {
     controls: { expanded: true },
     options: {
       storySort: {
-        order: ['Introduction', 'Foundations', 'Components'],
+        order: ['Introduction', 'Foundations', 'Components', 'Patterns'],
       },
     },
     darkMode: {
