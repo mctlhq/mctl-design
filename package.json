@@ -1,6 +1,6 @@
 {
   "name": "@mctlhq/design",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "MCTL shared design system — tokens, CSS, Vue 3 components and Storybook showcase",

@@ -26,10 +26,12 @@ export const Overview: Story = {
         </ul>
         <h2>Theming</h2>
         <p>
-          Use the <strong>Theme</strong> and <strong>Accent</strong> toolbar
-          controls above to flip between the dark <em>Engineering</em> and light
-          <em>Editorial</em> surfaces and the four accents. They map to the
-          <code>data-theme</code> and <code>data-accent</code> attributes.
+          Use the <strong>light/dark toggle</strong> in the toolbar to flip the
+          whole Storybook UI &mdash; chrome and story canvas together &mdash;
+          between the dark <em>Engineering</em> and light <em>Editorial</em>
+          surfaces. The <strong>Accent</strong> control cycles the four accents
+          on the canvas. They map to the <code>data-theme</code> and
+          <code>data-accent</code> attributes.
         </p>
         <h2>Sections</h2>
         <ul>
