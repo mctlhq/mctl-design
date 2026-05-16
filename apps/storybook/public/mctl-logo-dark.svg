@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="98" height="32" viewBox="0 0 98 32" fill="none">
+  <rect x="2.5" y="6.5" width="19" height="19" rx="3" stroke="#00b8cc" stroke-width="2"/>
+  <rect x="8" y="12" width="8" height="8" rx="1.5" fill="#00b8cc"/>
+  <text x="32" y="22" font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="1.5" fill="#15181d">MCTL</text>
+</svg>
