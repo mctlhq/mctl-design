@@ -1,0 +1,36 @@
+{
+  "name": "@mctlhq/tokens",
+  "version": "0.1.0",
+  "description": "MCTL design tokens — colors, surfaces, accents, typography, spacing",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./tokens.json": "./dist/tokens.json",
+    "./tokens.css": "./dist/tokens.css"
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mctlhq/mctl-design.git",
+    "directory": "packages/tokens"
+  },
+  "scripts": {
+    "build": "tsup && node scripts/gen-assets.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "clean": "rm -rf dist .turbo"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  }
+}

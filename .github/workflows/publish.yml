@@ -1,0 +1,44 @@
+name: Publish
+
+# Publishes @mctlhq/* packages to GitHub Packages. Triggered only by a semver
+# tag with no `v` prefix (e.g. 0.1.0). The tag must match every package version.
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify tag matches package versions
+        run: pnpm check:versions
+        env:
+          GIT_TAG: ${{ github.ref_name }}
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Publish to GitHub Packages
+        run: pnpm --filter "./packages/*" publish --no-git-checks
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

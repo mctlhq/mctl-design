@@ -1,0 +1,36 @@
+{
+  "name": "@mctlhq/design",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCTL shared design system — tokens, CSS, Vue 3 components and Storybook showcase",
+  "license": "Apache-2.0",
+  "homepage": "https://ui.mctl.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mctlhq/mctl-design.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "build": "turbo run build",
+    "build:storybook": "turbo run build:storybook",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "check:versions": "node scripts/check-versions.mjs",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "eslint-plugin-vue": "^9.30.0",
+    "prettier": "^3.3.3",
+    "turbo": "^2.2.3",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.12.2",
+    "vue-eslint-parser": "^9.4.3"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "@mctlhq/css",
+  "version": "0.1.0",
+  "description": "MCTL CSS — theme variables, global styles, prose styles, Tailwind preset",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    "./theme.css": "./dist/theme.css",
+    "./global.css": "./dist/global.css",
+    "./prose.css": "./dist/prose.css",
+    "./tailwind-preset": {
+      "types": "./dist/tailwind-preset.d.ts",
+      "import": "./dist/tailwind-preset.js"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mctlhq/mctl-design.git",
+    "directory": "packages/css"
+  },
+  "scripts": {
+    "build": "tsup && node scripts/build-css.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "clean": "rm -rf dist .turbo"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.4.0"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@mctlhq/tokens": "workspace:*",
+    "tailwindcss": "^3.4.14",
+    "tsup": "^8.3.0"
+  }
+}

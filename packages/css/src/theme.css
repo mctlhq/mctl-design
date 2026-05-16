@@ -1,0 +1,63 @@
+/*
+ * Semantic theme layer. Maps raw --mctl-* tokens (inlined above this block
+ * by the build) onto stable, theme-aware variables.
+ *
+ *   data-theme  = "dark" (default) | "light"   — surface flip
+ *   data-accent = "cyan" (default) | "lime" | "vermilion" | "lilac"
+ */
+:root {
+  /* Surface — dark "Engineering" is the default. */
+  --surface-bg: var(--mctl-surface-dark-bg);
+  --surface-elevated: var(--mctl-surface-dark-elevated);
+  --surface-card: var(--mctl-surface-dark-card);
+  --surface-line: var(--mctl-surface-dark-line);
+  --surface-line-strong: var(--mctl-surface-dark-line-strong);
+  --surface-fg: var(--mctl-surface-dark-fg);
+  --surface-fg-muted: var(--mctl-surface-dark-fg-muted);
+  --surface-fg-subtle: var(--mctl-surface-dark-fg-subtle);
+
+  /* Accent — cyan is the default. */
+  --accent: var(--mctl-accent-cyan-primary);
+  --accent-highlight: var(--mctl-accent-cyan-highlight);
+
+  /* Status. */
+  --status-ok: var(--mctl-status-ok);
+  --status-warn: var(--mctl-status-warn);
+  --status-bad: var(--mctl-status-bad);
+
+  /* Syntax. */
+  --syntax-key: var(--mctl-syntax-key);
+  --syntax-string: var(--mctl-syntax-string);
+  --syntax-comment: var(--mctl-syntax-comment);
+
+  /* Type families. */
+  --font-display: var(--mctl-typography-font-family-display);
+  --font-mono: var(--mctl-typography-font-family-mono);
+  --font-editorial: var(--mctl-typography-font-family-editorial);
+}
+
+[data-theme='light'] {
+  --surface-bg: var(--mctl-surface-light-bg);
+  --surface-elevated: var(--mctl-surface-light-elevated);
+  --surface-card: var(--mctl-surface-light-card);
+  --surface-line: var(--mctl-surface-light-line);
+  --surface-line-strong: var(--mctl-surface-light-line-strong);
+  --surface-fg: var(--mctl-surface-light-fg);
+  --surface-fg-muted: var(--mctl-surface-light-fg-muted);
+  --surface-fg-subtle: var(--mctl-surface-light-fg-subtle);
+}
+
+[data-accent='lime'] {
+  --accent: var(--mctl-accent-lime-primary);
+  --accent-highlight: var(--mctl-accent-lime-highlight);
+}
+
+[data-accent='vermilion'] {
+  --accent: var(--mctl-accent-vermilion-primary);
+  --accent-highlight: var(--mctl-accent-vermilion-highlight);
+}
+
+[data-accent='lilac'] {
+  --accent: var(--mctl-accent-lilac-primary);
+  --accent-highlight: var(--mctl-accent-lilac-highlight);
+}
