@@ -13,8 +13,8 @@ const config: StorybookConfig = {
   },
   managerHead: (head) =>
     `${head}
-    <title>MCTL Design System</title>
-    <meta property="og:title" content="MCTL Design System">
+    <title>MCTL UI</title>
+    <meta property="og:title" content="MCTL UI">
     <meta property="og:description" content="Design tokens, CSS theme, and Vue 3 components for MCTL products.">
     <meta property="og:url" content="https://ui.mctl.ai">
     <meta property="og:image" content="https://ui.mctl.ai/mctl-logo-light.svg">
