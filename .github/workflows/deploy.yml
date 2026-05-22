@@ -1,0 +1,50 @@
+name: Deploy to ui.mctl.ai
+
+# Continuous deploy of the Storybook UI: every merge to main builds an image
+# tagged with the commit SHA and rolls it out via the centralized mctl-gitops
+# pipeline. Deliberately NOT gated on a semver tag / release-please — a UI
+# change must reach ui.mctl.ai as soon as it lands on main, with no hidden
+# "no release was cut" stall. publish.yml (npm packages on a semver tag) is a
+# separate release track and is unaffected.
+on:
+  push:
+    branches: [main]
+
+# Serialize deploys: overlapping main merges must not fire competing
+# release-deploy dispatches, since the gitops image.tag bump is a
+# single-writer commit to mctl-gitops main.
+concurrency:
+  group: deploy-mctl-design
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Platform App token
+        id: app
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: mctlhq
+          repositories: mctl-gitops
+
+      - name: Dispatch centralized release-deploy (SHA-tagged image)
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          TAG="${SHA:0:12}"
+          gh workflow run release-deploy.yaml \
+            --repo mctlhq/mctl-gitops \
+            --ref main \
+            -f repo=mctlhq/mctl-design \
+            -f git_ref="$SHA" \
+            -f image_name=ghcr.io/mctlhq/mctl-design \
+            -f image_tag="$TAG" \
+            -f team_name=admins \
+            -f component_name=mctl-design
