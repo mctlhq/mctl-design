@@ -5,7 +5,7 @@ import { create } from 'storybook/theming';
 // cannot import the workspace CSS variables.
 
 const brand = {
-  brandTitle: 'MCTL Design System',
+  brandTitle: 'MCTL UI',
   brandUrl: 'https://ui.mctl.ai',
   brandTarget: '_self',
 };
