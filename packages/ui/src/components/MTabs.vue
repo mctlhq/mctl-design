@@ -73,6 +73,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
       class="m-tabs__panel"
       role="tabpanel"
       :aria-labelledby="tabId(active)"
+      tabindex="0"
     >
       <slot :active="active" />
     </div>
@@ -120,5 +121,10 @@ function onKeydown(event: KeyboardEvent, index: number) {
   padding: var(--mctl-space-5) 0;
   font-family: var(--font-display);
   color: var(--surface-fg);
+}
+
+.m-tabs__panel:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 </style>

@@ -35,7 +35,7 @@ const messageId = computed(() =>
       <span v-if="required" class="m-field__required" aria-hidden="true">*</span>
     </label>
     <div class="m-field__control">
-      <slot :described-by="messageId" />
+      <slot :described-by="messageId" :required="required || undefined" />
     </div>
     <p v-if="error" :id="messageId" class="m-field__error" role="alert">{{ error }}</p>
     <p v-else-if="hint" :id="messageId" class="m-field__hint">{{ hint }}</p>
