@@ -13,10 +13,13 @@ export const Overview: Story = {
     template: `
       <div class="mctl-prose" style="max-width: 720px;">
         <h1>MCTL Design System</h1>
+        <p class="mctl-lede">
+          Swiss-engineering minimalism &times; editorial density.
+        </p>
         <p>
-          <em>Swiss-engineering minimalism &times; editorial density.</em>
           The shared visual language for <code>mctl.ai</code>,
-          <code>docs.mctl.ai</code> and future MCTL web surfaces.
+          <code>docs.mctl.ai</code>, <code>tg.mctl.ai</code> and future
+          MCTL web surfaces.
         </p>
         <h2>Packages</h2>
         <ul>

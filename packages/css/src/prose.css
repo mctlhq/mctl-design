@@ -23,6 +23,21 @@
   font-size: var(--mctl-typography-font-size-section-title);
 }
 
+/*
+ * Editorial lede — a standfirst paragraph in the Instrument Serif voice.
+ * Sized at the lede step (not body) and rendered upright at full contrast so
+ * the delicate serif stays legible; italic at body size reads poorly.
+ */
+.mctl-prose .mctl-lede,
+.mctl-lede {
+  font-family: var(--font-editorial);
+  font-style: normal;
+  font-size: var(--mctl-typography-font-size-lede);
+  line-height: var(--mctl-typography-line-height-lede);
+  color: var(--surface-fg);
+  margin: var(--mctl-space-4) 0;
+}
+
 .mctl-prose h2 {
   font-size: var(--mctl-typography-font-size-stat);
   padding-bottom: var(--mctl-space-3);
