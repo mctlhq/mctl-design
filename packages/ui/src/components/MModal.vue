@@ -28,6 +28,9 @@ const dialogRef = ref<HTMLElement | null>(null);
 // clobbering a scroll policy set by the app or an outer modal.
 let previousOverflow = '';
 let overflowLocked = false;
+// The element focused before the modal opened, so focus can return to it
+// (typically the trigger) on close.
+let previouslyFocused: HTMLElement | null = null;
 
 function isTopmost(): boolean {
   return modalStack[modalStack.length - 1] === instanceKey;
@@ -76,6 +79,7 @@ function onKeydown(event: KeyboardEvent) {
 
 function activate() {
   if (typeof document === 'undefined' || overflowLocked) return;
+  previouslyFocused = document.activeElement as HTMLElement | null;
   previousOverflow = document.body.style.overflow;
   document.body.style.overflow = 'hidden';
   overflowLocked = true;
@@ -91,6 +95,9 @@ function deactivate() {
   const idx = modalStack.lastIndexOf(instanceKey);
   if (idx !== -1) modalStack.splice(idx, 1);
   document.removeEventListener('keydown', onKeydown);
+  // Return focus to whatever was focused before opening (usually the trigger).
+  previouslyFocused?.focus?.();
+  previouslyFocused = null;
 }
 
 // immediate so a modal mounted with open=true still locks scroll, traps Esc
