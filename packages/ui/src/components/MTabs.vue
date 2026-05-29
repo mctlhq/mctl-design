@@ -21,6 +21,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
 // on one page (avoids ambiguous aria-labelledby across instances).
 const uid = getCurrentInstance()?.uid ?? 0;
 const tabId = (value: string) => `m-tab-${uid}-${value}`;
+const panelId = `m-tabpanel-${uid}`;
 
 const active = computed(() => props.modelValue || props.tabs[0]?.value || '');
 
@@ -59,6 +60,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
         type="button"
         role="tab"
         :aria-selected="tab.value === active"
+        :aria-controls="panelId"
         :tabindex="tab.value === active ? 0 : -1"
         @click="select(tab.value)"
         @keydown="onKeydown($event, i)"
@@ -67,6 +69,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
       </button>
     </div>
     <div
+      :id="panelId"
       class="m-tabs__panel"
       role="tabpanel"
       :aria-labelledby="tabId(active)"

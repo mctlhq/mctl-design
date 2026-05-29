@@ -64,6 +64,11 @@ defineEmits<{ 'update:modelValue': [value: string] }>();
   border-color: var(--status-bad);
 }
 
+.m-textarea--invalid:focus-visible {
+  border-color: var(--status-bad);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-bad) 22%, transparent);
+}
+
 .m-textarea:disabled {
   opacity: 0.5;
   cursor: not-allowed;

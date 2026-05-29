@@ -105,6 +105,11 @@ function normalize(opt: string | Option): Option {
   border-color: var(--status-bad);
 }
 
+.m-select--invalid .m-select__control:focus-visible {
+  border-color: var(--status-bad);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-bad) 22%, transparent);
+}
+
 .m-select__chevron {
   position: absolute;
   top: 50%;

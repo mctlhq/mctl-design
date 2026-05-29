@@ -17,9 +17,11 @@ const tipId = `m-tooltip-${getCurrentInstance()?.uid ?? 0}`;
 </script>
 
 <template>
-  <span class="m-tooltip" :class="`m-tooltip--${placement}`" :aria-describedby="tipId">
+  <span class="m-tooltip" :class="`m-tooltip--${placement}`">
     <span class="m-tooltip__trigger">
-      <slot />
+      <!-- Expose tipId so the slotted control itself can carry
+           aria-describedby (the wrapper isn't the focus target). -->
+      <slot :tip-id="tipId" />
     </span>
     <span :id="tipId" class="m-tooltip__bubble" role="tooltip">{{ text }}</span>
   </span>

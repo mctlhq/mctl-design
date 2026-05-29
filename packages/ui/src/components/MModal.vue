@@ -1,3 +1,10 @@
+<script lang="ts">
+// Module-scoped (declared in a plain <script>, so it is evaluated once and
+// shared across instances — unlike <script setup>, which re-runs per instance).
+// Lets several stacked modals coordinate so only the topmost handles Escape.
+const modalStack: symbol[] = [];
+</script>
+
 <script setup lang="ts">
 import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
 
@@ -14,9 +21,6 @@ const props = withDefaults(
 
 const emit = defineEmits<{ 'update:open': [value: boolean] }>();
 
-// Module-level stack of open modals, so that with several stacked dialogs only
-// the topmost one consumes Escape / traps focus.
-const modalStack: symbol[] = [];
 const instanceKey = Symbol('m-modal');
 
 const dialogRef = ref<HTMLElement | null>(null);

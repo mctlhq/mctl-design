@@ -16,7 +16,9 @@ const meta: Meta<typeof MTooltip> = {
     template: `
       <div style="padding:48px; display:flex; justify-content:center;">
         <MTooltip v-bind="args">
-          <MButton variant="ghost">Hover or focus me</MButton>
+          <template #default="{ tipId }">
+            <MButton variant="ghost" :aria-describedby="tipId">Hover or focus me</MButton>
+          </template>
         </MTooltip>
       </div>
     `,
