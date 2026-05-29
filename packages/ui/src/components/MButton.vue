@@ -50,6 +50,11 @@ withDefaults(
   padding: var(--mctl-space-3) var(--mctl-space-5);
 }
 
+.m-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .m-button--primary {
   background: var(--accent);
   color: var(--mctl-color-ink);

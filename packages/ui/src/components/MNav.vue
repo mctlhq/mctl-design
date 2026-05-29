@@ -60,6 +60,12 @@ defineProps<{
   color: var(--surface-fg);
 }
 
+.m-nav__link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  color: var(--surface-fg);
+}
+
 .m-nav__link--active {
   color: var(--accent);
   border-bottom-color: var(--accent);

@@ -62,6 +62,12 @@ withDefaults(
   color: var(--surface-fg-muted);
 }
 
+.m-footer__link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  color: var(--surface-fg-muted);
+}
+
 .m-footer__copy {
   margin: 0;
 }
