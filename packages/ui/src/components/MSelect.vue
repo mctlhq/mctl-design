@@ -1,10 +1,17 @@
 <script setup lang="ts">
+import { computed, useAttrs } from 'vue';
+
 interface Option {
   label: string;
   value: string;
 }
 
-withDefaults(
+// inheritAttrs:false so fallthrough attrs (e.g. aria-describedby from MField)
+// reach the native <select>, not the wrapper div. Layout attrs (class/style)
+// stay on the wrapper.
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
   defineProps<{
     /** v-model value. */
     modelValue?: string;
@@ -19,19 +26,35 @@ withDefaults(
 
 defineEmits<{ 'update:modelValue': [value: string] }>();
 
+const attrs = useAttrs();
+const wrapperClass = computed(() => attrs.class);
+const wrapperStyle = computed(() => attrs.style);
+// Everything except class/style is forwarded to the native control.
+const controlAttrs = computed(() => {
+  const rest = { ...attrs };
+  delete rest.class;
+  delete rest.style;
+  return rest;
+});
+
 function normalize(opt: string | Option): Option {
   return typeof opt === 'string' ? { label: opt, value: opt } : opt;
 }
 </script>
 
 <template>
-  <div class="m-select" :class="{ 'm-select--invalid': invalid, 'm-select--disabled': disabled }">
+  <div
+    class="m-select"
+    :class="[wrapperClass, { 'm-select--invalid': invalid, 'm-select--disabled': disabled }]"
+    :style="wrapperStyle"
+  >
     <select
-      :id="id"
+      :id="props.id"
       class="m-select__control"
       :value="modelValue"
       :disabled="disabled"
       :aria-invalid="invalid || undefined"
+      v-bind="controlAttrs"
       @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
     >
       <option

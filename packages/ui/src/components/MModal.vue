@@ -14,11 +14,20 @@ const props = withDefaults(
 
 const emit = defineEmits<{ 'update:open': [value: boolean] }>();
 
+// Module-level stack of open modals, so that with several stacked dialogs only
+// the topmost one consumes Escape / traps focus.
+const modalStack: symbol[] = [];
+const instanceKey = Symbol('m-modal');
+
 const dialogRef = ref<HTMLElement | null>(null);
 // Remember the host's prior body overflow so closing restores it rather than
 // clobbering a scroll policy set by the app or an outer modal.
 let previousOverflow = '';
 let overflowLocked = false;
+
+function isTopmost(): boolean {
+  return modalStack[modalStack.length - 1] === instanceKey;
+}
 
 function close() {
   if (props.dismissible) emit('update:open', false);
@@ -28,12 +37,14 @@ function focusable(): HTMLElement[] {
   if (!dialogRef.value) return [];
   return Array.from(
     dialogRef.value.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
     ),
-  );
+  ).filter((el) => el.offsetParent !== null || el === dialogRef.value);
 }
 
 function onKeydown(event: KeyboardEvent) {
+  // Only the topmost open modal reacts to the shared document listener.
+  if (!isTopmost()) return;
   if (event.key === 'Escape') {
     close();
     return;
@@ -64,6 +75,7 @@ function activate() {
   previousOverflow = document.body.style.overflow;
   document.body.style.overflow = 'hidden';
   overflowLocked = true;
+  modalStack.push(instanceKey);
   document.addEventListener('keydown', onKeydown);
   nextTick(() => dialogRef.value?.focus());
 }
@@ -72,6 +84,8 @@ function deactivate() {
   if (typeof document === 'undefined' || !overflowLocked) return;
   document.body.style.overflow = previousOverflow;
   overflowLocked = false;
+  const idx = modalStack.lastIndexOf(instanceKey);
+  if (idx !== -1) modalStack.splice(idx, 1);
   document.removeEventListener('keydown', onKeydown);
 }
 
