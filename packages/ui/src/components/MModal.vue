@@ -15,35 +15,75 @@ const props = withDefaults(
 const emit = defineEmits<{ 'update:open': [value: boolean] }>();
 
 const dialogRef = ref<HTMLElement | null>(null);
+// Remember the host's prior body overflow so closing restores it rather than
+// clobbering a scroll policy set by the app or an outer modal.
+let previousOverflow = '';
+let overflowLocked = false;
 
 function close() {
   if (props.dismissible) emit('update:open', false);
 }
 
-function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') close();
+function focusable(): HTMLElement[] {
+  if (!dialogRef.value) return [];
+  return Array.from(
+    dialogRef.value.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+    ),
+  );
 }
 
+function onKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    close();
+    return;
+  }
+  // Trap Tab focus inside the dialog while it is open.
+  if (event.key === 'Tab') {
+    const items = focusable();
+    if (items.length === 0) {
+      event.preventDefault();
+      dialogRef.value?.focus();
+      return;
+    }
+    const first = items[0];
+    const last = items[items.length - 1];
+    const activeEl = document.activeElement;
+    if (event.shiftKey && (activeEl === first || activeEl === dialogRef.value)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && activeEl === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+}
+
+function activate() {
+  if (typeof document === 'undefined' || overflowLocked) return;
+  previousOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+  overflowLocked = true;
+  document.addEventListener('keydown', onKeydown);
+  nextTick(() => dialogRef.value?.focus());
+}
+
+function deactivate() {
+  if (typeof document === 'undefined' || !overflowLocked) return;
+  document.body.style.overflow = previousOverflow;
+  overflowLocked = false;
+  document.removeEventListener('keydown', onKeydown);
+}
+
+// immediate so a modal mounted with open=true still locks scroll, traps Esc
+// and moves focus.
 watch(
   () => props.open,
-  (isOpen) => {
-    if (typeof document === 'undefined') return;
-    if (isOpen) {
-      document.addEventListener('keydown', onKeydown);
-      document.body.style.overflow = 'hidden';
-      nextTick(() => dialogRef.value?.focus());
-    } else {
-      document.removeEventListener('keydown', onKeydown);
-      document.body.style.overflow = '';
-    }
-  },
+  (isOpen) => (isOpen ? activate() : deactivate()),
+  { immediate: true },
 );
 
-onBeforeUnmount(() => {
-  if (typeof document === 'undefined') return;
-  document.removeEventListener('keydown', onKeydown);
-  document.body.style.overflow = '';
-});
+onBeforeUnmount(deactivate);
 </script>
 
 <template>

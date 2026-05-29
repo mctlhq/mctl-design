@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, getCurrentInstance } from 'vue';
 
 const props = withDefaults(
   defineProps<{
@@ -18,6 +18,14 @@ const props = withDefaults(
 // `for` is a reserved word, so it can't be referenced bare in the template;
 // alias it through a computed for the label's `for` attribute.
 const labelFor = computed(() => props.for || undefined);
+
+// Id for the hint/error message, exposed via slot scope so the control can
+// reference it with aria-describedby (the control lives in the slot, so the
+// consumer wires it). Only emitted when a message is actually shown.
+const uid = getCurrentInstance()?.uid ?? 0;
+const messageId = computed(() =>
+  props.error || props.hint ? `m-field-msg-${uid}` : undefined,
+);
 </script>
 
 <template>
@@ -27,10 +35,10 @@ const labelFor = computed(() => props.for || undefined);
       <span v-if="required" class="m-field__required" aria-hidden="true">*</span>
     </label>
     <div class="m-field__control">
-      <slot />
+      <slot :described-by="messageId" />
     </div>
-    <p v-if="error" class="m-field__error" role="alert">{{ error }}</p>
-    <p v-else-if="hint" class="m-field__hint">{{ hint }}</p>
+    <p v-if="error" :id="messageId" class="m-field__error" role="alert">{{ error }}</p>
+    <p v-else-if="hint" :id="messageId" class="m-field__hint">{{ hint }}</p>
   </div>
 </template>
 

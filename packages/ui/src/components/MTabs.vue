@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, getCurrentInstance, nextTick } from 'vue';
 
 interface Tab {
   label: string;
@@ -17,13 +17,20 @@ const props = withDefaults(
 
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
 
+// Per-instance prefix so tab/panel ids stay unique when several MTabs render
+// on one page (avoids ambiguous aria-labelledby across instances).
+const uid = getCurrentInstance()?.uid ?? 0;
+const tabId = (value: string) => `m-tab-${uid}-${value}`;
+
 const active = computed(() => props.modelValue || props.tabs[0]?.value || '');
 
 function select(value: string) {
   emit('update:modelValue', value);
 }
 
-// Roving arrow-key navigation across the tab list.
+// Roving arrow-key navigation across the tab list. Move DOM focus to the newly
+// selected tab so subsequent arrow presses keep working (the prior tab becomes
+// tabindex="-1").
 function onKeydown(event: KeyboardEvent, index: number) {
   const last = props.tabs.length - 1;
   let next = -1;
@@ -33,7 +40,9 @@ function onKeydown(event: KeyboardEvent, index: number) {
   else if (event.key === 'End') next = last;
   if (next !== -1) {
     event.preventDefault();
-    select(props.tabs[next].value);
+    const value = props.tabs[next].value;
+    select(value);
+    nextTick(() => document.getElementById(tabId(value))?.focus());
   }
 }
 </script>
@@ -43,7 +52,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
     <div class="m-tabs__list" role="tablist">
       <button
         v-for="(tab, i) in tabs"
-        :id="`m-tab-${tab.value}`"
+        :id="tabId(tab.value)"
         :key="tab.value"
         class="m-tabs__tab"
         :class="{ 'm-tabs__tab--active': tab.value === active }"
@@ -60,7 +69,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
     <div
       class="m-tabs__panel"
       role="tabpanel"
-      :aria-labelledby="`m-tab-${active}`"
+      :aria-labelledby="tabId(active)"
     >
       <slot :active="active" />
     </div>

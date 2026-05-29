@@ -26,7 +26,9 @@ const meta: Meta<typeof MField> = {
     },
     template: `
       <MField v-bind="args" for="team" style="max-width:420px">
-        <MInput id="team" v-model="value" placeholder="my-team" :invalid="!!args.error" />
+        <template #default="{ describedBy }">
+          <MInput id="team" v-model="value" placeholder="my-team" :invalid="!!args.error" :aria-describedby="describedBy" />
+        </template>
       </MField>
     `,
   }),
@@ -57,7 +59,9 @@ export const Form: Story = {
     template: `
       <div style="display:flex; flex-direction:column; gap:24px; max-width:420px;">
         <MField label="Team name" for="t" required hint="Becomes your namespace.">
-          <MInput id="t" v-model="team" placeholder="my-team" />
+          <template #default="{ describedBy }">
+            <MInput id="t" v-model="team" placeholder="my-team" :aria-describedby="describedBy" />
+          </template>
         </MField>
         <MField label="Database" for="d">
           <MSelect id="d" v-model="db" :options="options" />

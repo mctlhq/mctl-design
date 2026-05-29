@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useId } from 'vue';
+import { getCurrentInstance } from 'vue';
 
 withDefaults(
   defineProps<{
@@ -10,13 +10,15 @@ withDefaults(
   { placement: 'top' },
 );
 
-// Stable id so the trigger can reference the tip via aria-describedby.
-const tipId = `m-tooltip-${useId()}`;
+// Per-instance id via the component uid (works on Vue 3.4+, unlike useId which
+// is 3.5-only and would break the peer range). Lets the bubble be referenced
+// by id without adding a separate tab stop.
+const tipId = `m-tooltip-${getCurrentInstance()?.uid ?? 0}`;
 </script>
 
 <template>
-  <span class="m-tooltip" :class="`m-tooltip--${placement}`">
-    <span class="m-tooltip__trigger" tabindex="0" :aria-describedby="tipId">
+  <span class="m-tooltip" :class="`m-tooltip--${placement}`" :aria-describedby="tipId">
+    <span class="m-tooltip__trigger">
       <slot />
     </span>
     <span :id="tipId" class="m-tooltip__bubble" role="tooltip">{{ text }}</span>
@@ -31,12 +33,6 @@ const tipId = `m-tooltip-${useId()}`;
 
 .m-tooltip__trigger {
   display: inline-flex;
-  border-radius: var(--mctl-radius-sm);
-}
-
-.m-tooltip__trigger:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
 }
 
 .m-tooltip__bubble {
@@ -70,8 +66,10 @@ const tipId = `m-tooltip-${useId()}`;
   margin-top: var(--mctl-space-2);
 }
 
+/* Reveal on hover or when the slotted control inside gains focus — no extra
+   tab stop, so the real trigger keeps its own focus + describedby. */
 .m-tooltip:hover .m-tooltip__bubble,
-.m-tooltip__trigger:focus-visible + .m-tooltip__bubble {
+.m-tooltip:focus-within .m-tooltip__bubble {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }

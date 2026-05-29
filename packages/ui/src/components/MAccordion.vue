@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getCurrentInstance } from 'vue';
+
 interface Item {
   /** Stable id, also used as the slot name for rich content. */
   id: string;
@@ -15,6 +17,10 @@ withDefaults(
   }>(),
   { multiple: false },
 );
+
+// Per-instance <details name> so exclusivity is scoped to this accordion —
+// otherwise two accordions on a page would form one shared exclusive group.
+const groupName = `m-accordion-${getCurrentInstance()?.uid ?? 0}`;
 </script>
 
 <template>
@@ -23,7 +29,7 @@ withDefaults(
       v-for="item in items"
       :key="item.id"
       class="m-accordion__item"
-      :name="multiple ? undefined : 'm-accordion'"
+      :name="multiple ? undefined : groupName"
     >
       <summary class="m-accordion__summary">
         <span>{{ item.title }}</span>
