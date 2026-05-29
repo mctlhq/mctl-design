@@ -27,9 +27,9 @@ const config: StorybookConfig = {
   },
   managerHead: (head) =>
     `${head}
-    <title>MCTL Design System</title>
+    <title>MCTL UI</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-    <meta property="og:title" content="MCTL Design System">
+    <meta property="og:title" content="MCTL UI">
     <meta property="og:description" content="Design tokens, CSS theme, and Vue 3 components for MCTL products.">
     <meta property="og:url" content="https://ui.mctl.ai">
     <meta property="og:image" content="https://ui.mctl.ai/mctl-logo-light.svg">
@@ -47,7 +47,7 @@ const config: StorybookConfig = {
       // Rebrand the suffix to MCTL so the browser tab carries no upstream artifact.
       (function () {
         var rebrand = function () {
-          var next = document.title.replace(/⋅ Storybook$/, '⋅ MCTL Design System');
+          var next = document.title.replace(/⋅ Storybook$/, '⋅ MCTL UI');
           if (next !== document.title) document.title = next;
         };
         new MutationObserver(rebrand).observe(
