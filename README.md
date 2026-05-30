@@ -79,6 +79,17 @@ export default {
 };
 ```
 
+## Components
+
+`@mctlhq/ui` ships these Vue 3 components (see the
+[Storybook showcase](https://ui.mctl.ai) for live examples and props):
+
+- **Layout & structure** — `MPageLayout`, `MNav`, `MFooter`, `MCard`
+- **Forms** — `MField`, `MInput`, `MTextarea`, `MSelect`, `MButton`
+- **Disclosure & overlay** — `MTabs`, `MAccordion`, `MTooltip`, `MModal`
+- **Data & status** — `MTable`, `MStat`, `MBadge`, `MPill`, `MAlert`
+- **Content** — `MCodeBlock`, `MYamlBlock`, `MStepCard`, `MSpecCard`
+
 ## License
 
 Apache-2.0 — see [LICENSE](./LICENSE).
