@@ -6,6 +6,7 @@ import { computed, ref, watchEffect } from 'vue';
 import '@mctlhq/css/theme.css';
 import '@mctlhq/css/global.css';
 import '@mctlhq/css/prose.css';
+import '@mctlhq/css/telegram.css';
 import '@mctlhq/ui/style.css';
 
 import { mctlDark, mctlLight } from './mctl-theme';
@@ -27,7 +28,13 @@ const preview: Preview = {
     controls: { expanded: true },
     options: {
       storySort: {
-        order: ['Introduction', 'Foundations', 'Components', 'Patterns'],
+        order: [
+          'Introduction',
+          'Foundations',
+          'Components',
+          'Patterns',
+          ['Telegram', ['Introduction', 'Foundations', 'Components', 'Patterns', 'Rewards', 'PairDesk']],
+        ],
       },
     },
     darkMode: {
