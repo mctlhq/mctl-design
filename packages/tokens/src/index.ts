@@ -16,6 +16,7 @@ export { radius } from './radius';
 export { shadow } from './shadow';
 export { zIndex } from './zIndex';
 export { motion } from './motion';
+export { telegramPalette, telegramThemeParamsMap } from './telegram';
 
 export type { Color } from './color';
 export type { Surface, SurfaceName } from './surface';
@@ -28,6 +29,7 @@ export type { Radius } from './radius';
 export type { Shadow } from './shadow';
 export type { ZIndex } from './zIndex';
 export type { Motion } from './motion';
+export type { TelegramPalette, TelegramThemeParamsMap } from './telegram';
 
 import { color } from './color';
 import { surface } from './surface';
