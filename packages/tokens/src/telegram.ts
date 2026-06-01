@@ -44,10 +44,16 @@ export const telegramThemeParamsMap = {
   section_bg_color: '--tg-surface',
   text_color: '--tg-ink',
   hint_color: '--tg-muted',
+  // accent_text_color, link_color, and button_color are all intentionally
+  // mapped to --tg-accent — Telegram themes guarantee they carry the same
+  // value. When iterating this map with setProperty(), the last write wins
+  // (button_color), but the result is correct because all three are equal.
   accent_text_color: '--tg-accent',
   link_color: '--tg-accent',
   button_color: '--tg-accent',
-  button_text_color: '--tg-ink',
+  // button_text_color is omitted: Telegram themes often set it to white (for
+  // blue buttons) while text_color is dark, so mapping it to --tg-ink would
+  // make body text white on light backgrounds. Handle button text separately.
   destructive_text_color: '--tg-danger',
   section_separator_color: '--tg-line',
 } as const;

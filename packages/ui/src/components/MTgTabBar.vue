@@ -1,10 +1,14 @@
-<script setup lang="ts">
+<script lang="ts">
+// Exported here (not in <script setup>) so @vitejs/plugin-vue can bundle it
+// as a named ES module export without conflicting with the SFC compiler.
 export interface MTgTab {
   key: string;
   label: string;
   icon?: string;
 }
+</script>
 
+<script setup lang="ts">
 withDefaults(
   defineProps<{
     tabs: MTgTab[];
@@ -12,15 +16,17 @@ withDefaults(
     modelValue?: string;
     /** Apply safe-area-inset-bottom padding below the bar. */
     safeArea?: boolean;
+    /** Accessible name for the tablist (screen-reader announcement). */
+    ariaLabel?: string;
   }>(),
-  { modelValue: '', safeArea: true },
+  { modelValue: '', safeArea: true, ariaLabel: 'Navigation' },
 );
 
 defineEmits<{ 'update:modelValue': [key: string] }>();
 </script>
 
 <template>
-  <nav class="m-tg-tabbar" :class="{ 'm-tg-tabbar--safe': safeArea }" role="tablist">
+  <nav class="m-tg-tabbar" :class="{ 'm-tg-tabbar--safe': safeArea }" role="tablist" :aria-label="ariaLabel">
     <button
       v-for="tab in tabs"
       :key="tab.key"

@@ -23,7 +23,7 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
           aria-hidden="true"
           @click="$emit('update:modelValue', false)"
         />
-        <div class="m-tg-sheet" role="dialog" :aria-label="title || 'Sheet'">
+        <div class="m-tg-sheet" role="dialog" aria-modal="true" :aria-label="title || 'Sheet'">
           <div class="m-tg-sheet__handle-row">
             <span class="m-tg-sheet__handle" aria-hidden="true" />
             <span v-if="title" class="m-tg-sheet__title">{{ title }}</span>
@@ -57,14 +57,14 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
 .m-tg-sheet-scrim {
   position: absolute;
   inset: 0;
-  background: rgba(21, 23, 27, 0.4);
+  background: color-mix(in srgb, var(--tg-ink, #15171b) 40%, transparent);
 }
 
 .m-tg-sheet {
   position: relative;
   width: 100%;
   background: var(--tg-surface, #ffffff);
-  border-radius: 22px 22px 0 0;
+  border-radius: var(--tg-radius-sheet, 22px) var(--tg-radius-sheet, 22px) 0 0;
   max-height: 90dvh;
   display: flex;
   flex-direction: column;
@@ -74,7 +74,9 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
 .m-tg-sheet__handle-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 12px 16px 8px;
+  position: relative;
   flex-shrink: 0;
 }
 
@@ -84,8 +86,6 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
   height: 4px;
   border-radius: 2px;
   background: var(--tg-line, #e7e6e1);
-  margin: 0 auto;
-  flex: 1;
 }
 
 .m-tg-sheet__title {
@@ -99,7 +99,8 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
 }
 
 .m-tg-sheet__close {
-  margin-left: auto;
+  position: absolute;
+  right: 16px;
   background: var(--tg-surface-sub, #f3f2ec);
   border: none;
   border-radius: 50%;
@@ -111,7 +112,6 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
   font-size: 12px;
   cursor: pointer;
   color: var(--tg-muted, #6a6e76);
-  flex-shrink: 0;
 }
 
 .m-tg-sheet__body {

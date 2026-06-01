@@ -28,7 +28,7 @@ defineEmits<{ click: [] }>();
 </script>
 
 <template>
-  <div class="m-tg-order-card" role="button" tabindex="0" @click="$emit('click')" @keydown.enter="$emit('click')">
+  <div class="m-tg-order-card" role="button" tabindex="0" @click="$emit('click')" @keydown.enter.prevent="$emit('click')" @keydown.space.prevent="$emit('click')">
     <div class="m-tg-order-card__header">
       <span class="m-tg-order-card__direction" :class="`m-tg-order-card__direction--${direction.toLowerCase()}`">
         {{ direction }}
@@ -69,12 +69,17 @@ defineEmits<{ click: [] }>();
   gap: 10px;
   cursor: pointer;
   transition: opacity 0.12s ease;
-  outline: none;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
-.m-tg-order-card:active,
+.m-tg-order-card:active {
+  opacity: 0.75;
+}
+
 .m-tg-order-card:focus-visible {
   opacity: 0.75;
+  outline-color: var(--tg-accent, #2d7df6);
 }
 
 .m-tg-order-card__header {

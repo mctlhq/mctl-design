@@ -34,6 +34,7 @@
   --tg-line: #e7e6e1;
   --tg-radius-card: 18px;
   --tg-radius-chip: 10px;
+  --tg-radius-sheet: 22px;
   --tg-pad-screen: 20px;
 
   /* Safe area insets — resolve from the device; fall back to 0. */
