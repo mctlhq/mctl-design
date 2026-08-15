@@ -90,7 +90,7 @@ defineEmits<{ 'update:modelValue': [key: string] }>();
 }
 
 .m-tg-tabbar__label {
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.01em;

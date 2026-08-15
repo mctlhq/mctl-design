@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { fontFamily, fontWeight } from '@mctlhq/tokens';
+import { fontFamily, fontWeight, fontSize, text } from '@mctlhq/tokens';
 
 const meta: Meta = {
   title: 'Foundations/Typography',
@@ -13,6 +13,8 @@ export const Scale: Story = {
     setup: () => ({
       families: Object.entries(fontFamily),
       weights: Object.entries(fontWeight),
+      uiSizes: Object.entries(fontSize).filter(([, v]) => !String(v).includes('clamp')),
+      styles: Object.entries(text),
     }),
     template: `
       <div style="display:flex; flex-direction:column; gap:40px; max-width:760px;">
@@ -30,8 +32,8 @@ export const Scale: Story = {
             font-family:var(--font-mono);">56 stat</div>
           <div style="font-size:var(--mctl-typography-font-size-lede);
             line-height:var(--mctl-typography-line-height-lede);
-            color:var(--surface-fg-muted);">
-            Lede paragraph &mdash; the standfirst voice of the page.
+            font-family:var(--font-editorial);">
+            Lede paragraph — the standfirst voice of the page.
           </div>
           <div style="font-size:var(--mctl-typography-font-size-body);">Body text — 15–16px.</div>
           <div style="font-size:var(--mctl-typography-font-size-marker);
@@ -42,10 +44,36 @@ export const Scale: Story = {
 
         <section>
           <h3 style="font-family:var(--font-mono); text-transform:uppercase;
+            letter-spacing:0.12em; font-size:12px; color:var(--surface-fg-subtle);">UI sizes</h3>
+          <div v-for="[name, size] in uiSizes" :key="name"
+            :style="{ fontFamily: 'var(--font-display)', fontSize: size, marginBottom: '6px' }">
+            {{ name }} — {{ size }}
+          </div>
+        </section>
+
+        <section>
+          <h3 style="font-family:var(--font-mono); text-transform:uppercase;
+            letter-spacing:0.12em; font-size:12px; color:var(--surface-fg-subtle);">Text styles</h3>
+          <div v-for="[name, style] in styles" :key="name"
+            :style="{
+              fontFamily: style.family,
+              fontSize: style.size,
+              fontWeight: style.weight,
+              lineHeight: style.lineHeight,
+              letterSpacing: style.letterSpacing,
+              marginBottom: '16px',
+              color: name === 'bodyMuted' ? 'var(--surface-fg-muted)' : 'var(--surface-fg)',
+            }">
+            {{ name }} — The platform team is now an agent.
+          </div>
+        </section>
+
+        <section>
+          <h3 style="font-family:var(--font-mono); text-transform:uppercase;
             letter-spacing:0.12em; font-size:12px; color:var(--surface-fg-subtle);">Families</h3>
           <div v-for="[name, stack] in families" :key="name"
             :style="{ fontFamily: stack, fontSize: '20px', marginBottom: '8px' }">
-            {{ name }} &mdash; The platform team is now an agent.
+            {{ name }} — The platform team is now an agent.
           </div>
         </section>
 

@@ -111,6 +111,6 @@ const lines = computed<Segment[][]>(() =>
 }
 
 .m-yaml__t-punct {
-  color: var(--surface-fg-subtle);
+  color: var(--syntax-punctuation);
 }
 </style>

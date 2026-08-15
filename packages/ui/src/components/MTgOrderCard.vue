@@ -89,7 +89,7 @@ defineEmits<{ click: [] }>();
 }
 
 .m-tg-order-card__direction {
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 700;
   padding: 2px 10px;
@@ -108,7 +108,7 @@ defineEmits<{ click: [] }>();
 }
 
 .m-tg-order-card__pair {
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 14px;
   font-weight: 600;
   color: var(--tg-ink, #15171b);
@@ -121,7 +121,7 @@ defineEmits<{ click: [] }>();
 }
 
 .m-tg-order-card__rate {
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 700;
   color: var(--tg-ink, #15171b);
@@ -136,13 +136,13 @@ defineEmits<{ click: [] }>();
 }
 
 .m-tg-order-card__meta-item {
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 13px;
   color: var(--tg-muted, #6a6e76);
 }
 
 .m-tg-order-card__method {
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 12px;
   color: var(--tg-muted, #6a6e76);
   background: var(--tg-surface-sub, #f3f2ec);
@@ -159,7 +159,7 @@ defineEmits<{ click: [] }>();
 }
 
 .m-tg-order-card__author {
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 13px;
   color: var(--tg-muted, #6a6e76);
 }

@@ -3,7 +3,8 @@
  * by the build) onto stable, theme-aware variables.
  *
  *   data-theme  = "dark" (default) | "light"   — surface flip
- *   data-accent = "cyan" (default) | "lime" | "vermilion" | "lilac"
+ *   data-accent = "terracotta" (default) | "cyan" | "lime" | "lilac" | "vermilion"
+ *                 vermilion is a public alias of terracotta.
  */
 :root {
   /* Surface — dark "Engineering" is the default. */
@@ -16,19 +17,40 @@
   --surface-fg-muted: var(--mctl-surface-dark-fg-muted);
   --surface-fg-subtle: var(--mctl-surface-dark-fg-subtle);
 
-  /* Accent — cyan is the default. */
-  --accent: var(--mctl-accent-cyan-primary);
-  --accent-highlight: var(--mctl-accent-cyan-highlight);
+  /* Accent — terracotta is the default. */
+  --accent: var(--mctl-accent-terracotta-dark-primary);
+  --accent-highlight: var(--mctl-accent-terracotta-dark-highlight);
+  --accent-fg: var(--mctl-accent-terracotta-dark-fg);
+  --accent-soft: var(--mctl-accent-terracotta-dark-soft);
+
+  /* Named accent primaries for Tailwind swatches (bg-accent-cyan, etc.). */
+  --accent-terracotta: var(--mctl-accent-terracotta-dark-primary);
+  --accent-cyan: var(--mctl-accent-cyan-dark-primary);
+  --accent-lime: var(--mctl-accent-lime-dark-primary);
+  --accent-lilac: var(--mctl-accent-lilac-dark-primary);
 
   /* Status. */
-  --status-ok: var(--mctl-status-ok);
-  --status-warn: var(--mctl-status-warn);
-  --status-bad: var(--mctl-status-bad);
+  --status-ok: var(--mctl-status-dark-ok);
+  --status-warn: var(--mctl-status-dark-warn);
+  --status-bad: var(--mctl-status-dark-bad);
 
   /* Syntax. */
   --syntax-key: var(--mctl-syntax-key);
   --syntax-string: var(--mctl-syntax-string);
+  --syntax-number: var(--mctl-syntax-number);
+  --syntax-keyword: var(--mctl-syntax-keyword);
+  --syntax-punctuation: var(--mctl-syntax-punctuation);
   --syntax-comment: var(--mctl-syntax-comment);
+
+  /* Elevation. */
+  --shadow-sm: var(--mctl-shadow-dark-sm);
+  --shadow-md: var(--mctl-shadow-dark-md);
+  --shadow-overlay: var(--mctl-shadow-dark-overlay);
+
+  /* Focus ring follows the active accent. */
+  --focus-ring: var(--accent);
+  --focus-ring-width: var(--mctl-focus-ring-width);
+  --focus-ring-offset: var(--mctl-focus-ring-offset);
 
   /* Type families. */
   --font-display: var(--mctl-typography-font-family-display);
@@ -45,19 +67,80 @@
   --surface-fg: var(--mctl-surface-light-fg);
   --surface-fg-muted: var(--mctl-surface-light-fg-muted);
   --surface-fg-subtle: var(--mctl-surface-light-fg-subtle);
+
+  --accent: var(--mctl-accent-terracotta-light-primary);
+  --accent-highlight: var(--mctl-accent-terracotta-light-highlight);
+  --accent-fg: var(--mctl-accent-terracotta-light-fg);
+  --accent-soft: var(--mctl-accent-terracotta-light-soft);
+
+  --accent-terracotta: var(--mctl-accent-terracotta-light-primary);
+  --accent-cyan: var(--mctl-accent-cyan-light-primary);
+  --accent-lime: var(--mctl-accent-lime-light-primary);
+  --accent-lilac: var(--mctl-accent-lilac-light-primary);
+
+  --status-ok: var(--mctl-status-light-ok);
+  --status-warn: var(--mctl-status-light-warn);
+  --status-bad: var(--mctl-status-light-bad);
+
+  --shadow-sm: var(--mctl-shadow-light-sm);
+  --shadow-md: var(--mctl-shadow-light-md);
+  --shadow-overlay: var(--mctl-shadow-light-overlay);
+}
+
+[data-accent='terracotta'],
+[data-accent='vermilion'] {
+  --accent: var(--mctl-accent-terracotta-dark-primary);
+  --accent-highlight: var(--mctl-accent-terracotta-dark-highlight);
+  --accent-fg: var(--mctl-accent-terracotta-dark-fg);
+  --accent-soft: var(--mctl-accent-terracotta-dark-soft);
+}
+
+[data-theme='light'][data-accent='terracotta'],
+[data-theme='light'][data-accent='vermilion'] {
+  --accent: var(--mctl-accent-terracotta-light-primary);
+  --accent-highlight: var(--mctl-accent-terracotta-light-highlight);
+  --accent-fg: var(--mctl-accent-terracotta-light-fg);
+  --accent-soft: var(--mctl-accent-terracotta-light-soft);
+}
+
+[data-accent='cyan'] {
+  --accent: var(--mctl-accent-cyan-dark-primary);
+  --accent-highlight: var(--mctl-accent-cyan-dark-highlight);
+  --accent-fg: var(--mctl-accent-cyan-dark-fg);
+  --accent-soft: var(--mctl-accent-cyan-dark-soft);
+}
+
+[data-theme='light'][data-accent='cyan'] {
+  --accent: var(--mctl-accent-cyan-light-primary);
+  --accent-highlight: var(--mctl-accent-cyan-light-highlight);
+  --accent-fg: var(--mctl-accent-cyan-light-fg);
+  --accent-soft: var(--mctl-accent-cyan-light-soft);
 }
 
 [data-accent='lime'] {
-  --accent: var(--mctl-accent-lime-primary);
-  --accent-highlight: var(--mctl-accent-lime-highlight);
+  --accent: var(--mctl-accent-lime-dark-primary);
+  --accent-highlight: var(--mctl-accent-lime-dark-highlight);
+  --accent-fg: var(--mctl-accent-lime-dark-fg);
+  --accent-soft: var(--mctl-accent-lime-dark-soft);
 }
 
-[data-accent='vermilion'] {
-  --accent: var(--mctl-accent-vermilion-primary);
-  --accent-highlight: var(--mctl-accent-vermilion-highlight);
+[data-theme='light'][data-accent='lime'] {
+  --accent: var(--mctl-accent-lime-light-primary);
+  --accent-highlight: var(--mctl-accent-lime-light-highlight);
+  --accent-fg: var(--mctl-accent-lime-light-fg);
+  --accent-soft: var(--mctl-accent-lime-light-soft);
 }
 
 [data-accent='lilac'] {
-  --accent: var(--mctl-accent-lilac-primary);
-  --accent-highlight: var(--mctl-accent-lilac-highlight);
+  --accent: var(--mctl-accent-lilac-dark-primary);
+  --accent-highlight: var(--mctl-accent-lilac-dark-highlight);
+  --accent-fg: var(--mctl-accent-lilac-dark-fg);
+  --accent-soft: var(--mctl-accent-lilac-dark-soft);
+}
+
+[data-theme='light'][data-accent='lilac'] {
+  --accent: var(--mctl-accent-lilac-light-primary);
+  --accent-highlight: var(--mctl-accent-lilac-light-highlight);
+  --accent-fg: var(--mctl-accent-lilac-light-fg);
+  --accent-soft: var(--mctl-accent-lilac-light-soft);
 }

@@ -29,5 +29,7 @@ console.log('css: wrote theme.css, global.css, prose.css, telegram.css');
 const storybookPublic = join(pkgRoot, '../../apps/storybook/public');
 if (existsSync(storybookPublic)) {
   copyFileSync(join(dist, 'theme.css'), join(storybookPublic, 'mctl.css'));
-  console.log('css: copied mctl.css to storybook/public');
+  copyFileSync(join(dist, 'global.css'), join(storybookPublic, 'global.css'));
+  copyFileSync(join(dist, 'prose.css'), join(storybookPublic, 'prose.css'));
+  console.log('css: copied mctl.css, global.css, prose.css to storybook/public');
 }

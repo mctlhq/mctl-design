@@ -47,12 +47,12 @@ const preview: Preview = {
   globalTypes: {
     accent: {
       description: 'Accent color',
-      defaultValue: 'cyan',
+      defaultValue: 'terracotta',
       toolbar: {
         title: 'Accent',
         icon: 'paintbrush',
         dynamicTitle: true,
-        items: ['cyan', 'lime', 'vermilion', 'lilac'],
+        items: ['terracotta', 'cyan', 'lime', 'lilac'],
       },
     },
   },

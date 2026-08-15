@@ -89,7 +89,7 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
 }
 
 .m-tg-sheet__title {
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 17px;
   font-weight: 600;
   color: var(--tg-ink, #15171b);

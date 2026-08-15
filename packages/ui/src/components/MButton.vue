@@ -57,7 +57,7 @@ withDefaults(
 
 .m-button--primary {
   background: var(--accent);
-  color: var(--mctl-color-ink);
+  color: var(--accent-fg);
   border-color: var(--accent);
 }
 

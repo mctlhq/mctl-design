@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { color, accent, status, syntax } from '@mctlhq/tokens';
+import { color, hue, accent, status, syntax } from '@mctlhq/tokens';
 
 const meta: Meta = {
   title: 'Foundations/Colors',
@@ -8,24 +8,40 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-const accentSwatches = Object.entries(accent).flatMap(([name, pair]) => [
-  { label: `${name} · primary`, value: pair.primary },
-  { label: `${name} · highlight`, value: pair.highlight },
-]);
+const flatten = (obj: Record<string, unknown>, prefix = ''): { label: string; value: string }[] => {
+  const out: { label: string; value: string }[] = [];
+  for (const [key, value] of Object.entries(obj)) {
+    const label = prefix ? `${prefix} · ${key}` : key;
+    if (value !== null && typeof value === 'object') {
+      out.push(...flatten(value as Record<string, unknown>, label));
+    } else {
+      out.push({ label, value: String(value) });
+    }
+  }
+  return out;
+};
+
+const accentSwatches = Object.entries(accent)
+  .filter(([name]) => name !== 'vermilion')
+  .flatMap(([name, pair]) => flatten(pair, name));
+
+const hueSwatches = flatten(hue);
 
 export const Palette: Story = {
   render: () => ({
     setup: () => ({
-      surface: Object.entries(color),
+      primitives: Object.entries(color),
       accents: accentSwatches,
-      statuses: Object.entries(status),
+      hues: hueSwatches,
+      statuses: flatten(status),
       syntaxes: Object.entries(syntax),
     }),
     template: `
       <div style="display:flex; flex-direction:column; gap:32px; max-width:760px;">
         <section v-for="group in [
-          { title: 'Palette', items: surface },
-          { title: 'Accents', items: accents },
+          { title: 'Primitives', items: primitives },
+          { title: 'Accents (theme-split)', items: accents },
+          { title: 'Hue ramps 50–900', items: hues },
           { title: 'Status', items: statuses },
           { title: 'Syntax', items: syntaxes },
         ]" :key="group.title">
