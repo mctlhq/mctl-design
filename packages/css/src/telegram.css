@@ -75,7 +75,7 @@
   min-height: 100dvh;
   background: var(--tg-bg);
   color: var(--tg-ink);
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }

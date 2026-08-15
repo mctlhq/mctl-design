@@ -21,8 +21,10 @@ export const Surfaces: Story = {
       <div style="display:flex; flex-direction:column; gap:24px; max-width:760px;">
         <p class="mctl-prose">
           The surface flips via <code>data-theme</code>. Components consume the
-          semantic <code>--surface-*</code> and <code>--accent</code> variables,
-          so the same markup renders correctly on either surface.
+          semantic <code>--surface-*</code>, <code>--accent</code> and
+          <code>--accent-fg</code> variables, so the same markup renders
+          correctly on either surface. Light Editorial now has distinct
+          elevated and card steps.
         </p>
         <div v-for="t in themes" :key="t.id" :data-theme="t.id"
           style="background:var(--surface-bg); color:var(--surface-fg);

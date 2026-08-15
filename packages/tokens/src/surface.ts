@@ -15,10 +15,10 @@ export const surface = {
   },
   light: {
     bg: color.paper,
-    elevated: color.paper,
-    card: color.paper,
+    elevated: color.paperElevated,
+    card: color.paperCard,
     line: color.paperLine,
-    lineStrong: color.paperLine,
+    lineStrong: color.paperLineStrong,
     fg: color.paperInk,
     fgMuted: color.paperFg,
     fgSubtle: color.fg3,

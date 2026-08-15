@@ -57,7 +57,7 @@ const iconMap = {
 
 .m-tg-empty__title {
   margin: 0;
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 600;
   color: var(--tg-ink, #15171b);
@@ -65,7 +65,7 @@ const iconMap = {
 
 .m-tg-empty__description {
   margin: 0;
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 14px;
   color: var(--tg-muted, #6a6e76);
   max-width: 260px;

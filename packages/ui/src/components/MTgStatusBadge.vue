@@ -36,7 +36,7 @@ const labelMap: Record<string, string> = {
 .m-tg-status-badge {
   display: inline-flex;
   align-items: center;
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 500;
   padding: 3px 10px;

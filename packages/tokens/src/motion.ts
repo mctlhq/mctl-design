@@ -1,9 +1,11 @@
 // Motion tokens — durations and easing curves.
 export const motion = {
   duration: {
+    instant: '0ms',
     fast: '120ms',
     base: '200ms',
     slow: '320ms',
+    emphasis: '480ms',
   },
   easing: {
     standard: 'cubic-bezier(0.2, 0, 0, 1)',

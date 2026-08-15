@@ -43,41 +43,43 @@ All published packages and the Docker image are versioned **lockstep** with the
 repository: a single semver tag `X.Y.Z` (no `v` prefix). `pnpm check:versions`
 fails the build if any package version drifts from the root.
 
-## Consuming the packages
+## Consuming
 
-Packages are published to **GitHub Packages** under the `@mctlhq` scope.
-Add an `.npmrc` to the consuming repo:
+**CSS — CDN (preferred).** Tokens and the semantic theme ship with Storybook
+and update on every merge to `main`. No npm tag, no GitHub Packages token.
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://ui.mctl.ai/mctl.css">
+<link rel="stylesheet" href="https://ui.mctl.ai/global.css">
+<!-- docs / markdown only: https://ui.mctl.ai/prose.css -->
+```
+
+Flip surface and accent with `data-theme` (`dark` | `light`) and optional
+`data-accent` (`terracotta` default | `cyan` | `lime` | `lilac`). Omit
+`data-accent` to follow the CDN default.
+
+Allow `https://ui.mctl.ai` in `style-src` and `https://fonts.gstatic.com` in
+`font-src` if the app ships a CSP.
+
+**Vue components — npm.** `@mctlhq/ui` is still a GitHub Packages package
+(SFCs cannot ship from the CSS CDN). Add an `.npmrc`:
 
 ```
 @mctlhq:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 ```
 
-### VitePress
-
 ```ts
-import '@mctlhq/css/theme.css';
-import '@mctlhq/css/global.css';
-import '@mctlhq/css/prose.css';
-```
-
-### Nuxt / Vue
-
-```ts
-import '@mctlhq/css/theme.css';
-import '@mctlhq/css/global.css';
+import '@mctlhq/ui/style.css';
 import { MButton } from '@mctlhq/ui';
 ```
 
-### Tailwind
-
-```ts
-import mctlPreset from '@mctlhq/css/tailwind-preset';
-
-export default {
-  presets: [mctlPreset],
-};
-```
+**Tailwind preset — npm** (`@mctlhq/css/tailwind-preset`), same registry.
+`@mctlhq/css` theme/global/prose CSS remains published for offline or
+air-gapped builds; prefer the CDN for product apps.
 
 ## Components
 
