@@ -18,7 +18,8 @@ const fontCode = '"JetBrains Mono", ui-monospace, "SFMono-Regular", monospace';
 export const mctlDark = create({
   base: 'dark',
   ...brand,
-  brandImage: '/mctl-logo-light.svg',
+  // New /brand/ URL so CF/browsers do not keep the 7-day-cached cyan square.
+  brandImage: '/brand/sidebar-dark.svg',
   colorPrimary: '#e25a3c',
   colorSecondary: '#e25a3c',
   appBg: '#0a0b0d',
@@ -43,7 +44,7 @@ export const mctlDark = create({
 export const mctlLight = create({
   base: 'light',
   ...brand,
-  brandImage: '/mctl-logo-dark.svg',
+  brandImage: '/brand/sidebar-light.svg',
   colorPrimary: '#b83d28',
   colorSecondary: '#b83d28',
   appBg: '#f1ede4',

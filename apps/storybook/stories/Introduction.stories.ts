@@ -77,6 +77,11 @@ export const Overview: Story = {
             Favicons cannot use CSS <code>currentColor</code>.
           </li>
           <li>
+            <code>/brand/sidebar-dark.svg</code> /
+            <code>/brand/sidebar-light.svg</code> &mdash; hex + MCTL
+            wordmark for Storybook manager chrome (<code>brandImage</code>).
+          </li>
+          <li>
             Letter badges (<code>favicon-docs.svg</code> D,
             <code>favicon-web.svg</code> W,
             <code>favicon-academy.svg</code> A,

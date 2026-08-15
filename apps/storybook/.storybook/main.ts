@@ -26,13 +26,15 @@ const config: StorybookConfig = {
     disableTelemetry: true,
   },
   managerHead: (head) =>
-    `${head}
+    `${head.replace(
+      /<link rel="icon"[^>]*href="\.\/favicon\.svg"[^>]*>/i,
+      '<link rel="icon" type="image/svg+xml" href="./brand/favicon.svg">',
+    )}
     <title>MCTL UI</title>
-    <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg">
     <meta property="og:title" content="MCTL UI">
     <meta property="og:description" content="Design tokens, CSS theme, and Vue 3 components for MCTL products.">
     <meta property="og:url" content="https://ui.mctl.ai">
-    <meta property="og:image" content="https://ui.mctl.ai/mctl-logo-light.svg">
+    <meta property="og:image" content="https://ui.mctl.ai/brand/sidebar-dark.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">

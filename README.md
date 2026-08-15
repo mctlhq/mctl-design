@@ -71,6 +71,8 @@ one change here updates every product after the SHA deploy.
 |---|---|
 | `https://ui.mctl.ai/brand/hex.svg` | Hex mark, `currentColor`. Inline or CSS mask. |
 | `https://ui.mctl.ai/brand/favicon.svg` | Baked terracotta hex (default). |
+| `https://ui.mctl.ai/brand/sidebar-dark.svg` | Manager wordmark (dark chrome). |
+| `https://ui.mctl.ai/brand/sidebar-light.svg` | Manager wordmark (light chrome). |
 | `https://ui.mctl.ai/brand/favicon-docs.svg` | Docs tab (D) |
 | `https://ui.mctl.ai/brand/favicon-web.svg` | Landing tab (W) |
 | `https://ui.mctl.ai/brand/favicon-academy.svg` | Academy tab (A) |
