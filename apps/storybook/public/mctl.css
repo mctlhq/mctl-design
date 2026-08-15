@@ -343,6 +343,12 @@
   --accent-fg: var(--mctl-accent-terracotta-dark-fg);
   --accent-soft: var(--mctl-accent-terracotta-dark-soft);
 
+  /* Named accent primaries for Tailwind swatches (bg-accent-cyan, etc.). */
+  --accent-terracotta: var(--mctl-accent-terracotta-dark-primary);
+  --accent-cyan: var(--mctl-accent-cyan-dark-primary);
+  --accent-lime: var(--mctl-accent-lime-dark-primary);
+  --accent-lilac: var(--mctl-accent-lilac-dark-primary);
+
   /* Status. */
   --status-ok: var(--mctl-status-dark-ok);
   --status-warn: var(--mctl-status-dark-warn);
@@ -386,6 +392,11 @@
   --accent-highlight: var(--mctl-accent-terracotta-light-highlight);
   --accent-fg: var(--mctl-accent-terracotta-light-fg);
   --accent-soft: var(--mctl-accent-terracotta-light-soft);
+
+  --accent-terracotta: var(--mctl-accent-terracotta-light-primary);
+  --accent-cyan: var(--mctl-accent-cyan-light-primary);
+  --accent-lime: var(--mctl-accent-lime-light-primary);
+  --accent-lilac: var(--mctl-accent-lilac-light-primary);
 
   --status-ok: var(--mctl-status-light-ok);
   --status-warn: var(--mctl-status-light-warn);

@@ -1,6 +1,5 @@
 import type { Config } from 'tailwindcss';
 import {
-  accent,
   color,
   hue,
   syntax,
@@ -60,11 +59,11 @@ const preset = {
           highlight: 'var(--accent-highlight)',
           fg: 'var(--accent-fg)',
           soft: 'var(--accent-soft)',
-          terracotta: accent.terracotta.dark.primary,
-          cyan: accent.cyan.dark.primary,
-          lime: accent.lime.dark.primary,
-          vermilion: accent.vermilion.dark.primary,
-          lilac: accent.lilac.dark.primary,
+          terracotta: 'var(--accent-terracotta)',
+          cyan: 'var(--accent-cyan)',
+          lime: 'var(--accent-lime)',
+          vermilion: 'var(--accent-terracotta)',
+          lilac: 'var(--accent-lilac)',
         },
         ok: 'var(--status-ok)',
         warn: 'var(--status-warn)',

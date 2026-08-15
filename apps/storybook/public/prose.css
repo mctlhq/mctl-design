@@ -39,7 +39,7 @@
 }
 
 .mctl-prose h2 {
-  font-size: var(--mctl-typography-font-size-stat);
+  font-size: var(--mctl-typography-font-size-lede);
   padding-bottom: var(--mctl-space-3);
   border-bottom: 1px solid var(--surface-line);
 }

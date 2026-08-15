@@ -86,6 +86,8 @@ export const text = {
     lineHeight: lineHeight.body,
     letterSpacing: letterSpacing.normal,
   },
+  // Same type recipe as body; muted color is applied separately
+  // (e.g. color: var(--surface-fg-muted)).
   bodyMuted: {
     family: fontFamily.display,
     size: fontSize.body,
