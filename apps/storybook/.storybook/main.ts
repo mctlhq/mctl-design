@@ -28,7 +28,7 @@ const config: StorybookConfig = {
   managerHead: (head) =>
     `${head}
     <title>MCTL UI</title>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="./brand/favicon.svg">
     <meta property="og:title" content="MCTL UI">
     <meta property="og:description" content="Design tokens, CSS theme, and Vue 3 components for MCTL products.">
     <meta property="og:url" content="https://ui.mctl.ai">
