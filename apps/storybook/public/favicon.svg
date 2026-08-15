@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
   <style>
-    .bg { fill: #00e5ff; }
+    .bg { fill: #e25a3c; }
     .stroke { stroke: #0a0b0d; }
     @media (prefers-color-scheme: dark) {
-      .bg { fill: #00e5ff; }
+      .bg { fill: #e25a3c; }
       .stroke { stroke: #0a0b0d; }
     }
   </style>

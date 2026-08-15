@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="98" height="32" viewBox="0 0 98 32" fill="none">
   <!-- Icon mark: stylised M in a square -->
-  <rect x="1" y="1" width="30" height="30" rx="5" fill="#00b8cc"/>
+  <rect x="1" y="1" width="30" height="30" rx="5" fill="#b83d28"/>
   <polyline points="7,22 7,10 16,19 25,10 25,22" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- Wordmark -->
   <text x="40" y="22" font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="1.5" fill="#15181d">MCTL</text>
