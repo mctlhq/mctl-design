@@ -23,12 +23,27 @@ export const Overview: Story = {
           warm paper; UI type is Onest, editorial voice is Instrument Serif,
           code is JetBrains Mono.
         </p>
-        <h2>Packages</h2>
+        <h2>How to consume</h2>
         <ul>
-          <li><code>@mctlhq/tokens</code> &mdash; design tokens; framework-agnostic.</li>
-          <li><code>@mctlhq/css</code> &mdash; theme variables, global &amp; prose styles, Tailwind preset; framework-agnostic.</li>
-          <li><code>@mctlhq/ui</code> &mdash; Vue 3 component library.</li>
+          <li>
+            <strong>CSS &mdash; CDN-first.</strong>
+            Product apps load
+            <code>https://ui.mctl.ai/mctl.css</code>
+            plus <code>global.css</code>; add <code>prose.css</code> for
+            docs and markdown. No npm tag, no GitHub Packages token.
+          </li>
+          <li>
+            <code>@mctlhq/tokens</code> &mdash; design tokens; source of
+            truth, framework-agnostic.
+          </li>
+          <li>
+            <code>@mctlhq/ui</code> &mdash; Vue 3 SFCs via npm
+            (GitHub Packages).
+          </li>
         </ul>
+        <pre><code>&lt;link rel="stylesheet" href="https://ui.mctl.ai/mctl.css"&gt;
+&lt;link rel="stylesheet" href="https://ui.mctl.ai/global.css"&gt;
+&lt;!-- docs / markdown only: https://ui.mctl.ai/prose.css --&gt;</code></pre>
         <h2>Theming</h2>
         <p>
           Use the <strong>light/dark toggle</strong> in the toolbar to flip the
