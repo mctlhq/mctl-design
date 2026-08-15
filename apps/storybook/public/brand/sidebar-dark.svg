@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="110" height="32" viewBox="0 0 110 32" fill="none">
-  <!-- Alias of /brand/sidebar-dark.svg. Prefer that URL — this path was 7-day cached. -->
+  <!-- Storybook manager wordmark (dark chrome). Baked terracotta — brandImage is an <img>. -->
+  <!-- https://ui.mctl.ai/brand/sidebar-dark.svg -->
   <g transform="scale(0.0625)">
     <path d="M256 60L435.263 158V354L256 452L76.7372 354V158L256 60Z" stroke="#e25a3c" stroke-width="48" stroke-linejoin="round"/>
     <circle cx="256" cy="256" r="64" fill="#e25a3c"/>
