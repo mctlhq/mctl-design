@@ -96,7 +96,7 @@ jobs:
           fi
           case $score in
             3) model="claude-opus-4-7" ;;
-            2) model="claude-sonnet-4-6" ;;
+            2) model="claude-sonnet-5" ;;
             *) model="claude-haiku-4-5-20251001" ;;
           esac
           echo "model=$model" >> $GITHUB_OUTPUT
