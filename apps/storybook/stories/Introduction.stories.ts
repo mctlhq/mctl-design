@@ -18,10 +18,11 @@ export const Overview: Story = {
         </p>
         <p>
           The shared visual language for <code>mctl.ai</code>,
-          <code>docs.mctl.ai</code>, <code>tg.mctl.ai</code> and future
-          MCTL web surfaces. Default accent is terracotta on cool ink and
-          warm paper; UI type is Onest, editorial voice is Instrument Serif,
-          code is JetBrains Mono.
+          <code>docs.mctl.ai</code>, <code>tg.mctl.ai</code>,
+          <code>academy.mctl.ai</code>, <code>app.mctl.ai</code>,
+          and <code>ui.mctl.ai</code>. Default accent is terracotta on
+          cool ink and warm paper; UI type is Onest, editorial voice is
+          Instrument Serif, code is JetBrains Mono.
         </p>
         <h2>How to consume</h2>
         <ul>

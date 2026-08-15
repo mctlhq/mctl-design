@@ -10,7 +10,9 @@ const brand = {
   brandTarget: '_self',
 };
 
-const fontBase = '"JetBrains Mono", ui-monospace, SFMono-Regular, monospace';
+// Mirror --font-display / --font-mono from tokens. Literal strings because
+// the manager bundle cannot read the preview CSS variables.
+const fontBase = '"Onest", system-ui, -apple-system, sans-serif';
 const fontCode = '"JetBrains Mono", ui-monospace, "SFMono-Regular", monospace';
 
 export const mctlDark = create({
