@@ -27,10 +27,11 @@ const config: StorybookConfig = {
   },
   managerHead: (head) =>
     `${head.replace(
-      /<link rel="icon"[^>]*href="\.\/favicon\.svg"[^>]*>/i,
-      '<link rel="icon" type="image/svg+xml" href="/brand/favicon.svg?v=9dc770313d10">',
+      /<link rel="icon"[^>]*>/gi,
+      '',
     )}
     <title>MCTL UI</title>
+    <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg?v=9dc770313d10">
     <meta property="og:title" content="MCTL UI">
     <meta property="og:description" content="Design tokens, CSS theme, and Vue 3 components for MCTL products.">
     <meta property="og:url" content="https://ui.mctl.ai">
@@ -60,6 +61,25 @@ const config: StorybookConfig = {
           { childList: true, characterData: true, subtree: true }
         );
         rebrand();
+      })();
+      // Storybook also injects ./favicon.svg into index.html outside managerHead.
+      // That URL is a 7-day Cloudflare HIT of the old cyan square — drop it.
+      (function () {
+        var href = '/brand/favicon.svg?v=9dc770313d10';
+        var apply = function () {
+          document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]').forEach(function (el) {
+            if (el.getAttribute('href') !== href) el.parentNode.removeChild(el);
+          });
+          if (!document.querySelector('link[rel="icon"][href="' + href + '"]')) {
+            var l = document.createElement('link');
+            l.rel = 'icon';
+            l.type = 'image/svg+xml';
+            l.href = href;
+            document.head.insertBefore(l, document.head.firstChild);
+          }
+        };
+        apply();
+        new MutationObserver(apply).observe(document.head, { childList: true, subtree: true });
       })();
     </script>`,
 };
