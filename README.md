@@ -61,8 +61,30 @@ Flip surface and accent with `data-theme` (`dark` | `light`) and optional
 `data-accent` (`terracotta` default | `cyan` | `lime` | `lilac`). Omit
 `data-accent` to follow the CDN default.
 
-Allow `https://ui.mctl.ai` in `style-src` and `https://fonts.gstatic.com` in
-`font-src` if the app ships a CSP.
+Allow `https://ui.mctl.ai` in `style-src`, `img-src` (favicons and marks),
+and `https://fonts.gstatic.com` in `font-src` if the app ships a CSP.
+
+**Brand marks — CDN.** Same pipeline as `mctl.css`. Do not vendor copies;
+one change here updates every product after the SHA deploy.
+
+| URL | Use |
+|---|---|
+| `https://ui.mctl.ai/brand/hex.svg` | Hex mark, `currentColor`. Inline or CSS mask. |
+| `https://ui.mctl.ai/brand/favicon.svg` | Baked terracotta hex (default). |
+| `https://ui.mctl.ai/brand/favicon-docs.svg` | Docs tab (D) |
+| `https://ui.mctl.ai/brand/favicon-web.svg` | Landing tab (W) |
+| `https://ui.mctl.ai/brand/favicon-academy.svg` | Academy tab (A) |
+| `https://ui.mctl.ai/brand/favicon-telegram.svg` | Telegram tab (T) |
+| `https://ui.mctl.ai/brand/favicon-portal.svg` | Portal tab (P) |
+
+Favicons cannot use CSS `currentColor`; the `/brand/favicon*.svg` files bake
+terracotta (`#e25a3c` dark / `#b83d28` light). Use a **letter variant** in
+`<link rel="icon">` so browser tabs are distinguishable; use the plain hex
+or `MLogo` in-app.
+
+```html
+<link rel="icon" type="image/svg+xml" href="https://ui.mctl.ai/brand/favicon-docs.svg">
+```
 
 **Vue components — npm.** `@mctlhq/ui` is still a GitHub Packages package
 (SFCs cannot ship from the CSS CDN). Add an `.npmrc`:
@@ -86,6 +108,7 @@ air-gapped builds; prefer the CDN for product apps.
 `@mctlhq/ui` ships these Vue 3 components (see the
 [Storybook showcase](https://ui.mctl.ai) for live examples and props):
 
+- **Brand** — `MLogo` (token-aware hex; see also the CDN kit above)
 - **Layout & structure** — `MPageLayout`, `MNav`, `MFooter`, `MCard`
 - **Forms** — `MField`, `MInput`, `MTextarea`, `MSelect`, `MButton`
 - **Disclosure & overlay** — `MTabs`, `MAccordion`, `MTooltip`, `MModal`

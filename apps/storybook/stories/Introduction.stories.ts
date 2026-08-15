@@ -60,16 +60,36 @@ export const Overview: Story = {
         </p>
         <h2>Brand</h2>
         <p>
-          The hex mark is <code>MLogo</code> under <strong>Brand</strong>.
-          It paints with <code>currentColor</code> / <code>var(--accent)</code>,
-          so the Storybook Accent control (and consumer Tweaks) recolor it.
-          Use the standalone SVG at <code>/mctl-hex.svg</code> only when inlined
-          or masked &mdash; an <code>&lt;img&gt;</code> cannot inherit tokens.
+          Consume marks from <code>https://ui.mctl.ai/brand/...</code> &mdash;
+          do not vendor copies. One change here updates every product after
+          the SHA deploy.
         </p>
+        <ul>
+          <li>
+            <code>/brand/hex.svg</code> &mdash; token-aware mark
+            (<code>currentColor</code>). Inline or mask; an
+            <code>&lt;img&gt;</code> cannot inherit tokens. Vue apps can use
+            <code>MLogo</code> instead.
+          </li>
+          <li>
+            <code>/brand/favicon.svg</code> &mdash; baked terracotta hex
+            (dark <code>#e25a3c</code>, light <code>#b83d28</code>).
+            Favicons cannot use CSS <code>currentColor</code>.
+          </li>
+          <li>
+            Letter badges (<code>favicon-docs.svg</code> D,
+            <code>favicon-web.svg</code> W,
+            <code>favicon-academy.svg</code> A,
+            <code>favicon-telegram.svg</code> T,
+            <code>favicon-portal.svg</code> P) &mdash; same hex, for
+            <code>&lt;link rel="icon"&gt;</code> so tabs are distinguishable.
+            Use the plain hex in-app.
+          </li>
+        </ul>
         <h2>Sections</h2>
         <ul>
           <li><strong>Foundations</strong> &mdash; colors, typography, spacing, surfaces, product scale.</li>
-          <li><strong>Brand</strong> &mdash; the token-aware hex logo.</li>
+          <li><strong>Brand</strong> &mdash; hex logo, CDN kit, and favicon family.</li>
           <li><strong>Components</strong> &mdash; the Vue 3 component library.</li>
         </ul>
       </div>
