@@ -99,8 +99,6 @@ const preview: Preview = {
           const theme = computed(() => (isDark.value ? 'dark' : 'light'));
           watchEffect(() => {
             document.documentElement.setAttribute('data-theme', theme.value);
-            const live = context.globals.accent;
-            if (live != null) accentName.value = String(live);
             applyAccent(accentName.value);
           });
         },
