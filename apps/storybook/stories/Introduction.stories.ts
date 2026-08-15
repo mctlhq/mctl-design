@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
+import { MLogo } from '@mctlhq/ui';
 
 const meta: Meta = {
   title: 'Introduction',
@@ -10,8 +11,10 @@ type Story = StoryObj;
 export const Overview: Story = {
   name: 'Overview',
   render: () => ({
+    components: { MLogo },
     template: `
       <div class="mctl-prose" style="max-width: 720px;">
+        <MLogo :size="96" glow />
         <h1>MCTL Design System</h1>
         <p class="mctl-lede">
           Swiss-engineering minimalism &times; editorial density.
@@ -39,9 +42,18 @@ export const Overview: Story = {
           <code>data-theme</code> and <code>data-accent</code> attributes.
           <code>vermilion</code> remains a public alias of terracotta.
         </p>
+        <h2>Brand</h2>
+        <p>
+          The hex mark is <code>MLogo</code> under <strong>Brand</strong>.
+          It paints with <code>currentColor</code> / <code>var(--accent)</code>,
+          so the Storybook Accent control (and consumer Tweaks) recolor it.
+          Use the standalone SVG at <code>/mctl-hex.svg</code> only when inlined
+          or masked &mdash; an <code>&lt;img&gt;</code> cannot inherit tokens.
+        </p>
         <h2>Sections</h2>
         <ul>
           <li><strong>Foundations</strong> &mdash; colors, typography, spacing, surfaces, product scale.</li>
+          <li><strong>Brand</strong> &mdash; the token-aware hex logo.</li>
           <li><strong>Components</strong> &mdash; the Vue 3 component library.</li>
         </ul>
       </div>
