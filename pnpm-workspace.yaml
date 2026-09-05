@@ -11,4 +11,4 @@ catalog:
   # vite-plugin-dts stays on 4.x: under 5.x `rollupTypes` stopped inlining the
   # component declarations, leaving dist/index.d.ts as re-exports to paths that
   # are not emitted -- a green build that publishes `any` to every consumer.
-  vite-plugin-dts: ^4.5.4
+  vite-plugin-dts: ^5.1.0
