@@ -27,6 +27,21 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # Gates at `moderate`, not `low`. One low advisory is knowingly open --
+      # esbuild GHSA-g7r4-m6w7-qqqr, which `pnpm audit` reports on four paths,
+      # every one of them through tsup, which pins `esbuild@^0.27.0` in its
+      # latest release; closing it would mean forcing 0.28 across a range tsup
+      # does not declare. A gate that has to be bypassed on its first run
+      # teaches the bypass, so it sits one level above what is actually open.
+      # See CONTRIBUTING.md -> Dependency overrides for the full condition.
+      #
+      # Placed right after the install because that is all it needs, and
+      # because it is the one step here that can go red with no change to
+      # the tree: a newly published advisory fails every pull request and
+      # every push to main until it is answered. Cheap to learn early.
+      - name: Audit dependencies
+        run: pnpm audit --audit-level moderate
+
       - name: Lint
         run: pnpm lint
 
@@ -41,13 +56,3 @@ jobs:
 
       - name: Check lockstep versions
         run: pnpm check:versions
-
-      # Gates at `moderate`, not `low`. One low advisory is knowingly open --
-      # esbuild GHSA-g7r4-m6w7-qqqr, which `pnpm audit` reports on four paths,
-      # every one of them through tsup, which pins `esbuild@^0.27.0` in its
-      # latest release; closing it would mean forcing 0.28 across a range tsup
-      # does not declare. A gate that has to be bypassed on its first run
-      # teaches the bypass, so it sits one level above what is actually open.
-      # See CONTRIBUTING.md -> Dependency overrides for the full condition.
-      - name: Audit dependencies
-        run: pnpm audit --audit-level moderate

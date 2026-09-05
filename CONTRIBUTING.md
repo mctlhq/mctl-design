@@ -4,7 +4,9 @@ Thank you for your interest in contributing to the MCTL design system.
 
 ## Prerequisites
 
-- **Node.js** v22+ (`.nvmrc` pins the version)
+- **Node.js** 22.12+ (`.nvmrc` pins the version). The floor is `vite` 7's,
+  which requires `^20.19.0 || >=22.12.0`; 22.0-22.11 satisfies a bare `22` and
+  then fails inside the build.
 - **pnpm** via Corepack (`corepack enable`)
 - **Git**
 
