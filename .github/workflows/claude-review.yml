@@ -1,5 +1,14 @@
 name: Claude PR review
 
+# Thin caller of the org reusable reviewer. The local copy this replaces had
+# drifted: its action pins, gate hardening and model IDs were maintained by
+# hand, and its complexity classifier was still the one copied from
+# mctl-telegram (see #37) rather than anything to do with this repository.
+#
+# The tiering that #37 restored is preserved here as inputs — the reusable
+# workflow has carried sensitive-paths / code-paths / test-paths and the three
+# model tiers all along.
+
 on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
@@ -9,260 +18,55 @@ on:
 permissions: {}
 
 jobs:
-  review:
-    # pull_request: skip drafts and fork PRs (CLAUDE_CODE_OAUTH_TOKEN unavailable
-    # to forks, so the step would fail with a secret-not-found error).
-    # synchronize re-reviews after each fix-up push (and dismisses stale
-    # approvals when branch protection is configured to do so).
-    # issue_comment: only fire on PR comments containing '@claude review' from
-    # a maintainer (association pre-filter here; hard write-permission +
-    # same-repo check in the first step below).
-    if: >
-      (
-        github.event_name == 'pull_request' &&
-        github.event.pull_request.draft == false &&
-        github.event.pull_request.head.repo.full_name == github.repository
-      ) || (
-        github.event_name == 'issue_comment' &&
-        github.event.issue.pull_request != null &&
-        contains(github.event.comment.body, '@claude review') &&
-        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
-      )
-    runs-on: ubuntu-latest
+  claude-review:
+    uses: mctlhq/.github/.github/workflows/claude-review.yml@83de7592939117e7ce9bbeb524dd71b3a9eb23a4
     permissions:
       contents: read
       pull-requests: write
       issues: write
       id-token: write
-    env:
-      PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
-    steps:
-      # author_association alone is too coarse (MEMBER = any org member,
-      # COLLABORATOR includes read-only). Require actual write access, and
-      # refuse comment-triggered runs on fork PRs — the job would check out
-      # refs/pull/N/head, making fork-controlled files the workspace while
-      # the OAuth secret is available.
-      - name: Gate comment-triggered runs (write permission + same-repo)
-        if: github.event_name == 'issue_comment'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          PERM=$(gh api "repos/${{ github.repository }}/collaborators/${{ github.event.comment.user.login }}/permission" --jq .permission)
-          case "$PERM" in
-            admin|maintain|write) ;;
-            *) echo "::error::@claude review requires write access (commenter has: $PERM)"; exit 1 ;;
-          esac
-          CROSS=$(gh pr view "${{ env.PR_NUMBER }}" --repo "${{ github.repository }}" --json isCrossRepository --jq .isCrossRepository)
-          if [ "$CROSS" != "false" ]; then
-            echo "::error::comment-triggered review is not supported on fork PRs"
-            exit 1
-          fi
+    with:
+      # mctl-agents is the App the DevLoop implementer runs under; without the
+      # slug claude-code-action hard-fails with "Workflow initiated by
+      # non-human actor" and, since main requires an approving review, such a
+      # PR is structurally unmergeable (#36).
+      allowed-bots: "mctl-claude-remote,github-actions,dependabot,mctl-agents"
 
-      - name: Resolve PR branch for issue_comment trigger
-        if: github.event_name == 'issue_comment'
-        id: pr-ref
-        run: |
-          ref=$(gh pr view ${{ env.PR_NUMBER }} --repo ${{ github.repository }} --json headRefName -q .headRefName)
-          echo "ref=$ref" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ github.token }}
+      # Tier 3 — a bad change here leaves this repository or changes how the
+      # site is served: packages/tokens and packages/css are published as
+      # @mctlhq/tokens and @mctlhq/css and consumed by mctl-web, mctl-docs and
+      # mctl-portal; every package.json at any depth is a published manifest
+      # (@mctlhq/ui carries an exports map consumers resolve against) or the
+      # manifest the site is built from; nginx.conf caching produced the
+      # stale-favicon series (#28-#33); Dockerfile, workflows and scripts
+      # decide what gets built at all. Dockerfile and nginx.conf exist only at
+      # the root today but are matched at any depth so a future per-app copy
+      # is not silently demoted (agy P2 on #37).
+      sensitive-paths: '^((.*/)?(Dockerfile|nginx\.conf|package\.json)$|packages/(tokens|css)/|scripts/|\.github/workflows/|pnpm-workspace\.yaml$)'
 
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          fetch-depth: 1
-          ref: ${{ steps.pr-ref.outputs.ref }}
+      # Tier 2 — the UI package and the Storybook config. Overrides the
+      # extension-based default because in this repository the meaningful
+      # split is by package, not by suffix: a .ts file under
+      # apps/storybook/stories is a story, not library code.
+      code-paths: '^(packages/ui/|apps/storybook/\.storybook/)'
+      test-paths: '\.stories\.ts$'
 
-      - name: Classify PR complexity and pick model
-        id: classify
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          PR=${{ env.PR_NUMBER }}
-          files=$(gh pr view "$PR" --repo ${{ github.repository }} \
-            --json files --jq '[.files[].path] | join("\n")')
-          lines=$(gh pr diff "$PR" --repo ${{ github.repository }} 2>/dev/null \
-            | grep -c '^[+-][^+-]' || true)
-          # Tier 3 — a bad change here escapes this repo or changes how the
-          # site is served: packages/tokens and packages/css are published as
-          # @mctlhq/tokens and @mctlhq/css and consumed by mctl-web, mctl-docs
-          # and mctl-portal; every package.json at any depth is a published
-          # manifest (@mctlhq/ui carries an exports map that consumers resolve
-          # against) or the manifest the site is built from; nginx.conf caching
-          # has produced real incidents (the stale-favicon series, #28-#33);
-          # Dockerfile, workflows and scripts decide what gets built at all.
-          # Dockerfile and nginx.conf exist only at the root today, but are
-          # matched at any depth so a future per-app copy is not silently
-          # demoted to tier 1.
-          # Tier 2 — the rest of the UI package and the Storybook config:
-          # wrong but contained within this repo.
-          # Tier 1 (default) — stories, docs, assets, the lockfile.
-          score=1
-          while IFS= read -r f; do
-            if echo "$f" | grep -qE '^((.*/)?(Dockerfile|nginx\.conf|package\.json)$|packages/(tokens|css)/|scripts/|\.github/workflows/|pnpm-workspace\.yaml$)'; then
-              score=3; break
-            elif echo "$f" | grep -qE '^(packages/ui/|apps/storybook/\.storybook/)' \
-                 && ! echo "$f" | grep -qE '\.stories\.ts$'; then
-              [ $score -lt 2 ] && score=2
-            fi
-          done <<< "$files"
-          if [ "$lines" -gt 400 ] && [ $score -lt 3 ]; then
-            score=$((score + 1))
-          fi
-          case $score in
-            3) model="claude-opus-5" ;;
-            2) model="claude-sonnet-5" ;;
-            *) model="claude-haiku-4-5-20251001" ;;
-          esac
-          echo "model=$model" >> $GITHUB_OUTPUT
-          echo "score=$score" >> $GITHUB_OUTPUT
-          echo "lines=$lines" >> $GITHUB_OUTPUT
-          echo "PR #$PR: model=$model score=$score lines=$lines"
+      conventions: |
+        Follow the conventions in this repository's CLAUDE.md (conventional
+        commits, English only, no emoji, M-prefixed components).
 
-      - name: Check fallback token availability
-        id: token-check
-        run: |
-          if [ -n "$TOKEN2" ]; then
-            echo "has_fallback=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_fallback=false" >> $GITHUB_OUTPUT
-          fi
-        env:
-          TOKEN2: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_2 }}
-
-      - name: Claude review
-        id: review
-        continue-on-error: true
-        uses: anthropics/claude-code-action@51ea8ea73a139f2a74ff649e3092c25a904aed7e # v1
-        with:
-          # release-please opens its release PR through GITHUB_TOKEN, so the
-          # workflow actor is a Bot and the action refuses to run ("Workflow
-          # initiated by non-human actor"), making the review-required check
-          # structurally unpassable for every release PR. Matching normalizes
-          # both sides (lowercase, trailing "[bot]" stripped), so the bare name
-          # covers the `github-actions[bot]` actor. Deliberately NOT "*": that
-          # would let any bot-triggered workflow invoke the reviewer.
-          allowed_bots: "github-actions,dependabot,mctl-agents"
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          track_progress: true
-          prompt: |
-            REPO: ${{ github.repository }}
-            PR NUMBER: ${{ env.PR_NUMBER }}
-
-            You are the automated code reviewer for this pull request. Review
-            the PR diff thoroughly.
-
-            Focus on:
-            - Correctness and logic errors; edge cases the change misses.
-            - Design tokens: values must match the MCTL design spec; no
-              hard-coded colors/sizes that bypass @mctlhq/tokens.
-            - Cross-package contracts: package exports, peerDependencies,
-              lockstep versioning (all package versions must match).
-            - Vue components: prop typing, accessibility, scoped styles, no
-              leaking global CSS.
-            - Build correctness: tsup/Vite/Storybook config, CI scripts.
-
-            Follow the conventions in this repository's CLAUDE.md (conventional
-            commits, English only, no emoji, M-prefixed components).
-
-            If the diff is trivial — only config/values YAML, a dependency bump
-            with no logic change, docs/comments, or a one-line typo — approve
-            the PR with a one-line reason and nothing else:
-            `gh pr review ${{ env.PR_NUMBER }} --repo ${{ github.repository }} --approve --body "<reason>"`.
-
-            Otherwise, post each finding as an inline comment using the
-            mcp__github_inline_comment__create_inline_comment tool, prefixed
-            with a severity tag:
-            - P1 — must fix before merge (bug, broken build, broken contract).
-            - P2 — should fix before merge (likely bug, missing piece).
-            - P3 — nice to have (style, minor nit); does not block merge.
-
-            Finish by submitting a single PR review verdict (this is the merge
-            gate — `main` requires one approving review, and pr-steward will
-            only auto-merge a feat/agents-* PR once an approving review exists
-            at the current head SHA). Include the P1/P2/P3 counts in the body;
-            be concise and do not restate the diff:
-            - No P1/P2 findings (P3 nits are fine): approve —
-              `gh pr review ${{ env.PR_NUMBER }} --repo ${{ github.repository }} --approve --body "No P1/P2 findings (<n> P3). Good to merge."`
-            - One or more P1/P2 findings: request changes —
-              `gh pr review ${{ env.PR_NUMBER }} --repo ${{ github.repository }} --request-changes --body "Has P1/P2 findings, changes requested: <summary>"`
-          claude_args: '--model ${{ steps.classify.outputs.model }} --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr review:*),Bash(gh pr diff:*),Bash(gh pr view:*)"'
-
-      - name: Check primary review actually succeeded
-        # The action can report GH Actions outcome=success while the
-        # underlying SDK call itself errored (e.g. instant quota-exhaustion
-        # failure) — outcome alone silently skips the fallback path below.
-        # Read the raw execution output the action always writes to confirm
-        # the run really finished cleanly.
-        id: review-check
-        if: always()
-        run: |
-          OUT="$RUNNER_TEMP/claude-execution-output.json"
-          is_error="false"
-          if [ -f "$OUT" ]; then
-            is_error=$(jq -r '
-              if type != "array" then "false"
-              else ([.[] | select(.type == "result")] | if length > 0 then (.[-1].is_error // false | tostring) else "false" end)
-              end' "$OUT" 2>/dev/null || echo "false")
-          fi
-          if [ "${{ steps.review.outcome }}" = "failure" ] || [ "$is_error" = "true" ]; then
-            echo "failed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "failed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Reset git state before fallback
-        if: steps.review-check.outputs.failed == 'true' && steps.token-check.outputs.has_fallback == 'true'
-        run: git checkout . && git clean -fd
-
-      - name: Claude review (fallback token)
-        if: steps.review-check.outputs.failed == 'true' && steps.token-check.outputs.has_fallback == 'true'
-        uses: anthropics/claude-code-action@51ea8ea73a139f2a74ff649e3092c25a904aed7e # v1
-        with:
-          # Must match the step above: the bot-actor check runs before the token
-          # is ever used, so without this the fallback fails identically.
-          allowed_bots: "github-actions,dependabot,mctl-agents"
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_2 }}
-          track_progress: true
-          prompt: |
-            REPO: ${{ github.repository }}
-            PR NUMBER: ${{ env.PR_NUMBER }}
-
-            You are the automated code reviewer for this pull request. Review
-            the PR diff thoroughly.
-
-            Focus on:
-            - Correctness and logic errors; edge cases the change misses.
-            - Design tokens: values must match the MCTL design spec; no
-              hard-coded colors/sizes that bypass @mctlhq/tokens.
-            - Cross-package contracts: package exports, peerDependencies,
-              lockstep versioning (all package versions must match).
-            - Vue components: prop typing, accessibility, scoped styles, no
-              leaking global CSS.
-            - Build correctness: tsup/Vite/Storybook config, CI scripts.
-
-            Follow the conventions in this repository's CLAUDE.md (conventional
-            commits, English only, no emoji, M-prefixed components).
-
-            If the diff is trivial — only config/values YAML, a dependency bump
-            with no logic change, docs/comments, or a one-line typo — approve
-            the PR with a one-line reason and nothing else:
-            `gh pr review ${{ env.PR_NUMBER }} --repo ${{ github.repository }} --approve --body "<reason>"`.
-
-            Otherwise, post each finding as an inline comment using the
-            mcp__github_inline_comment__create_inline_comment tool, prefixed
-            with a severity tag:
-            - P1 — must fix before merge (bug, broken build, broken contract).
-            - P2 — should fix before merge (likely bug, missing piece).
-            - P3 — nice to have (style, minor nit); does not block merge.
-
-            Finish by submitting a single PR review verdict (this is the merge
-            gate — `main` requires one approving review, and pr-steward will
-            only auto-merge a feat/agents-* PR once an approving review exists
-            at the current head SHA). Include the P1/P2/P3 counts in the body;
-            be concise and do not restate the diff:
-            - No P1/P2 findings (P3 nits are fine): approve —
-              `gh pr review ${{ env.PR_NUMBER }} --repo ${{ github.repository }} --approve --body "No P1/P2 findings (<n> P3). Good to merge."`
-            - One or more P1/P2 findings: request changes —
-              `gh pr review ${{ env.PR_NUMBER }} --repo ${{ github.repository }} --request-changes --body "Has P1/P2 findings, changes requested: <summary>"`
-          claude_args: '--model ${{ steps.classify.outputs.model }} --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr review:*),Bash(gh pr diff:*),Bash(gh pr view:*)"'
+        Focus on:
+        - Design tokens: values must match the MCTL design spec; no
+          hard-coded colors/sizes that bypass @mctlhq/tokens.
+        - Cross-package contracts: package exports, peerDependencies,
+          lockstep versioning (all package versions must match;
+          `pnpm check:versions`).
+        - Vue 3 SFC components: prop/emits typing, accessibility and
+          keyboard navigation, scoped styles, no leaking global CSS.
+        - Storybook story coverage and breaking prop/slot changes in
+          published components.
+        - Build correctness: Vite/Storybook config, nginx caching headers,
+          CI scripts.
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      CLAUDE_CODE_OAUTH_TOKEN_2: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_2 }}
