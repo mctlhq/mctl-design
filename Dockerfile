@@ -14,7 +14,7 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm build && pnpm build:storybook
 
 # --- Runtime stage: nginx serving the static showcase. No Node runtime. ---
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/apps/storybook/storybook-static /usr/share/nginx/html
 EXPOSE 80
