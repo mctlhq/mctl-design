@@ -80,15 +80,32 @@ that reintroduces one of these advisories fails the pull request rather than
 filing an alert after merge.
 
 It gates at `moderate` rather than `low` because exactly one low advisory is
-knowingly open: esbuild `GHSA-g7r4-m6w7-qqqr`, reachable only through `tsup`,
-whose latest release still pins `esbuild@^0.27.0`. Closing it would mean
-forcing 0.28 across a range `tsup` does not declare. Raise the gate to `low`
-once `tsup` widens.
+knowingly open: esbuild `GHSA-g7r4-m6w7-qqqr`, which affects `>=0.27.3
+<0.28.1`. `pnpm audit` reports it on four paths, all of them
+`packages/css` / `packages/tokens` → `tsup@8.5.1` → `esbuild@0.27.7`, and
+`tsup`'s latest release still pins `esbuild@^0.27.0`; closing it would mean
+forcing 0.28 across a range `tsup` does not declare. The tree holds a second
+copy, `esbuild@0.25.12` under `storybook`, which is outside the affected range
+and is not what keeps this open. Raise the gate to `low` once `tsup` widens —
+and re-read `pnpm audit`'s paths first, because the second copy is the one
+that would make that assumption wrong for a future advisory.
 
 ## The vite toolchain
 
 `vite`, `@vitejs/plugin-vue` and `vite-plugin-dts` are declared once in the
-`catalog:` block of `pnpm-workspace.yaml` and referenced as `catalog:` from
-`packages/ui` and `apps/storybook`. Both consumed the same range and had to be
-kept in step by hand; the next major is a one-line change. Add anything else
-both of them share to the catalog rather than to two manifests.
+`catalog:` block of `pnpm-workspace.yaml`.
+
+`vite` and `@vitejs/plugin-vue` are the shared ones — `packages/ui` and
+`apps/storybook` both declared the same range and had to be kept in step by
+hand, and the catalog makes the next major a one-line change. Add anything
+else both of them consume here rather than to two manifests.
+
+`vite-plugin-dts` has a single consumer (`packages/ui`) and is catalogued
+anyway, so the whole vite toolchain and the reason each version is where it is
+live in one file — in particular the note explaining why it is held at 4.x.
+
+`packages/ui` also pins `build.target` explicitly rather than taking vite's
+default, so the published browser floor of `@mctlhq/ui` does not move when
+vite changes that default. It is currently the pre-vite-7 floor
+(`es2020, chrome87, edge88, firefox78, safari14`); raising it is a deliberate
+change, not an upgrade side effect.
