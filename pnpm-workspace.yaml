@@ -6,7 +6,7 @@ packages:
 # apps/storybook. Both consumed the same vite range and had to be edited in
 # lockstep by hand; a catalog makes the next major a one-line change.
 catalog:
-  vite: ^7.3.6
+  vite: ^8.2.2
   "@vitejs/plugin-vue": ^6.0.8
   # vite-plugin-dts stays on 4.x: under 5.x `rollupTypes` stopped inlining the
   # component declarations, leaving dist/index.d.ts as re-exports to paths that
