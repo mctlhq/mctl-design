@@ -1,10 +1,12 @@
 version: 2
 updates:
+  # `directory: /` is enough: dependabot resolves the pnpm workspace from
+  # pnpm-workspace.yaml and updates every member manifest in one pull request.
+  # Listing the members as well produced an exact duplicate of each update --
+  # #56 and #63 both bumped @vitejs/plugin-vue in packages/ui, from the same
+  # version to the same version.
   - package-ecosystem: npm
-    directories:
-      - "/"
-      - "/packages/*"
-      - "/apps/*"
+    directory: /
     schedule:
       interval: weekly
       day: monday
