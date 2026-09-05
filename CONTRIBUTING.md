@@ -50,3 +50,32 @@ enforced in CI and before publish.
 
 Non-trivial PRs are reviewed automatically. Address every P1/P2 finding before
 merge; CI must be green.
+
+## Dependency overrides
+
+`pnpm.overrides` in the root `package.json` forces patched versions of
+transitive packages whose parents pin a range that still resolves to a
+vulnerable one. Each key exists to close a specific advisory and should be
+**removed once the parent widens its range far enough on its own** — check
+with `pnpm why <package>` and drop the key if `pnpm install` still resolves at
+or above the floor.
+
+| Override | Closes |
+| --- | --- |
+| `brace-expansion@1` `@2` `@5` | ReDoS, GHSA lines on all three majors |
+| `fast-uri@3` | ReDoS in URI parsing |
+| `js-yaml@4` | prototype pollution / DoS |
+| `nanoid@3` | predictable IDs on non-integer input |
+| `postcss@8` | parsing DoS |
+| `postcss-selector-parser@6` | uncontrolled AST recursion |
+| `ws@8` | DoS on excessive headers |
+
+Every selector is scoped to a major (`pkg@N`). Do not add an unscoped or
+open-ended key: an override applies to *every* version line that matches, so
+`"ws": "^8.21.0"` would silently clamp a future `ws@9` down to 8.x in a parent
+that was never tested against it.
+
+CI does not run `pnpm audit` as a gate. The `vite` 6 / `esbuild` upgrade is
+deliberately deferred to its own pull request, and until it lands an audit gate
+would fail every build for a known, accepted advisory. Add the gate with that
+upgrade, not before.
