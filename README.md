@@ -43,19 +43,44 @@ All published packages and the Docker image are versioned **lockstep** with the
 repository: a single semver tag `X.Y.Z` (no `v` prefix). `pnpm check:versions`
 fails the build if any package version drifts from the root.
 
+**Changing a token or the theme layer requires a version bump.** `ui.mctl.ai`
+serves `/<version>/mctl.css` with a one-year immutable cache, and it deploys on
+every merge to `main` rather than on a tag — so two different sheets under one
+version would be permanently cached by consumers who can never refresh them.
+`pnpm check:token-version` fails any pull request that touches
+`packages/tokens/src` or `packages/css/src` without moving the root version.
+Everything else — Storybook, docs, components that do not feed `theme.css` —
+lands without one.
+
 ## Consuming
 
-**CSS — CDN (preferred).** Tokens and the semantic theme ship with Storybook
-and update on every merge to `main`. No npm tag, no GitHub Packages token.
+There are three supported ways to consume the CSS, and they differ only in what
+moves under you.
+
+| Path | Moves when | Use for |
+|---|---|---|
+| `https://ui.mctl.ai/0.5.0/mctl.css` | never | anything shipped to users |
+| `https://ui.mctl.ai/mctl.css` | every merge to `main` | previews, internal tools, seeing a token change land |
+| `@mctlhq/css` on GitHub Packages | on a semver tag | builds that already have a Packages token |
+
+The sheet names its own version on line 1 (`/* @mctlhq/css 0.5.0 … */`), so a
+vendored copy records what it was taken from and a mismatch shows up in a diff.
+
+**CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://ui.mctl.ai/mctl.css">
+<link rel="stylesheet" href="https://ui.mctl.ai/0.5.0/mctl.css">
 <link rel="stylesheet" href="https://ui.mctl.ai/global.css">
 <!-- docs / markdown only: https://ui.mctl.ai/prose.css -->
 ```
+
+Bumping to a new version is then a one-line edit made on purpose, not something
+that happens to a product page four hours after an unrelated merge. The
+unversioned `https://ui.mctl.ai/mctl.css` still works and still floats with
+`main` — use it where you want the change, not where you want the pin.
 
 Flip surface and accent with `data-theme` (`dark` | `light`) and optional
 `data-accent` (`terracotta` default | `cyan` | `lime` | `lilac`). Omit

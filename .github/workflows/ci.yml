@@ -56,3 +56,12 @@ jobs:
 
       - name: Check lockstep versions
         run: pnpm check:versions
+
+      - name: Check token changes carry a version bump
+        # ui.mctl.ai serves /<version>/mctl.css immutable for a year, and it
+        # deploys on every merge to main rather than on a tag — so this check
+        # is the only thing making that promise true. Needs the full history
+        # to diff against origin/main; the checkout above is shallow.
+        run: |
+          git fetch --no-tags --depth=50 origin main
+          BASE_REF=origin/main pnpm check:token-version
