@@ -18,17 +18,32 @@ const base = process.env.BASE_REF || 'origin/main';
 const git = (...args) =>
   execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
 
-let changed;
+// Skip only when the base ref genuinely is not there — a fork without the
+// remote, or a local run on a fresh clone. Everything else must be loud: a
+// swallowed git error would print `skipping`, exit 0, and leave a green check
+// named "Check token changes carry a version bump" that never checked
+// anything, which is worse than having no check at all.
 try {
-  changed = git('diff', '--name-only', `${base}...HEAD`).split('\n').filter(Boolean);
+  git('rev-parse', '--verify', `${base}^{commit}`);
 } catch {
-  // No base to compare against (a shallow clone, or main itself). Nothing to
-  // assert — better than failing a build for a reason unrelated to its diff.
   console.log(`check-token-version-bump: no ${base} to diff against, skipping.`);
   process.exit(0);
 }
 
-const SOURCES = ['packages/tokens/src/', 'packages/css/src/'];
+const changed = git('diff', '--name-only', `${base}...HEAD`).split('\n').filter(Boolean);
+
+// The scripts belong here as much as the sources do: dist/tokens.css is
+// emitted by packages/tokens/scripts/gen-assets.mjs and the sheet is assembled
+// by packages/css/scripts/build-css.mjs, so a change to either rewrites the
+// published bytes without touching src/ at all. Renaming a custom property in
+// gen-assets.mjs would otherwise ship a materially different sheet under a
+// version already cached immutable for a year.
+const SOURCES = [
+  'packages/tokens/src/',
+  'packages/css/src/',
+  'packages/tokens/scripts/',
+  'packages/css/scripts/',
+];
 const touched = changed.filter((f) => SOURCES.some((s) => f.startsWith(s)));
 if (touched.length === 0) {
   console.log('check-token-version-bump: no token or theme sources touched.');

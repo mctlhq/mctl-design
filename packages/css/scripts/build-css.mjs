@@ -49,8 +49,13 @@ if (existsSync(storybookPublic)) {
   // keeps old pins alive: a build only ever writes the version it is building,
   // so an uncommitted directory would disappear from the image the moment the
   // next release is cut and every URL pinned to the previous one would 404.
+  // All three, not only mctl.css. global.css owns body typography and base
+  // element styles, so a snippet that pins the theme and leaves global.css
+  // floating is pinned in name only — the reader believes they are covered.
   const versioned = join(storybookPublic, version);
   mkdirSync(versioned, { recursive: true });
   copyFileSync(join(dist, 'theme.css'), join(versioned, 'mctl.css'));
-  console.log(`css: copied mctl.css to storybook/public/${version}/`);
+  copyFileSync(join(dist, 'global.css'), join(versioned, 'global.css'));
+  copyFileSync(join(dist, 'prose.css'), join(versioned, 'prose.css'));
+  console.log(`css: copied mctl.css, global.css, prose.css to storybook/public/${version}/`);
 }
