@@ -10,6 +10,7 @@
 - [ ] `pnpm build:storybook` passes
 - [ ] `pnpm check:versions` passes (lockstep versions)
 - [ ] `pnpm check:token-version` passes (a token or generator change bumps the version — ui.mctl.ai serves `/<version>/mctl.css` immutable)
+- [ ] No already-published `apps/storybook/public/<version>/` directory is edited, moved or deleted — supersede it with a new version instead
 - [ ] Generated CSS under `apps/storybook/public` is committed, including the new `<version>/` directory
 - [ ] Storybook stories added/updated for any component change
 

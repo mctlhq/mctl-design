@@ -50,7 +50,8 @@ version would be permanently cached by consumers who can never refresh them.
 `pnpm check:token-version` fails any pull request that touches
 `packages/tokens/src`, `packages/css/src`, or either package's `scripts/`
 directory — `gen-assets.mjs` and `build-css.mjs` produce the bytes just as much
-as the sources do — without moving the root version.
+as the sources do — without moving the root version, and refuses a version that
+moves backwards. It also refuses any diff that touches a version directory already on `main` — by edit, `git rm` or `git mv` — so a published sheet can only be superseded, never changed or removed. That second rule is what makes the pinned path in the table below actually never move.
 Everything else — Storybook, docs, components that do not feed `theme.css` —
 lands without one.
 

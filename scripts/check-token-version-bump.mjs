@@ -79,6 +79,13 @@ const current = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).ver
 // *inside* a version directory. A bare digit test also fires on a 404.html or a
 // 2x/ asset directory, failing safe but with a message naming something that
 // was never on the CDN.
+// Left to throw. `git cat-file -e` cannot separate "path absent from the tree"
+// from "object store unreadable" by exit code, and onBase treats every failure
+// as absent — i.e. as writable. Asserting the base tree is readable once, up
+// front, turns a broken or partial object store into a loud failure and leaves
+// onBase answering only the question it can actually answer.
+git('rev-parse', '--verify', `${base}^{tree}`);
+
 const onBase = (p) => {
   try {
     // stdio ignored: a miss is the expected answer for a freshly cut
@@ -107,12 +114,47 @@ if (frozen.length > 0) {
   process.exit(1);
 }
 
+// Read above the early exit for the same reason `frozen` sits there: a version
+// rollback touches no source at all.
+const previous = JSON.parse(git('show', `${base}:package.json`)).version;
+
+// A version moving backwards puts an already-published directory back under the
+// build, and without this the author never hears that. `frozen` is empty on the
+// first push — nothing under a published directory is *committed* as changed
+// yet — so the only failure is the cleanliness step saying "Generated CSS is not
+// committed", whose obvious remedy is to commit the regenerated 0.5.0 sheets.
+// That commit is precisely what poisons the URL, and only then does `frozen`
+// print the right diagnosis. Refusing the rollback itself puts the correct
+// message first.
+const order = (v) => {
+  const [core, pre] = v.split('-');
+  // A prerelease sorts below the release it leads to; the exact identifier
+  // ordering does not matter here, only that 0.6.0-rc.1 < 0.6.0.
+  return [...core.split('.').map(Number), pre === undefined ? 1 : 0];
+};
+const movedBackwards = (a, b) => {
+  const [x, y] = [order(a), order(b)];
+  for (let i = 0; i < x.length; i += 1) {
+    if (x[i] !== y[i]) return x[i] < y[i];
+  }
+  return false;
+};
+if (movedBackwards(current, previous)) {
+  console.error(
+    `The root version moved backwards: ${previous} -> ${current}.\n\n` +
+      `apps/storybook/public/${current}/ is already published and served ` +
+      `immutable for a year, so the build would regenerate it from newer ` +
+      `sources and CI would then ask you to commit the result. Cut a higher ` +
+      `version instead, or revert the whole release including its version ` +
+      `directory.\n`,
+  );
+  process.exit(1);
+}
+
 if (touched.length === 0) {
   console.log('check-token-version-bump: no token or theme sources touched.');
   process.exit(0);
 }
-
-const previous = JSON.parse(git('show', `${base}:package.json`)).version;
 
 if (current === previous) {
   console.error(
