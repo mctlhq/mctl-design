@@ -43,19 +43,53 @@ All published packages and the Docker image are versioned **lockstep** with the
 repository: a single semver tag `X.Y.Z` (no `v` prefix). `pnpm check:versions`
 fails the build if any package version drifts from the root.
 
+**Changing a token or the theme layer requires a version bump.** `ui.mctl.ai`
+serves `/<version>/mctl.css` with a one-year immutable cache, and it deploys on
+every merge to `main` rather than on a tag — so two different sheets under one
+version would be permanently cached by consumers who can never refresh them.
+`pnpm check:token-version` fails any pull request that touches
+`packages/tokens/src`, `packages/css/src`, or either package's `scripts/`
+directory — `gen-assets.mjs` and `build-css.mjs` produce the bytes just as much
+as the sources do — without moving the root version, and refuses a version that
+moves backwards. It also refuses any diff that touches a version directory already on `main` — by edit, `git rm` or `git mv` — so a published sheet can only be superseded, never changed or removed. That second rule is what makes the pinned path in the table below actually never move. It also refuses a root version that is not `X.Y.Z` with an optional `-prerelease` suffix: `build-css.mjs` writes the directory verbatim while nginx matches only that shape, so anything else would be served without CORS and never frozen.
+
+Withdrawing published bytes — a sheet built from the wrong branch, a token file that briefly carried something it should not have — is deliberately not something CI will do for you. Superseding leaves the old URL serving the bad bytes for a year to everyone already pinned, so a real removal takes an admin merge past the check and a CDN purge, on purpose.
+Everything else — Storybook, docs, components that do not feed `theme.css` —
+lands without one.
+
 ## Consuming
 
-**CSS — CDN (preferred).** Tokens and the semantic theme ship with Storybook
-and update on every merge to `main`. No npm tag, no GitHub Packages token.
+There are three supported ways to consume the CSS, and they differ only in what
+moves under you.
+
+| Path | Moves when | Use for |
+|---|---|---|
+| `https://ui.mctl.ai/0.5.0/{mctl,global,prose}.css` | never | anything shipped to users |
+| `https://ui.mctl.ai/{mctl,global,prose}.css` | every merge to `main` | previews, internal tools, seeing a token change land |
+| `@mctlhq/css` on GitHub Packages | on a semver tag | builds that already have a Packages token |
+
+All three sheets are versioned together. Pinning `mctl.css` alone leaves
+`global.css` — body typography and base element styles — floating, which is
+pinned in name only.
+
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.5.0 … */`), so a
+vendored copy records what it was taken from and a mismatch shows up in a diff.
+
+**CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://ui.mctl.ai/mctl.css">
-<link rel="stylesheet" href="https://ui.mctl.ai/global.css">
-<!-- docs / markdown only: https://ui.mctl.ai/prose.css -->
+<link rel="stylesheet" href="https://ui.mctl.ai/0.5.0/mctl.css">
+<link rel="stylesheet" href="https://ui.mctl.ai/0.5.0/global.css">
+<!-- docs / markdown only: https://ui.mctl.ai/0.5.0/prose.css -->
 ```
+
+Bumping to a new version is then a one-line edit made on purpose, not something
+that happens to a product page four hours after an unrelated merge. The
+unversioned `https://ui.mctl.ai/mctl.css` still works and still floats with
+`main` — use it where you want the change, not where you want the pin.
 
 Flip surface and accent with `data-theme` (`dark` | `light`) and optional
 `data-accent` (`terracotta` default | `cyan` | `lime` | `lilac`). Omit
