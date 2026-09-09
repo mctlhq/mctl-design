@@ -5,6 +5,11 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "@mctlhq/css#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "cache": false
+    },
     "build:storybook": {
       "dependsOn": ["^build"],
       "outputs": ["storybook-static/**"]

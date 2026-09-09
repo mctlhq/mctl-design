@@ -4,9 +4,11 @@
 // and ui.mctl.ai deploys on every merge to main rather than on a tag — so
 // nothing but this check stands between "immutable" and a lie.
 //
-// Rule: a change under packages/tokens/src or packages/css/src must come with
-// a root version bump. Everything else — Storybook, docs, CI, components that
-// do not feed theme.css — is free to land without one.
+// Rule: a change under packages/tokens/src, packages/css/src, or either
+// package's scripts/ directory must come with a root version bump — the
+// generators produce the published bytes as much as the sources do.
+// Everything else — Storybook, docs, CI, components that do not feed
+// theme.css — is free to land without one.
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';

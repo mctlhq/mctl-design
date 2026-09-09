@@ -41,6 +41,13 @@ console.log('css: wrote theme.css, global.css, prose.css, telegram.css');
 // Copy mctl.css bundle into the Storybook public dir so it's served at
 // https://ui.mctl.ai/mctl.css for CDN consumers (e.g. mctl-telegram).
 // Guard: only runs inside the monorepo where the storybook app exists.
+//
+// This write lands OUTSIDE the package, which is why turbo.json sets
+// `cache: false` on `@mctlhq/css#build`. Turbo can only declare `dist/**` as an
+// output, so a cache hit would replay dist/ and write nothing here — and
+// ci.yml's cleanliness step proves the committed sheets match the sources only
+// because the build just rewrote them. Under a replay it would pass having
+// verified nothing. Do not re-enable caching for this task.
 const storybookPublic = join(pkgRoot, '../../apps/storybook/public');
 if (existsSync(storybookPublic)) {
   copyFileSync(join(dist, 'theme.css'), join(storybookPublic, 'mctl.css'));
