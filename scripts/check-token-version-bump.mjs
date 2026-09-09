@@ -106,6 +106,34 @@ if (process.argv.includes('--selftest')) {
   process.exit(0);
 }
 
+// Read and shape-checked before any git call, for the same reason --selftest
+// is: it answers a question about the working tree, not the repository. Below
+// the base-ref skip it would never run on a checkout where origin/main does
+// not resolve — a fresh clone, or the local pre-push run CONTRIBUTING asks
+// for — which is exactly where a bad shape would go unnoticed.
+const current = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
+
+// The comparator understands more shapes than the pipeline does, and the extra
+// ones fail silently rather than loudly. build-css.mjs writes
+// `public/<version>/` verbatim, while nginx.conf:39 and the frozen regex both
+// match `\d+\.\d+\.\d+(-…)?` with no `+` and no two- or four-segment form —
+// so a root version like 0.6.0+build-1, which check-versions.mjs is happy to
+// enforce lockstep on, produces a directory served for 7 days with no CORS
+// header and never frozen. Refusing the shape here is the only place that
+// notices.
+const SHAPE = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
+if (!SHAPE.test(current)) {
+  console.error(
+    `The root version is not a shape the CDN can serve: ${current}.\n\n` +
+      `build-css.mjs writes apps/storybook/public/${current}/ verbatim, but ` +
+      `nginx.conf only matches X.Y.Z with an optional prerelease — so that ` +
+      `directory would be served for 7 days with no CORS header, and the ` +
+      `freeze would never cover it. Use X.Y.Z, optionally with a -prerelease ` +
+      `suffix, and no build metadata.\n`,
+  );
+  process.exit(1);
+}
+
 const base = process.env.BASE_REF || 'origin/main';
 
 const git = (...args) =>
@@ -117,7 +145,12 @@ const git = (...args) =>
 // named "Check token changes carry a version bump" that never checked
 // anything, which is worse than having no check at all.
 try {
-  git('rev-parse', '--verify', `${base}^{commit}`);
+  // stdio ignored: not resolving is the expected answer on a fresh clone, and
+  // git prints "Needed a single revision" for it.
+  execFileSync('git', ['rev-parse', '--verify', `${base}^{commit}`], {
+    cwd: root,
+    stdio: 'ignore',
+  });
 } catch {
   console.log(`check-token-version-bump: no ${base} to diff against, skipping.`);
   process.exit(0);
@@ -146,7 +179,6 @@ const SOURCES = [
 ];
 const touched = changed.filter((f) => SOURCES.some((s) => f.startsWith(s)));
 
-const current = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
 
 // Already-published version directories are frozen, and this runs before the
 // early exit below because the diffs that reach them touch no source at all.
@@ -200,7 +232,11 @@ if (frozen.length > 0) {
       frozen.map((f) => `  ${f}`).join('\n') +
       `\n\nThose files are served immutable for a year, so consumers pinned to ` +
       `them can never pick up an edit and never recover from a deletion. Cut a ` +
-      `new version instead.\n`,
+      `new version instead.\n\n` +
+      `If the bytes must genuinely be withdrawn rather than superseded, that ` +
+      `takes an admin merge past this check and a CDN purge — superseding ` +
+      `leaves the old URL serving them for a year to everyone already ` +
+      `pinned.\n`,
   );
   process.exit(1);
 }
@@ -209,26 +245,6 @@ if (frozen.length > 0) {
 // rollback touches no source at all.
 const previous = JSON.parse(git('show', `${base}:package.json`)).version;
 
-// The comparator understands more shapes than the pipeline does, and the extra
-// ones fail silently rather than loudly. build-css.mjs writes
-// `public/<version>/` verbatim, while nginx.conf:39 and the frozen regex both
-// match `\d+\.\d+\.\d+(-…)?` with no `+` and no two- or four-segment form —
-// so a root version like 0.6.0+build-1, which check-versions.mjs is happy to
-// enforce lockstep on, produces a directory served for 7 days with no CORS
-// header and never frozen. Refusing the shape here is the only place that
-// notices.
-const SHAPE = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
-if (!SHAPE.test(current)) {
-  console.error(
-    `The root version is not a shape the CDN can serve: ${current}.\n\n` +
-      `build-css.mjs writes apps/storybook/public/${current}/ verbatim, but ` +
-      `nginx.conf only matches X.Y.Z with an optional prerelease — so that ` +
-      `directory would be served for 7 days with no CORS header, and the ` +
-      `freeze would never cover it. Use X.Y.Z, optionally with a -prerelease ` +
-      `suffix, and no build metadata.\n`,
-  );
-  process.exit(1);
-}
 
 // A version moving backwards puts an already-published directory back under the
 // build, and without this the author never hears that. `frozen` is empty on the

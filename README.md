@@ -51,7 +51,9 @@ version would be permanently cached by consumers who can never refresh them.
 `packages/tokens/src`, `packages/css/src`, or either package's `scripts/`
 directory — `gen-assets.mjs` and `build-css.mjs` produce the bytes just as much
 as the sources do — without moving the root version, and refuses a version that
-moves backwards. It also refuses any diff that touches a version directory already on `main` — by edit, `git rm` or `git mv` — so a published sheet can only be superseded, never changed or removed. That second rule is what makes the pinned path in the table below actually never move.
+moves backwards. It also refuses any diff that touches a version directory already on `main` — by edit, `git rm` or `git mv` — so a published sheet can only be superseded, never changed or removed. That second rule is what makes the pinned path in the table below actually never move. It also refuses a root version that is not `X.Y.Z` with an optional `-prerelease` suffix: `build-css.mjs` writes the directory verbatim while nginx matches only that shape, so anything else would be served without CORS and never frozen.
+
+Withdrawing published bytes — a sheet built from the wrong branch, a token file that briefly carried something it should not have — is deliberately not something CI will do for you. Superseding leaves the old URL serving the bad bytes for a year to everyone already pinned, so a real removal takes an admin merge past the check and a CDN purge, on purpose.
 Everything else — Storybook, docs, components that do not feed `theme.css` —
 lands without one.
 

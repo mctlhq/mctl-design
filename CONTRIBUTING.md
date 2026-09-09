@@ -26,7 +26,8 @@ pnpm lint
 pnpm typecheck
 pnpm check:versions
 pnpm check:token-version   # a token or generator change needs a version bump,
-                           # and a published <version>/ directory cannot be touched
+                           # a published <version>/ directory cannot be touched,
+                           # and the root version must be X.Y.Z(-prerelease)
 ```
 
 ## Branch strategy
