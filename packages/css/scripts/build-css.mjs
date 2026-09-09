@@ -24,17 +24,18 @@ const semanticCss = readFileSync(join(src, 'theme.css'), 'utf8');
 const themeCss = `/* @mctlhq/css ${version} — raw tokens + semantic theme layer. */\n${tokensCss}\n${semanticCss}`;
 
 writeFileSync(join(dist, 'theme.css'), themeCss);
-// The same marker on every sheet that gets a versioned copy. A reader told the
-// three move as a set will check a vendored global.css the way they check
-// mctl.css, and finding no version there makes the set look like a claim
-// rather than a fact.
-for (const name of ['global.css', 'prose.css']) {
+// The same marker on every published sheet. A reader told the three move as a
+// set will check a vendored global.css the way they check mctl.css, and finding
+// no version there makes the set look like a claim rather than a fact.
+// telegram.css is here too even though nothing copies it to the CDN: it is a
+// public export and mctl-telegram vendors it by hand, so it is the sheet where
+// "taken from which version" is asked soonest.
+for (const name of ['global.css', 'prose.css', 'telegram.css']) {
   writeFileSync(
     join(dist, name),
     `/* @mctlhq/css ${version} — ${name}. */\n${readFileSync(join(src, name), 'utf8')}`,
   );
 }
-copyFileSync(join(src, 'telegram.css'), join(dist, 'telegram.css'));
 
 console.log('css: wrote theme.css, global.css, prose.css, telegram.css');
 

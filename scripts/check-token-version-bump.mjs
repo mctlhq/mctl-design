@@ -47,12 +47,39 @@ const SOURCES = [
   'packages/css/scripts/',
 ];
 const touched = changed.filter((f) => SOURCES.some((s) => f.startsWith(s)));
+
+const current = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
+
+// Already-published version directories are frozen, and this runs before the
+// early exit below because the diffs that reach them touch no source at all.
+// `SOURCES` guards the inputs to a versioned sheet; nothing guarded the sheets
+// themselves, and ci.yml's cleanliness step compares against HEAD, so a
+// *committed* edit leaves the tree clean. A repo-wide `**/*.css` sweep — one
+// hex value replaced everywhere, a formatter pass, a renamed custom property —
+// or a `git rm` of what reads as a stale build artifact would both pass every
+// other gate while rewriting or deleting a URL consumers have cached immutable
+// for a year and cannot refresh. `git diff --name-only` lists deletions too,
+// so both cases land here.
+const currentVersionDir = `apps/storybook/public/${current}/`;
+const frozen = changed.filter(
+  (f) => /^apps\/storybook\/public\/\d/.test(f) && !f.startsWith(currentVersionDir),
+);
+if (frozen.length > 0) {
+  console.error(
+    `A published version directory changed:\n\n` +
+      frozen.map((f) => `  ${f}`).join('\n') +
+      `\n\nThose files are served immutable for a year, so consumers pinned to ` +
+      `them can never pick up an edit and never recover from a deletion. Cut a ` +
+      `new version instead.\n`,
+  );
+  process.exit(1);
+}
+
 if (touched.length === 0) {
   console.log('check-token-version-bump: no token or theme sources touched.');
   process.exit(0);
 }
 
-const current = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
 const previous = JSON.parse(git('show', `${base}:package.json`)).version;
 
 if (current === previous) {

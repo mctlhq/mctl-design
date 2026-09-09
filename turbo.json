@@ -5,9 +5,17 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    // Never cached, and never given `outputs`: this task writes versioned CSS
+    // into apps/storybook/public, outside its own package, which Turbo cannot
+    // declare or restore. A cache replay would skip that write and leave
+    // ci.yml's "generated CSS is committed" step passing having verified
+    // nothing. See packages/css/scripts/build-css.mjs before editing this.
+    //
+    // A pkg#task entry REPLACES the generic `build` above rather than merging
+    // with it, so `dependsOn` is repeated on purpose — anything added to
+    // `build` later has to be added here too.
     "@mctlhq/css#build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"],
       "cache": false
     },
     "build:storybook": {
