@@ -75,11 +75,22 @@ or above the floor.
 | `postcss@8` | parsing DoS |
 | `postcss-selector-parser@6` | uncontrolled AST recursion |
 | `ws@8` | DoS on excessive headers |
+| `@vitest/mocker@3` | path traversal / arbitrary file read, GHSA-82fw-gwwq-j7x9 |
 
 Every selector is scoped to a major (`pkg@N`). Do not add an unscoped or
 open-ended key: an override applies to *every* version line that matches, so
 `"ws": "^8.21.0"` would silently clamp a future `ws@9` down to 8.x in a parent
 that was never tested against it.
+
+`@vitest/mocker@3` is the one key that resolves *across* a major, and that is
+deliberate rather than an oversight. GHSA-82fw-gwwq-j7x9 covers `>=2.1.0
+<4.1.11` and was never backported — 3.2.7, the newest 3.x, is still inside the
+range — so there is no in-major fix to point at. The parent is Storybook's
+Vite builder, which is a devDependency: it does not reach the published
+packages, and the nginx image ships static output with no Node runtime at all.
+`pnpm build`, `pnpm build:storybook`, lint and typecheck all pass on 4.1.11.
+Drop the key once Storybook widens on its own — the scoping rule is about not
+clamping a future line *down*, which this does not do.
 
 CI runs `pnpm audit --audit-level moderate` as a gate, so a transitive bump
 that reintroduces one of these advisories fails the pull request rather than
