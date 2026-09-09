@@ -21,17 +21,20 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 // 0.6.0-rc.1 looking equal, and ui.mctl.ai deploys on merge, so rc.1 is already
 // live and already pinnable.
 const parse = (v) => {
-  // Slice at the FIRST hyphen, and strip build metadata. Splitting on every
-  // hyphen drops everything past the second one, so 0.6.0-rc-2 and 0.6.0-rc-1
-  // both read as `rc` and compare equal — and nginx.conf serves exactly that
-  // shape immutable, since its prerelease class allows hyphens. A `+ci.4`
-  // suffix left on the core turns a segment into NaN, and every comparison
-  // against NaN is false, so nothing is ever backwards from it: fail-open, in
-  // the one file that argues against fail-open twice.
-  // Metadata comes off FIRST. Semver puts it after the prerelease, so a `+`
-  // suffix can itself contain a hyphen — searching for the hyphen before
-  // stripping it lands `build-1` in `pre` and compares two versions by their
-  // build tags.
+  // Build metadata comes off first, then the FIRST hyphen splits core from
+  // prerelease. All three details earned their place:
+  //
+  //   - metadata first, because semver puts it after the prerelease, so a `+`
+  //     suffix can contain a hyphen — find the hyphen too early and `build-1`
+  //     lands in `pre`, comparing two versions by their build tags;
+  //   - first hyphen, not every hyphen, because splitting on all of them drops
+  //     everything past the second, so 0.6.0-rc-2 and 0.6.0-rc-1 both read as
+  //     `rc` and compare equal — and nginx.conf serves that shape immutable,
+  //     since its prerelease class allows hyphens;
+  //   - metadata stripped at all, because `+ci.4` left on the core makes a
+  //     segment NaN, and every comparison against NaN is false, so nothing is
+  //     ever backwards from it: fail-open, in the file that argues against
+  //     fail-open twice.
   const core = v.split('+')[0];
   const i = core.indexOf('-');
   return {
@@ -205,6 +208,27 @@ if (frozen.length > 0) {
 // Read above the early exit for the same reason `frozen` sits there: a version
 // rollback touches no source at all.
 const previous = JSON.parse(git('show', `${base}:package.json`)).version;
+
+// The comparator understands more shapes than the pipeline does, and the extra
+// ones fail silently rather than loudly. build-css.mjs writes
+// `public/<version>/` verbatim, while nginx.conf:39 and the frozen regex both
+// match `\d+\.\d+\.\d+(-…)?` with no `+` and no two- or four-segment form —
+// so a root version like 0.6.0+build-1, which check-versions.mjs is happy to
+// enforce lockstep on, produces a directory served for 7 days with no CORS
+// header and never frozen. Refusing the shape here is the only place that
+// notices.
+const SHAPE = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
+if (!SHAPE.test(current)) {
+  console.error(
+    `The root version is not a shape the CDN can serve: ${current}.\n\n` +
+      `build-css.mjs writes apps/storybook/public/${current}/ verbatim, but ` +
+      `nginx.conf only matches X.Y.Z with an optional prerelease — so that ` +
+      `directory would be served for 7 days with no CORS header, and the ` +
+      `freeze would never cover it. Use X.Y.Z, optionally with a -prerelease ` +
+      `suffix, and no build metadata.\n`,
+  );
+  process.exit(1);
+}
 
 // A version moving backwards puts an already-published directory back under the
 // build, and without this the author never hears that. `frozen` is empty on the
