@@ -32,7 +32,14 @@ try {
   process.exit(0);
 }
 
-const changed = git('diff', '--name-only', `${base}...HEAD`).split('\n').filter(Boolean);
+// --no-renames, because rename detection is on by default and `--name-only`
+// prints only the destination of a detected rename. `git mv` of a published
+// directory somewhere out of the way would otherwise show up as paths that no
+// longer look like a version directory at all, and the frozen check below would
+// never see the source it is meant to protect.
+const changed = git('diff', '--no-renames', '--name-only', `${base}...HEAD`)
+  .split('\n')
+  .filter(Boolean);
 
 // The scripts belong here as much as the sources do: dist/tokens.css is
 // emitted by packages/tokens/scripts/gen-assets.mjs and the sheet is assembled
@@ -58,11 +65,36 @@ const current = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).ver
 // hex value replaced everywhere, a formatter pass, a renamed custom property —
 // or a `git rm` of what reads as a stale build artifact would both pass every
 // other gate while rewriting or deleting a URL consumers have cached immutable
-// for a year and cannot refresh. `git diff --name-only` lists deletions too,
-// so both cases land here.
-const currentVersionDir = `apps/storybook/public/${current}/`;
+// for a year and cannot refresh.
+//
+// "Published" is "present on the base ref", not "not the current version". The
+// version-named exemption reopened the hole on a rollback: set the root back to
+// an already-shipped value and its live directory becomes writable again —
+// worse, the cleanliness step then *demands* the commit that rewrites it,
+// because the build regenerates those files from newer sources. A freshly cut
+// directory is absent from the base and stays writable; anything already on
+// main does not, whatever the version field says.
+//
+// The shape is the semver one nginx.conf matches, with a trailing slash: a path
+// *inside* a version directory. A bare digit test also fires on a 404.html or a
+// 2x/ asset directory, failing safe but with a message naming something that
+// was never on the CDN.
+const onBase = (p) => {
+  try {
+    // stdio ignored: a miss is the expected answer for a freshly cut
+    // directory, and git writes "exists on disk, but not in <ref>" to stderr
+    // for every one of them.
+    execFileSync('git', ['cat-file', '-e', `${base}:${p}`], {
+      cwd: root,
+      stdio: 'ignore',
+    });
+    return true;
+  } catch {
+    return false;
+  }
+};
 const frozen = changed.filter(
-  (f) => /^apps\/storybook\/public\/\d/.test(f) && !f.startsWith(currentVersionDir),
+  (f) => /^apps\/storybook\/public\/\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?\//.test(f) && onBase(f),
 );
 if (frozen.length > 0) {
   console.error(
