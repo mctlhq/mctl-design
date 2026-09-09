@@ -28,11 +28,15 @@ const parse = (v) => {
   // suffix left on the core turns a segment into NaN, and every comparison
   // against NaN is false, so nothing is ever backwards from it: fail-open, in
   // the one file that argues against fail-open twice.
-  const i = v.indexOf('-');
-  const core = (i === -1 ? v : v.slice(0, i)).split('+')[0];
+  // Metadata comes off FIRST. Semver puts it after the prerelease, so a `+`
+  // suffix can itself contain a hyphen — searching for the hyphen before
+  // stripping it lands `build-1` in `pre` and compares two versions by their
+  // build tags.
+  const core = v.split('+')[0];
+  const i = core.indexOf('-');
   return {
-    core: core.split('.').map(Number),
-    pre: i === -1 ? null : v.slice(i + 1).split('+')[0].split('.'),
+    core: (i === -1 ? core : core.slice(0, i)).split('.').map(Number),
+    pre: i === -1 ? null : core.slice(i + 1).split('.'),
   };
 };
 const compareIds = (a, b) => {
@@ -84,6 +88,8 @@ if (process.argv.includes('--selftest')) {
     ['0.6.0-2', '0.6.0-alpha', true],
     ['0.6.0-rc-1', '0.6.0-rc-2', true],
     ['0.6.0+ci.4', '0.6.1', true],
+    ['0.6.0+build-1', '0.6.1', true],
+    ['0.6.0+build-1', '0.6.0+build-2', false],
   ];
   const failures = cases.filter(([a, b, want]) => movedBackwards(a, b) !== want);
   if (failures.length > 0) {
