@@ -68,6 +68,7 @@ or above the floor.
 
 | Override | Closes |
 | --- | --- |
+| `@vitest/mocker@3` | path traversal / arbitrary file read, GHSA-82fw-gwwq-j7x9 |
 | `brace-expansion@1` `@2` `@5` | ReDoS, GHSA lines on all three majors |
 | `fast-uri@3` | ReDoS in URI parsing |
 | `js-yaml@4` | prototype pollution / DoS |
@@ -80,6 +81,25 @@ Every selector is scoped to a major (`pkg@N`). Do not add an unscoped or
 open-ended key: an override applies to *every* version line that matches, so
 `"ws": "^8.21.0"` would silently clamp a future `ws@9` down to 8.x in a parent
 that was never tested against it.
+
+`@vitest/mocker@3` is the one key that resolves *across* a major, and that is
+deliberate rather than an oversight. GHSA-82fw-gwwq-j7x9 covers `>=2.1.0
+<4.1.11` and was never backported — 3.2.7, the newest 3.x, is still inside the
+range — so there is no in-major fix to point at. The parent is the `storybook` core
+package (the lockfile lists `@vitest/mocker` in *its* dependencies, not
+`@storybook/builder-vite`'s), which is a devDependency: it does not reach the
+published packages, and the nginx image ships static output with no Node
+runtime at all. Drop the key once Storybook widens on its own — the scoping
+rule is about not clamping a future line *down*, which this does not do.
+
+The override does leave a version skew inside Storybook's test stack:
+`storybook@9.1.20` keeps `@vitest/expect@3.2.4` and `@vitest/spy@3.2.4`, while
+`@vitest/mocker@4.1.11` brings its own `@vitest/spy@4.1.11`, so a mocked module
+would be spied by v4 and asserted by a v3 `expect`. That is safe here for one
+reason only, and it is not that the build passes: **nothing in this repo
+exercises the mocking path.** There are no `play` functions, no `storybook/test`
+import, no `@storybook/addon-vitest`, and `ci.yml` has no test step at all. If
+any of those arrive, re-check this key before trusting it.
 
 CI runs `pnpm audit --audit-level moderate` as a gate, so a transitive bump
 that reintroduces one of these advisories fails the pull request rather than
