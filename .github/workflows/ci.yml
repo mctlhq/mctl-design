@@ -69,7 +69,19 @@ jobs:
         # check here and still 404 that pinned URL one release later, when the
         # image stops containing the directory. Runs after the build above, so
         # a dirty tree means the committed copies do not match the sources.
-        run: git diff --exit-code -- apps/storybook/public
+        #
+        # `git status --porcelain`, not `git diff --exit-code`: diff compares
+        # the index against the working tree, and a brand-new version directory
+        # is in neither, so it exits 0 on exactly the forgotten `git add` this
+        # exists to catch. `git add -u` is the realistic route in — it stages
+        # the rewritten tracked sheets and leaves the new directory behind.
+        run: |
+          DIRTY=$(git status --porcelain -- apps/storybook/public)
+          if [ -n "$DIRTY" ]; then
+            echo "Generated CSS is not committed:"
+            echo "$DIRTY"
+            exit 1
+          fi
 
       - name: Check token changes carry a version bump
         # ui.mctl.ai serves /<version>/mctl.css immutable for a year, and it

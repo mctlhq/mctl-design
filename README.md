@@ -48,7 +48,9 @@ serves `/<version>/mctl.css` with a one-year immutable cache, and it deploys on
 every merge to `main` rather than on a tag — so two different sheets under one
 version would be permanently cached by consumers who can never refresh them.
 `pnpm check:token-version` fails any pull request that touches
-`packages/tokens/src` or `packages/css/src` without moving the root version.
+`packages/tokens/src`, `packages/css/src`, or either package's `scripts/`
+directory — `gen-assets.mjs` and `build-css.mjs` produce the bytes just as much
+as the sources do — without moving the root version.
 Everything else — Storybook, docs, components that do not feed `theme.css` —
 lands without one.
 
@@ -67,7 +69,7 @@ All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.
 
-The sheet names its own version on line 1 (`/* @mctlhq/css 0.5.0 … */`), so a
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.5.0 … */`), so a
 vendored copy records what it was taken from and a mismatch shows up in a diff.
 
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.

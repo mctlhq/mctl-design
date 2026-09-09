@@ -1,3 +1,4 @@
+/* @mctlhq/css 0.5.0 — prose.css. */
 /*
  * Editorial / documentation typography. Scoped under `.mctl-prose` so it only
  * affects opted-in markdown content (VitePress, docs pages) and never leaks.
