@@ -21,8 +21,19 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 // 0.6.0-rc.1 looking equal, and ui.mctl.ai deploys on merge, so rc.1 is already
 // live and already pinnable.
 const parse = (v) => {
-  const [core, pre] = v.split('-');
-  return { core: core.split('.').map(Number), pre: pre === undefined ? null : pre.split('.') };
+  // Slice at the FIRST hyphen, and strip build metadata. Splitting on every
+  // hyphen drops everything past the second one, so 0.6.0-rc-2 and 0.6.0-rc-1
+  // both read as `rc` and compare equal — and nginx.conf serves exactly that
+  // shape immutable, since its prerelease class allows hyphens. A `+ci.4`
+  // suffix left on the core turns a segment into NaN, and every comparison
+  // against NaN is false, so nothing is ever backwards from it: fail-open, in
+  // the one file that argues against fail-open twice.
+  const i = v.indexOf('-');
+  const core = (i === -1 ? v : v.slice(0, i)).split('+')[0];
+  return {
+    core: core.split('.').map(Number),
+    pre: i === -1 ? null : v.slice(i + 1).split('+')[0].split('.'),
+  };
 };
 const compareIds = (a, b) => {
   // Numeric identifiers compare numerically and rank below alphanumeric ones;
@@ -71,6 +82,8 @@ if (process.argv.includes('--selftest')) {
     ['0.6.0-rc', '0.6.0-rc.1', true],
     ['0.6.0-alpha', '0.6.0-beta', true],
     ['0.6.0-2', '0.6.0-alpha', true],
+    ['0.6.0-rc-1', '0.6.0-rc-2', true],
+    ['0.6.0+ci.4', '0.6.1', true],
   ];
   const failures = cases.filter(([a, b, want]) => movedBackwards(a, b) !== want);
   if (failures.length > 0) {
@@ -196,11 +209,21 @@ const previous = JSON.parse(git('show', `${base}:package.json`)).version;
 // print the right diagnosis. Refusing the rollback itself puts the correct
 // message first.
 if (movedBackwards(current, previous)) {
+  // movedBackwards compares two version fields and nothing else, so do not
+  // assert the directory exists — a rollback to a version cut before this
+  // feature names a path that was never in the tree, and this message exists to
+  // be the FIRST thing an author reads on a rollback. One checkable claim they
+  // find false is the fastest way to have the rest of the diagnosis dismissed.
+  const published = onBase(`apps/storybook/public/${current}/mctl.css`);
   console.error(
     `The root version moved backwards: ${previous} -> ${current}.\n\n` +
-      `apps/storybook/public/${current}/ is already published and served ` +
-      `immutable for a year, so the build would regenerate it from newer ` +
-      `sources and CI would then ask you to commit the result.\n\n` +
+      (published
+        ? `apps/storybook/public/${current}/ is already published and served ` +
+          `immutable for a year, so the build would regenerate it from newer ` +
+          `sources and CI would then ask you to commit the result.\n\n`
+        : `The build regenerates apps/storybook/public/${current}/ from the ` +
+          `current sources, and CI would then ask you to commit the result ` +
+          `under a version that has already been cut.\n\n`) +
       `Cut a higher version carrying the content you want. Deleting the newer ` +
       `version's directory is not the way out — ui.mctl.ai deploys on merge, ` +
       `so ${previous} is already live and the freeze above refuses to remove ` +
