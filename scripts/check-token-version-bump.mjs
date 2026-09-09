@@ -15,6 +15,75 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
+
+// Semver precedence, enough of it for this one comparison. The identifiers do
+// matter: collapsing every prerelease to a single rank leaves 0.6.0-rc.2 ->
+// 0.6.0-rc.1 looking equal, and ui.mctl.ai deploys on merge, so rc.1 is already
+// live and already pinnable.
+const parse = (v) => {
+  const [core, pre] = v.split('-');
+  return { core: core.split('.').map(Number), pre: pre === undefined ? null : pre.split('.') };
+};
+const compareIds = (a, b) => {
+  // Numeric identifiers compare numerically and rank below alphanumeric ones;
+  // a shorter run of identifiers ranks below a longer one with the same prefix.
+  for (let i = 0; i < Math.max(a.length, b.length); i += 1) {
+    if (a[i] === undefined) return -1;
+    if (b[i] === undefined) return 1;
+    const [na, nb] = [/^\d+$/.test(a[i]), /^\d+$/.test(b[i])];
+    if (na && nb) {
+      if (Number(a[i]) !== Number(b[i])) return Number(a[i]) < Number(b[i]) ? -1 : 1;
+    } else if (na !== nb) {
+      return na ? -1 : 1;
+    } else if (a[i] !== b[i]) {
+      return a[i] < b[i] ? -1 : 1;
+    }
+  }
+  return 0;
+};
+const movedBackwards = (a, b) => {
+  const [x, y] = [parse(a), parse(b)];
+  for (let i = 0; i < 3; i += 1) {
+    if (x.core[i] !== y.core[i]) return x.core[i] < y.core[i];
+  }
+  if (x.pre === null && y.pre === null) return false;
+  if (x.pre === null) return false; // a release outranks its own prereleases
+  if (y.pre === null) return true;
+  return compareIds(x.pre, y.pre) < 0;
+};
+
+// The comparator is the one piece of real logic in this file, and it is
+// exactly the kind of thing that regresses silently — the collapsed-prerelease
+// version it replaced looked correct and left 0.6.0-rc.2 -> 0.6.0-rc.1
+// unremarked. Run with --selftest in CI.
+if (process.argv.includes('--selftest')) {
+  // [current, previous, movedBackwards]
+  const cases = [
+    ['0.6.0', '0.5.0', false],
+    ['0.5.0', '0.6.0', true],
+    ['0.6.0', '0.6.0', false],
+    ['1.0.0', '0.9.9', false],
+    ['0.9.9', '1.0.0', true],
+    ['0.6.0-rc.1', '0.6.0', true],
+    ['0.6.0', '0.6.0-rc.1', false],
+    ['0.6.0-rc.1', '0.6.0-rc.2', true],
+    ['0.6.0-rc.2', '0.6.0-rc.1', false],
+    ['0.6.0-rc', '0.6.0-rc.1', true],
+    ['0.6.0-alpha', '0.6.0-beta', true],
+    ['0.6.0-2', '0.6.0-alpha', true],
+  ];
+  const failures = cases.filter(([a, b, want]) => movedBackwards(a, b) !== want);
+  if (failures.length > 0) {
+    console.error(
+      'movedBackwards selftest failed:\n' +
+        failures.map(([a, b, want]) => `  ${b} -> ${a}: expected ${want}`).join('\n'),
+    );
+    process.exit(1);
+  }
+  console.log(`check-token-version-bump: selftest ok (${cases.length} cases).`);
+  process.exit(0);
+}
+
 const base = process.env.BASE_REF || 'origin/main';
 
 const git = (...args) =>
@@ -126,27 +195,16 @@ const previous = JSON.parse(git('show', `${base}:package.json`)).version;
 // That commit is precisely what poisons the URL, and only then does `frozen`
 // print the right diagnosis. Refusing the rollback itself puts the correct
 // message first.
-const order = (v) => {
-  const [core, pre] = v.split('-');
-  // A prerelease sorts below the release it leads to; the exact identifier
-  // ordering does not matter here, only that 0.6.0-rc.1 < 0.6.0.
-  return [...core.split('.').map(Number), pre === undefined ? 1 : 0];
-};
-const movedBackwards = (a, b) => {
-  const [x, y] = [order(a), order(b)];
-  for (let i = 0; i < x.length; i += 1) {
-    if (x[i] !== y[i]) return x[i] < y[i];
-  }
-  return false;
-};
 if (movedBackwards(current, previous)) {
   console.error(
     `The root version moved backwards: ${previous} -> ${current}.\n\n` +
       `apps/storybook/public/${current}/ is already published and served ` +
       `immutable for a year, so the build would regenerate it from newer ` +
-      `sources and CI would then ask you to commit the result. Cut a higher ` +
-      `version instead, or revert the whole release including its version ` +
-      `directory.\n`,
+      `sources and CI would then ask you to commit the result.\n\n` +
+      `Cut a higher version carrying the content you want. Deleting the newer ` +
+      `version's directory is not the way out — ui.mctl.ai deploys on merge, ` +
+      `so ${previous} is already live and the freeze above refuses to remove ` +
+      `it.\n`,
   );
   process.exit(1);
 }
