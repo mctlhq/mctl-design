@@ -29,6 +29,8 @@ Monorepo managed with **pnpm workspaces** + **Turborepo**. Node 22.
 
 ## Development
 
+Requirements: Node 22+ and pnpm (enabled via `corepack`).
+
 ```bash
 corepack enable
 pnpm install
