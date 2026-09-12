@@ -25,6 +25,8 @@ pnpm build:storybook  # static showcase
 pnpm lint
 pnpm typecheck
 pnpm check:versions
+pnpm check:license         # README's License section still links to LICENSE,
+                           # and every package.json license field matches
 pnpm check:token-version   # a token or generator change needs a version bump,
                            # a published <version>/ directory cannot be touched,
                            # and the root version must be X.Y.Z(-prerelease)

@@ -62,6 +62,9 @@ jobs:
       - name: Check lockstep versions
         run: pnpm check:versions
 
+      - name: Check license reference
+        run: pnpm check:license
+
       - name: Check token changes carry a version bump
         # ui.mctl.ai serves /<version>/mctl.css immutable for a year, and it
         # deploys on every merge to main rather than on a tag — so this check

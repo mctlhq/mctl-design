@@ -21,6 +21,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "check:versions": "node scripts/check-versions.mjs",
+    "check:license": "node scripts/check-license.mjs",
     "check:token-version": "node scripts/check-token-version-bump.mjs",
     "clean": "turbo run clean && rm -rf node_modules"
   },
