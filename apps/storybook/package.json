@@ -20,7 +20,7 @@
   "devDependencies": {
     "@storybook/vue3-vite": "^9.0.0",
     "@vitejs/plugin-vue": "catalog:",
-    "@vueless/storybook-dark-mode": "^9",
+    "@vueless/storybook-dark-mode": "^10",
     "storybook": "^9.0.0",
     "vite": "catalog:",
     "vue": "^3.5.12"
