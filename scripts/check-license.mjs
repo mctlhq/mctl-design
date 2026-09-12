@@ -48,7 +48,11 @@ for (const dir of dirs) {
     const pkgPath = join(base, entry, 'package.json');
     if (!existsSync(pkgPath)) continue;
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
-    if (!pkg.license) continue;
+    if (pkg.private) continue;
+    if (!pkg.license) {
+      mismatches.push(`  ${pkg.name}: no "license" field (expected ${expected})`);
+      continue;
+    }
     if (pkg.license !== expected) {
       mismatches.push(`  ${pkg.name}: ${pkg.license} (expected ${expected})`);
     }
