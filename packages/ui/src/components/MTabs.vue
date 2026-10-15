@@ -6,27 +6,33 @@ interface Tab {
   value: string;
 }
 
-const props = withDefaults(
-  defineProps<{
-    tabs: Tab[];
-    /** v-model: the active tab value. Defaults to the first tab. */
-    modelValue?: string;
-  }>(),
-  { modelValue: '' },
-);
+const props = defineProps<{
+  tabs: Tab[];
+}>();
 
-const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
+// v-model: the active tab value. Defaults to the first tab. Without a v-model
+// binding defineModel keeps the value locally, so the component also works
+// uncontrolled -- a derived-from-prop `active` would emit on click and never
+// move, leaving the arrow-key focus on a tabindex="-1" tab.
+const model = defineModel<string>({ default: '' });
 
 // Per-instance prefix so tab/panel ids stay unique when several MTabs render
-// on one page (avoids ambiguous aria-labelledby across instances).
+// on one page (avoids ambiguous aria-labelledby across instances). Ids use the
+// tab index, not its value: a value is free text and may hold spaces.
 const uid = getCurrentInstance()?.uid ?? 0;
-const tabId = (value: string) => `m-tab-${uid}-${value}`;
+const tabId = (index: number) => `m-tab-${uid}-${index}`;
 const panelId = `m-tabpanel-${uid}`;
 
-const active = computed(() => props.modelValue || props.tabs[0]?.value || '');
+const active = computed(() => model.value || props.tabs[0]?.value || '');
+const activeIndex = computed(() =>
+  Math.max(
+    0,
+    props.tabs.findIndex((tab) => tab.value === active.value),
+  ),
+);
 
 function select(value: string) {
-  emit('update:modelValue', value);
+  model.value = value;
 }
 
 // Roving arrow-key navigation across the tab list. Move DOM focus to the newly
@@ -41,9 +47,8 @@ function onKeydown(event: KeyboardEvent, index: number) {
   else if (event.key === 'End') next = last;
   if (next !== -1) {
     event.preventDefault();
-    const value = props.tabs[next].value;
-    select(value);
-    nextTick(() => document.getElementById(tabId(value))?.focus());
+    select(props.tabs[next].value);
+    nextTick(() => document.getElementById(tabId(next))?.focus());
   }
 }
 </script>
@@ -53,7 +58,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
     <div class="m-tabs__list" role="tablist">
       <button
         v-for="(tab, i) in tabs"
-        :id="tabId(tab.value)"
+        :id="tabId(i)"
         :key="tab.value"
         class="m-tabs__tab"
         :class="{ 'm-tabs__tab--active': tab.value === active }"
@@ -72,7 +77,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
       :id="panelId"
       class="m-tabs__panel"
       role="tabpanel"
-      :aria-labelledby="tabId(active)"
+      :aria-labelledby="tabId(activeIndex)"
       tabindex="0"
     >
       <slot :active="active" />

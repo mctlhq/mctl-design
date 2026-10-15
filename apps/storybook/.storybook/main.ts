@@ -2,7 +2,7 @@ import type { StorybookConfig } from '@storybook/vue3-vite';
 
 const config: StorybookConfig = {
   stories: ['../stories/**/*.stories.@(ts|tsx)'],
-  addons: ['@vueless/storybook-dark-mode'],
+  addons: ['@vueless/storybook-dark-mode', '@storybook/addon-a11y'],
   staticDirs: ['../public'],
   framework: {
     name: '@storybook/vue3-vite',

@@ -1,23 +1,49 @@
 <script setup lang="ts">
-withDefaults(
+import { computed, useAttrs, type Component } from 'vue';
+
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
   defineProps<{
     variant?: 'primary' | 'ghost';
     size?: 'sm' | 'md';
-    /** Render as a different element/component, e.g. 'a' for a link. */
-    as?: string;
+    /** Render as a different element or component, e.g. 'a' or RouterLink. */
+    as?: string | Component;
+    /** Native button type. Defaults to "button" so it never submits a form by accident. */
+    type?: 'button' | 'submit' | 'reset';
     disabled?: boolean;
   }>(),
-  { variant: 'primary', size: 'md', as: 'button', disabled: false },
+  { variant: 'primary', size: 'md', as: 'button', type: 'button', disabled: false },
 );
+
+const attrs = useAttrs();
+const isNative = computed(() => props.as === 'button');
+
+// A disabled non-button (a link, a RouterLink) cannot use the `disabled`
+// attribute, and `pointer-events: none` alone leaves it focusable and
+// Enter-activatable. Render it as a plain <a> with no href/to and no click
+// handler, out of the tab order -- the standard disabled-link placeholder.
+const tag = computed(() =>
+  props.disabled && typeof props.as !== 'string' ? 'a' : props.as,
+);
+
+const bindings = computed(() => {
+  if (isNative.value) {
+    return { ...attrs, type: props.type, disabled: props.disabled || undefined };
+  }
+  if (!props.disabled) return attrs;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { href, to, onClick, ...rest } = attrs;
+  return { ...rest, tabindex: -1, 'aria-disabled': 'true' };
+});
 </script>
 
 <template>
   <component
-    :is="as"
+    :is="tag"
+    v-bind="bindings"
     class="m-button"
     :class="[`m-button--${variant}`, `m-button--${size}`]"
-    :disabled="as === 'button' ? disabled : undefined"
-    :aria-disabled="disabled || undefined"
   >
     <slot />
   </component>

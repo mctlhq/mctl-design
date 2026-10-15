@@ -53,6 +53,12 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Test
+        # Component contracts (v-model, keyboard, form behaviour) and an axe
+        # pass over the rendered DOM. jsdom has no layout, so colour contrast
+        # is not part of this step.
+        run: pnpm test
+
       - name: Build packages
         run: pnpm build
 
