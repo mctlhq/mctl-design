@@ -6,7 +6,8 @@
  *   data-accent = "terracotta" (default) | "cyan" | "lime" | "lilac" | "vermilion"
  *                 vermilion is a public alias of terracotta.
  */
-:root {
+:root,
+[data-theme='dark'] {
   /* Surface — dark "Engineering" is the default. */
   --surface-bg: var(--mctl-surface-dark-bg);
   --surface-elevated: var(--mctl-surface-dark-elevated);
@@ -233,6 +234,7 @@
 :root,
 [data-theme],
 [data-accent] {
+  --focus-ring: var(--accent);
   --control-bg: var(--surface-bg);
   --control-disabled-bg: var(--surface-elevated);
   --control-border: var(--surface-line-strong);
