@@ -6,6 +6,7 @@ export { status } from './status';
 export { syntax } from './syntax';
 export {
   typography,
+  publicText,
   fontFamily,
   fontWeight,
   fontSize,

@@ -171,3 +171,23 @@ The CSS interface is `--site-header-{height,bg,blur,border}`,
 ## License
 
 Apache-2.0 — see [LICENSE](./LICENSE).
+
+## Public typography and state colors
+
+The public sites pin the same version of `mctl.css`. Families are `--font-display`
+(Onest), `--font-mono` (JetBrains Mono), and optional `--font-editorial`
+(Instrument Serif). Public roles expose `--text-<role>-size`, `-weight`,
+`-leading`, and `-tracking`: hero, docs-hero, section, title, subtitle, body,
+small, caption, micro, label, marker, code, prose, prose-title, prose-section,
+and prose-subsection. Existing product/editorial recipes remain unchanged.
+
+Use the prose roles for articles (16px/1.75); do not apply the marketing hero
+scale to documentation headings. Adapters retain engine-specific article
+width, sidebar, table overflow and mobile navigation.
+
+Forms use `--control-bg`, `--control-disabled-bg`, `--control-border`, and
+`--control-focus-shadow`. Feedback uses `--status-{ok,warn,bad}-soft` with the
+matching foreground. Overlays use `--overlay-scrim` and `--shadow-overlay`;
+public background grids use `--site-grid-line`. Derived colors recompute at
+scoped theme/accent boundaries. See **Foundations/Public Sites** and
+**Foundations/Typography** in Storybook for both themes and the complete scale.
