@@ -6,8 +6,18 @@ name: Deploy to ui.mctl.ai
 # change must reach ui.mctl.ai as soon as it lands on main, with no hidden
 # "no release was cut" stall. publish.yml (npm packages on a semver tag) is a
 # separate release track and is unaffected.
+#
+# Gated on CI. It used to fire on the push itself, in parallel with ci.yml,
+# so a main that failed the token-version or generated-CSS checks still
+# shipped -- and /<version>/ is served immutable for a year, so a bad sheet
+# there cannot be taken back by the next commit. workflow_run starts this
+# only when CI finished on a push to main, and the job below runs only when
+# that run succeeded. It deploys the commit CI checked (head_sha), not
+# whatever main points at by now.
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
 
 # Serialize deploys: overlapping main merges must not fire competing
@@ -22,6 +32,9 @@ permissions:
 
 jobs:
   deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     steps:
       # Uses mctl-agents, the backend-only automation App — deliberately
@@ -44,7 +57,7 @@ jobs:
       - name: Dispatch centralized release-deploy (SHA-tagged image)
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
-          SHA: ${{ github.sha }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           TAG="${SHA:0:12}"
           gh workflow run release-deploy.yaml \
