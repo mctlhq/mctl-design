@@ -6,6 +6,8 @@ import { readFileSync, writeFileSync, copyFileSync, existsSync, mkdirSync } from
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { tokens } from '@mctlhq/tokens';
+import { tailwindV4Css } from './tailwind-v4.mjs';
 
 const pkgRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const src = join(pkgRoot, 'src');
@@ -37,7 +39,9 @@ for (const name of ['global.css', 'prose.css', 'telegram.css']) {
   );
 }
 
-console.log('css: wrote theme.css, global.css, prose.css, telegram.css');
+writeFileSync(join(dist, 'tailwind.css'), tailwindV4Css(tokens, version));
+
+console.log('css: wrote theme.css, global.css, prose.css, telegram.css, tailwind.css');
 
 // Copy mctl.css bundle into the Storybook public dir so it's served at
 // https://ui.mctl.ai/mctl.css for CDN consumers (e.g. mctl-telegram).

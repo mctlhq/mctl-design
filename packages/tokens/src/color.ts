@@ -79,13 +79,12 @@ export const color = {
   syntaxPunctuation: '#7d828b',
 
   // Syntax on the light card — the same hues taken down in OKLCH lightness
-  // until each clears 4.5:1 on paper, the darkest light surface.
+  // until each clears 4.5:1 on paper, the darkest light surface. Punctuation
+  // and comments reuse paperFgSubtle.
   syntaxKeyDeep: '#287576',
   syntaxStringDeep: '#856515',
   syntaxNumberDeep: '#a45521',
   syntaxKeywordDeep: '#6e60a8',
-  syntaxPunctuationDeep: '#656a73',
-  syntaxCommentDeep: '#656a73',
 } as const;
 
 export type Color = typeof color;

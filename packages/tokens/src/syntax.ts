@@ -17,8 +17,8 @@ export const syntax = {
     string: color.syntaxStringDeep,
     number: color.syntaxNumberDeep,
     keyword: color.syntaxKeywordDeep,
-    punctuation: color.syntaxPunctuationDeep,
-    comment: color.syntaxCommentDeep,
+    punctuation: color.paperFgSubtle,
+    comment: color.paperFgSubtle,
   },
 } as const;
 

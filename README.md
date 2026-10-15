@@ -8,8 +8,8 @@ preset, and Vue 3 UI components, plus a Storybook showcase deployed at
 
 | Package | Description | Framework |
 |---|---|---|
-| `@mctlhq/tokens` | Design tokens — colors, surfaces, accents, typography, spacing | agnostic |
-| `@mctlhq/css` | CSS variables, global styles, prose styles, Tailwind preset | agnostic |
+| `@mctlhq/tokens` | Design tokens — colors, surfaces, accents, typography, spacing (TS, CSS, JSON, DTCG) | agnostic |
+| `@mctlhq/css` | CSS variables, global styles, prose styles, Tailwind v3 preset and v4 theme | agnostic |
 | `@mctlhq/ui` | Vue 3 component library | Vue 3 |
 
 `@mctlhq/tokens` and `@mctlhq/css` are framework-agnostic and can be consumed
@@ -137,9 +137,33 @@ import '@mctlhq/ui/style.css';
 import { MButton } from '@mctlhq/ui';
 ```
 
-**Tailwind preset — npm** (`@mctlhq/css/tailwind-preset`), same registry.
+**Tailwind — npm**, same registry. Tailwind v3 takes the JS preset
+(`@mctlhq/css/tailwind-preset`). Tailwind v4 is configured in CSS, so it takes
+a theme sheet instead, imported after `theme.css`:
+
+```css
+@import "tailwindcss";
+@import "@mctlhq/css/theme.css";
+@import "@mctlhq/css/tailwind.css";
+```
+
+Utility names match the v3 preset (`bg-surface-card`, `text-accent`,
+`font-mono`, `shadow-md`, `text-hero`), and opacity modifiers on the
+theme-aware colours (`bg-accent/50`) work. Three differences, all deliberate:
+the MCTL spacing scale is `p-mctl-5` rather than overriding Tailwind's own
+`p-5`; the page width is `max-w-pagew` (in v4 `max-w-page` is the page
+padding); and the prose width is `max-w-(--container-prose)`, because
+`max-w-prose` is Tailwind's built-in 65ch.
+
 `@mctlhq/css` theme/global/prose CSS remains published for offline or
 air-gapped builds; prefer the CDN for product apps.
+
+**Tokens for design tools — npm.** `@mctlhq/tokens/tokens.dtcg.json` is the
+token tree in the W3C Design Tokens (DTCG 2025.10) format, readable by Style
+Dictionary, Terrazzo and Tokens Studio / Figma. Semantic colours are aliases
+(`surface.dark.bg` is `{color.ink}`), not copies. Values the format has no
+type for — `clamp()` sizes, `em` letter spacing — keep their CSS text and are
+marked `$extensions["ai.mctl"].css`.
 
 ## Components
 
