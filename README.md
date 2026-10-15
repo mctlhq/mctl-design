@@ -66,7 +66,7 @@ moves under you.
 
 | Path | Moves when | Use for |
 |---|---|---|
-| `https://ui.mctl.ai/0.5.0/{mctl,global,prose}.css` | never | anything shipped to users |
+| `https://ui.mctl.ai/0.6.0/{mctl,global,prose}.css` | never | anything shipped to users |
 | `https://ui.mctl.ai/{mctl,global,prose}.css` | every merge to `main` | previews, internal tools, seeing a token change land |
 | `@mctlhq/css` on GitHub Packages | on a semver tag | builds that already have a Packages token |
 
@@ -74,7 +74,7 @@ All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.
 
-Each sheet names its own version on line 1 (`/* @mctlhq/css 0.5.0 … */`), so a
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.6.0 … */`), so a
 vendored copy records what it was taken from and a mismatch shows up in a diff.
 
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
@@ -83,9 +83,9 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://ui.mctl.ai/0.5.0/mctl.css">
-<link rel="stylesheet" href="https://ui.mctl.ai/0.5.0/global.css">
-<!-- docs / markdown only: https://ui.mctl.ai/0.5.0/prose.css -->
+<link rel="stylesheet" href="https://ui.mctl.ai/0.6.0/mctl.css">
+<link rel="stylesheet" href="https://ui.mctl.ai/0.6.0/global.css">
+<!-- docs / markdown only: https://ui.mctl.ai/0.6.0/prose.css -->
 ```
 
 Bumping to a new version is then a one-line edit made on purpose, not something
@@ -156,3 +156,13 @@ air-gapped builds; prefer the CDN for product apps.
 ## License
 
 Apache-2.0 — see [LICENSE](./LICENSE).
+
+### Public site shell
+
+Landing and documentation adapters consume the `--site-*` variables from the
+same pinned `mctl.css`. Header height is 80px, content width 1400px and gutters
+20px. Wordmarks use Onest 800 at 24px with 2px tracking; navigation uses Onest
+500 at 0.95rem. Load Onest through weight 800 in each consumer. The header uses
+the semantic surface at 80% opacity, a neutral divider and 12px backdrop blur.
+Adapters own framework-specific sidebar and mobile positioning. These tokens
+are additive; they do not change existing component layout automatically.

@@ -52,6 +52,20 @@
   --focus-ring-width: var(--mctl-focus-ring-width);
   --focus-ring-offset: var(--mctl-focus-ring-offset);
 
+  /* Public site shell: shared by the landing site and documentation adapters. */
+  --site-header-height: var(--mctl-layout-site-header-height);
+  --site-header-bg: color-mix(in srgb, var(--surface-bg) 80%, transparent);
+  --site-header-blur: var(--mctl-layout-site-header-blur);
+  --site-header-border: var(--surface-line);
+  --site-content-width: var(--mctl-layout-page-width);
+  --site-gutter: var(--mctl-layout-gutter);
+  --site-wordmark-size: var(--mctl-layout-site-wordmark-size);
+  --site-wordmark-weight: var(--mctl-layout-site-wordmark-weight);
+  --site-wordmark-tracking: var(--mctl-layout-site-wordmark-tracking);
+  --site-wordmark-accent-gap: var(--mctl-layout-site-wordmark-accent-gap);
+  --site-nav-size: var(--mctl-layout-site-nav-size);
+  --site-nav-weight: var(--mctl-layout-site-nav-weight);
+
   /* Type families. */
   --font-display: var(--mctl-typography-font-family-display);
   --font-mono: var(--mctl-typography-font-family-mono);
