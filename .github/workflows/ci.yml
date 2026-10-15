@@ -65,6 +65,12 @@ jobs:
       - name: Build Storybook
         run: pnpm build:storybook
 
+      - name: Check colour contrast
+        # Every text/background pair the components render, per theme and
+        # accent, against WCAG AA. Reads the built tokens, so it follows the
+        # build. A token comment claiming "AA on paper" is not a check.
+        run: pnpm check:contrast
+
       - name: Check lockstep versions
         run: pnpm check:versions
 

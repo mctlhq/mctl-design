@@ -1,4 +1,4 @@
-/* @mctlhq/css 0.5.0 — raw tokens + semantic theme layer. */
+/* @mctlhq/css 0.6.0 — raw tokens + semantic theme layer. */
 :root {
   --mctl-color-ink: #0a0b0d;
   --mctl-color-ink2: #0f1114;
@@ -7,7 +7,7 @@
   --mctl-color-line2: #2a313a;
   --mctl-color-fg: #e6e7e9;
   --mctl-color-fg2: #a4a8ae;
-  --mctl-color-fg3: #6b7079;
+  --mctl-color-fg3: #7d828b;
   --mctl-color-paper: #f1ede4;
   --mctl-color-paper-elevated: #f7f4ec;
   --mctl-color-paper-card: #fffdf8;
@@ -15,6 +15,7 @@
   --mctl-color-paper-fg: #3a3f47;
   --mctl-color-paper-line: #d8d2c4;
   --mctl-color-paper-line-strong: #c4bcae;
+  --mctl-color-paper-fg-subtle: #656a73;
   --mctl-color-terracotta: #e25a3c;
   --mctl-color-terracotta-highlight: #ff8a6a;
   --mctl-color-terracotta-deep: #b83d28;
@@ -24,14 +25,14 @@
   --mctl-color-terracotta-fg-light: #fff8f3;
   --mctl-color-cyan: #1ab3c7;
   --mctl-color-cyan-highlight: #5ed4e0;
-  --mctl-color-cyan-deep: #0e7a8a;
+  --mctl-color-cyan-deep: #017585;
   --mctl-color-cyan-deeper: #0a5c68;
   --mctl-color-cyan-soft: #d4f4f7;
   --mctl-color-cyan-soft-dark: #0c1f23;
   --mctl-color-lime: #bdf24a;
   --mctl-color-lime-highlight: #dcff8c;
-  --mctl-color-lime-deep: #6b8f14;
-  --mctl-color-lime-deeper: #547110;
+  --mctl-color-lime-deep: #527400;
+  --mctl-color-lime-deeper: #3e5e00;
   --mctl-color-lime-soft: #f0f8d4;
   --mctl-color-lime-soft-dark: #202714;
   --mctl-color-lime-fg-light: #f7fce8;
@@ -47,14 +48,20 @@
   --mctl-color-ok: #7cf2a4;
   --mctl-color-warn: #f5a524;
   --mctl-color-bad: #ff6b6b;
-  --mctl-color-ok-deep: #2f7d4a;
-  --mctl-color-warn-deep: #b45309;
+  --mctl-color-ok-deep: #2a7846;
+  --mctl-color-warn-deep: #ae4e00;
   --mctl-color-bad-deep: #c23b3b;
   --mctl-color-syntax-key: #7ec8c8;
   --mctl-color-syntax-string: #c4a35a;
   --mctl-color-syntax-number: #e08b5a;
   --mctl-color-syntax-keyword: #8b7ec8;
-  --mctl-color-syntax-punctuation: #6b7079;
+  --mctl-color-syntax-punctuation: #7d828b;
+  --mctl-color-syntax-key-deep: #287576;
+  --mctl-color-syntax-string-deep: #856515;
+  --mctl-color-syntax-number-deep: #a45521;
+  --mctl-color-syntax-keyword-deep: #6e60a8;
+  --mctl-color-syntax-punctuation-deep: #656a73;
+  --mctl-color-syntax-comment-deep: #656a73;
   --mctl-hue-terracotta-50: #fdf1ee;
   --mctl-hue-terracotta-100: #f6e4dc;
   --mctl-hue-terracotta-200: #f5c4b4;
@@ -102,7 +109,7 @@
   --mctl-surface-dark-line-strong: #2a313a;
   --mctl-surface-dark-fg: #e6e7e9;
   --mctl-surface-dark-fg-muted: #a4a8ae;
-  --mctl-surface-dark-fg-subtle: #6b7079;
+  --mctl-surface-dark-fg-subtle: #7d828b;
   --mctl-surface-light-bg: #f1ede4;
   --mctl-surface-light-elevated: #f7f4ec;
   --mctl-surface-light-card: #fffdf8;
@@ -110,7 +117,7 @@
   --mctl-surface-light-line-strong: #c4bcae;
   --mctl-surface-light-fg: #15181d;
   --mctl-surface-light-fg-muted: #3a3f47;
-  --mctl-surface-light-fg-subtle: #6b7079;
+  --mctl-surface-light-fg-subtle: #656a73;
   --mctl-accent-terracotta-dark-primary: #e25a3c;
   --mctl-accent-terracotta-dark-highlight: #ff8a6a;
   --mctl-accent-terracotta-dark-fg: #0a0b0d;
@@ -131,7 +138,7 @@
   --mctl-accent-cyan-dark-highlight: #5ed4e0;
   --mctl-accent-cyan-dark-fg: #0a0b0d;
   --mctl-accent-cyan-dark-soft: #0c1f23;
-  --mctl-accent-cyan-light-primary: #0e7a8a;
+  --mctl-accent-cyan-light-primary: #017585;
   --mctl-accent-cyan-light-highlight: #0a5c68;
   --mctl-accent-cyan-light-fg: #f1ede4;
   --mctl-accent-cyan-light-soft: #d4f4f7;
@@ -139,8 +146,8 @@
   --mctl-accent-lime-dark-highlight: #dcff8c;
   --mctl-accent-lime-dark-fg: #0a0b0d;
   --mctl-accent-lime-dark-soft: #202714;
-  --mctl-accent-lime-light-primary: #6b8f14;
-  --mctl-accent-lime-light-highlight: #547110;
+  --mctl-accent-lime-light-primary: #527400;
+  --mctl-accent-lime-light-highlight: #3e5e00;
   --mctl-accent-lime-light-fg: #f7fce8;
   --mctl-accent-lime-light-soft: #f0f8d4;
   --mctl-accent-lilac-dark-primary: #b07aff;
@@ -154,15 +161,21 @@
   --mctl-status-dark-ok: #7cf2a4;
   --mctl-status-dark-warn: #f5a524;
   --mctl-status-dark-bad: #ff6b6b;
-  --mctl-status-light-ok: #2f7d4a;
-  --mctl-status-light-warn: #b45309;
+  --mctl-status-light-ok: #2a7846;
+  --mctl-status-light-warn: #ae4e00;
   --mctl-status-light-bad: #c23b3b;
-  --mctl-syntax-key: #7ec8c8;
-  --mctl-syntax-string: #c4a35a;
-  --mctl-syntax-number: #e08b5a;
-  --mctl-syntax-keyword: #8b7ec8;
-  --mctl-syntax-punctuation: #6b7079;
-  --mctl-syntax-comment: #6b7079;
+  --mctl-syntax-dark-key: #7ec8c8;
+  --mctl-syntax-dark-string: #c4a35a;
+  --mctl-syntax-dark-number: #e08b5a;
+  --mctl-syntax-dark-keyword: #8b7ec8;
+  --mctl-syntax-dark-punctuation: #7d828b;
+  --mctl-syntax-dark-comment: #7d828b;
+  --mctl-syntax-light-key: #287576;
+  --mctl-syntax-light-string: #856515;
+  --mctl-syntax-light-number: #a45521;
+  --mctl-syntax-light-keyword: #6e60a8;
+  --mctl-syntax-light-punctuation: #656a73;
+  --mctl-syntax-light-comment: #656a73;
   --mctl-typography-font-family-display: 'Onest', system-ui, -apple-system, sans-serif;
   --mctl-typography-font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   --mctl-typography-font-family-editorial: 'Instrument Serif', Georgia, serif;
@@ -355,12 +368,12 @@
   --status-bad: var(--mctl-status-dark-bad);
 
   /* Syntax. */
-  --syntax-key: var(--mctl-syntax-key);
-  --syntax-string: var(--mctl-syntax-string);
-  --syntax-number: var(--mctl-syntax-number);
-  --syntax-keyword: var(--mctl-syntax-keyword);
-  --syntax-punctuation: var(--mctl-syntax-punctuation);
-  --syntax-comment: var(--mctl-syntax-comment);
+  --syntax-key: var(--mctl-syntax-dark-key);
+  --syntax-string: var(--mctl-syntax-dark-string);
+  --syntax-number: var(--mctl-syntax-dark-number);
+  --syntax-keyword: var(--mctl-syntax-dark-keyword);
+  --syntax-punctuation: var(--mctl-syntax-dark-punctuation);
+  --syntax-comment: var(--mctl-syntax-dark-comment);
 
   /* Elevation. */
   --shadow-sm: var(--mctl-shadow-dark-sm);
@@ -401,6 +414,13 @@
   --status-ok: var(--mctl-status-light-ok);
   --status-warn: var(--mctl-status-light-warn);
   --status-bad: var(--mctl-status-light-bad);
+
+  --syntax-key: var(--mctl-syntax-light-key);
+  --syntax-string: var(--mctl-syntax-light-string);
+  --syntax-number: var(--mctl-syntax-light-number);
+  --syntax-keyword: var(--mctl-syntax-light-keyword);
+  --syntax-punctuation: var(--mctl-syntax-light-punctuation);
+  --syntax-comment: var(--mctl-syntax-light-comment);
 
   --shadow-sm: var(--mctl-shadow-light-sm);
   --shadow-md: var(--mctl-shadow-light-md);

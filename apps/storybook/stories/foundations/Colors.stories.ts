@@ -34,7 +34,7 @@ export const Palette: Story = {
       accents: accentSwatches,
       hues: hueSwatches,
       statuses: flatten(status),
-      syntaxes: Object.entries(syntax),
+      syntaxes: flatten(syntax),
     }),
     template: `
       <div style="display:flex; flex-direction:column; gap:32px; max-width:760px;">
@@ -43,7 +43,7 @@ export const Palette: Story = {
           { title: 'Accents (theme-split)', items: accents },
           { title: 'Hue ramps 50–900', items: hues },
           { title: 'Status', items: statuses },
-          { title: 'Syntax', items: syntaxes },
+          { title: 'Syntax (theme-split)', items: syntaxes },
         ]" :key="group.title">
           <h3 style="font-family:var(--font-mono); text-transform:uppercase;
             letter-spacing:0.12em; font-size:12px; color:var(--surface-fg-subtle);">

@@ -35,12 +35,12 @@
   --status-bad: var(--mctl-status-dark-bad);
 
   /* Syntax. */
-  --syntax-key: var(--mctl-syntax-key);
-  --syntax-string: var(--mctl-syntax-string);
-  --syntax-number: var(--mctl-syntax-number);
-  --syntax-keyword: var(--mctl-syntax-keyword);
-  --syntax-punctuation: var(--mctl-syntax-punctuation);
-  --syntax-comment: var(--mctl-syntax-comment);
+  --syntax-key: var(--mctl-syntax-dark-key);
+  --syntax-string: var(--mctl-syntax-dark-string);
+  --syntax-number: var(--mctl-syntax-dark-number);
+  --syntax-keyword: var(--mctl-syntax-dark-keyword);
+  --syntax-punctuation: var(--mctl-syntax-dark-punctuation);
+  --syntax-comment: var(--mctl-syntax-dark-comment);
 
   /* Elevation. */
   --shadow-sm: var(--mctl-shadow-dark-sm);
@@ -81,6 +81,13 @@
   --status-ok: var(--mctl-status-light-ok);
   --status-warn: var(--mctl-status-light-warn);
   --status-bad: var(--mctl-status-light-bad);
+
+  --syntax-key: var(--mctl-syntax-light-key);
+  --syntax-string: var(--mctl-syntax-light-string);
+  --syntax-number: var(--mctl-syntax-light-number);
+  --syntax-keyword: var(--mctl-syntax-light-keyword);
+  --syntax-punctuation: var(--mctl-syntax-light-punctuation);
+  --syntax-comment: var(--mctl-syntax-light-comment);
 
   --shadow-sm: var(--mctl-shadow-light-sm);
   --shadow-md: var(--mctl-shadow-light-md);

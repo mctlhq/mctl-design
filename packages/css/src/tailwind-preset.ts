@@ -2,7 +2,6 @@ import type { Config } from 'tailwindcss';
 import {
   color,
   hue,
-  syntax,
   space,
   layout,
   radius,
@@ -68,13 +67,14 @@ const preset = {
         ok: 'var(--status-ok)',
         warn: 'var(--status-warn)',
         bad: 'var(--status-bad)',
+        // Theme-aware: the light set is a separate, darker palette.
         syntax: {
-          key: syntax.key,
-          string: syntax.string,
-          number: syntax.number,
-          keyword: syntax.keyword,
-          punctuation: syntax.punctuation,
-          comment: syntax.comment,
+          key: 'var(--syntax-key)',
+          string: 'var(--syntax-string)',
+          number: 'var(--syntax-number)',
+          keyword: 'var(--syntax-keyword)',
+          punctuation: 'var(--syntax-punctuation)',
+          comment: 'var(--syntax-comment)',
         },
       },
       fontFamily: {

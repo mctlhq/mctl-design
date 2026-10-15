@@ -26,6 +26,8 @@ pnpm lint
 pnpm typecheck
 pnpm test             # component contracts + axe (packages/ui, vitest + jsdom)
 pnpm check:versions
+pnpm check:contrast        # text/background pairs per theme and accent meet
+                           # WCAG AA (run after pnpm build)
 pnpm check:license         # README's License section still links to LICENSE,
                            # and every package.json license field matches
 pnpm check:token-version   # a token or generator change needs a version bump,
