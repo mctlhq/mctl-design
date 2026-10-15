@@ -73,6 +73,8 @@
 }
 
 [data-theme='light'] {
+  --site-header-bg: color-mix(in srgb, var(--surface-bg) 80%, transparent);
+  --site-header-border: var(--surface-line);
   --surface-bg: var(--mctl-surface-light-bg);
   --surface-elevated: var(--mctl-surface-light-elevated);
   --surface-card: var(--mctl-surface-light-card);

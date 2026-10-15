@@ -1,7 +1,7 @@
 {
   "name": "@mctlhq/css",
   "version": "0.6.0",
-  "description": "MCTL CSS \u2014 theme variables, global styles, prose styles, Tailwind preset",
+  "description": "MCTL CSS — theme variables, global styles, prose styles, Tailwind preset",
   "license": "Apache-2.0",
   "type": "module",
   "exports": {
@@ -14,9 +14,7 @@
       "import": "./dist/tailwind-preset.js"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

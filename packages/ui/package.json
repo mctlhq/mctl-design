@@ -14,12 +14,8 @@
     },
     "./style.css": "./dist/mctl-ui.css"
   },
-  "files": [
-    "dist"
-  ],
-  "sideEffects": [
-    "*.css"
-  ],
+  "files": ["dist"],
+  "sideEffects": ["*.css"],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

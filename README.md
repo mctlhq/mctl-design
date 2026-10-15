@@ -82,7 +82,7 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://ui.mctl.ai/0.6.0/mctl.css">
 <link rel="stylesheet" href="https://ui.mctl.ai/0.6.0/global.css">
 <!-- docs / markdown only: https://ui.mctl.ai/0.6.0/prose.css -->
@@ -153,11 +153,7 @@ air-gapped builds; prefer the CDN for product apps.
 - **Data & status** — `MTable`, `MStat`, `MBadge`, `MPill`, `MAlert`
 - **Content** — `MCodeBlock`, `MYamlBlock`, `MStepCard`, `MSpecCard`
 
-## License
-
-Apache-2.0 — see [LICENSE](./LICENSE).
-
-### Public site shell
+## Public site shell
 
 Landing and documentation adapters consume the `--site-*` variables from the
 same pinned `mctl.css`. Header height is 80px, content width 1400px and gutters
@@ -166,3 +162,12 @@ same pinned `mctl.css`. Header height is 80px, content width 1400px and gutters
 the semantic surface at 80% opacity, a neutral divider and 12px backdrop blur.
 Adapters own framework-specific sidebar and mobile positioning. These tokens
 are additive; they do not change existing component layout automatically.
+
+The CSS interface is `--site-header-{height,bg,blur,border}`,
+`--site-content-width`, `--site-gutter`,
+`--site-wordmark-{size,weight,tracking,accent-gap}` and
+`--site-nav-{size,weight}`.
+
+## License
+
+Apache-2.0 — see [LICENSE](./LICENSE).
