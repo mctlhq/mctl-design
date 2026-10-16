@@ -19,6 +19,14 @@ export default tseslint.config(
     },
   },
   {
+    // TypeScript already reports undefined names, and knows the DOM types.
+    // eslint-plugin-vue 10 no longer declares browser globals, so core
+    // no-undef flags every `document` / `HTMLElement` in a TS-only codebase.
+    // typescript-eslint recommends turning it off for TS sources.
+    files: ['**/*.ts', '**/*.vue'],
+    rules: { 'no-undef': 'off' },
+  },
+  {
     rules: {
       'vue/multi-word-component-names': 'off',
       // Formatting is owned by Prettier — disable the overlapping vue rules.
