@@ -92,6 +92,9 @@ const expected = {
   'duration-200': 'transition-duration: 200ms',
   'opacity-50': 'opacity: 50%',
   'border-2': 'border-width: 2px',
+  // ...and next to the per-side @utility shapes, physical and logical.
+  'border-t-2': 'border-top-width: 2px',
+  'border-x-2': 'border-inline-width: 2px',
   // --tw-duration is what .transition reads, so this is the order-independent part.
   'duration-base': `--tw-duration: ${ext.transitionDuration.base}`,
   // Tailwind's static max-w-prose (65ch) outranks --spacing-prose and
@@ -129,8 +132,11 @@ const name = (path) => path.filter((k) => k !== 'DEFAULT').join('-');
 const parity = new Map();
 const add = (candidate, key, source) => {
   // Two preset keys yielding one candidate would silently drop one of them.
-  if (parity.has(candidate) && parity.get(candidate)[0] !== key) {
-    throw new Error(`check-generated: ${key} and ${parity.get(candidate)[0]} both map to ${candidate}`);
+  // Reported with everything else rather than thrown, so it hides nothing.
+  const prev = parity.get(candidate);
+  if (prev && prev[0] !== key) {
+    problems.push(`tailwind v4 parity: ${key} and ${prev[0]} both map to ${candidate}`);
+    return;
   }
   parity.set(candidate, [key, source]);
 };
@@ -181,8 +187,14 @@ for (const k of Object.keys(ext.borderWidth)) {
 // v3 also reads theme.opacity as the colour-opacity modifier (bg-accent/disabled).
 // v4 modifiers take a number or (--var), so the README routes these to the raw
 // token, which theme.css must define.
-for (const k of Object.keys(ext.opacity)) {
-  add(`bg-accent/(--mctl-opacity-${kebab(k)})`, `opacity.${k} (modifier)`, `theme:--mctl-opacity-${kebab(k)}`);
+// The tokens are unitless (0.45), which color-mix() rejects through var(), so
+// the README replacement is the numeric modifier; assert it lands on the
+// token's percentage rather than only that the syntax compiles.
+const modifierPct = {};
+for (const [k, v] of Object.entries(ext.opacity)) {
+  const pct = Math.round(Number(v) * 100);
+  modifierPct[`bg-ink/${pct}`] = pct;
+  add(`bg-ink/${pct}`, `opacity.${k} (modifier)`, null);
 }
 for (const k of Object.keys(ext.outlineWidth)) add(`outline-${k}`, `outlineWidth.${k}`, `@utility outline-${k}`);
 for (const k of Object.keys(ext.outlineOffset)) add(`outline-offset-${k}`, `outlineOffset.${k}`, `@utility outline-offset-${k}`);
@@ -216,6 +228,13 @@ for (const [candidate, [key, source]] of parity) {
   const sel = `.${escape(candidate)}`;
   if (!parityCss.includes(`${sel} {`) && !parityCss.includes(`${sel} >`)) {
     problems.push(`tailwind v4 parity: ${key} -> \`${candidate}\` produces no rule`);
+  }
+}
+
+for (const [candidate, pct] of Object.entries(modifierPct)) {
+  const start = parityCss.indexOf(`.${escape(candidate)} {`);
+  if (start !== -1 && !parityCss.slice(start, parityCss.indexOf('}', start)).includes(` ${pct}%`)) {
+    problems.push(`tailwind v4 parity: \`${candidate}\` does not resolve to ${pct}%`);
   }
 }
 

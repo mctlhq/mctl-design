@@ -157,7 +157,7 @@ theme-aware colours (`bg-accent/50`) work. The differences, all deliberate:
 | `max-w-page` | `max-w-pagew` | in v4 `max-w-page` resolves to the page padding |
 | `max-w-prose` | `max-w-(--container-prose)` | `max-w-prose` is Tailwind's built-in 65ch |
 | `divide-y-hairline` … (divide width) | `divide-y-(length:--mctl-border-width-hairline)`; `divide-y-none` is `divide-y-0` | v4 divide widths take a number or a variable, not a named key |
-| `bg-accent/disabled` … (opacity key as modifier) | `bg-accent/(--mctl-opacity-disabled)` | v4 modifiers take a number or a variable, not a named key |
+| `bg-ink/disabled` … (opacity key as modifier) | `bg-ink/45` (the token × 100) | v4 modifiers take a number, not a named key; the `--mctl-opacity-*` tokens are unitless, so `bg-ink/(--mctl-opacity-disabled)` would produce an invalid `color-mix()` |
 
 `duration-*`, `opacity-*`, `border-hairline` / `border-thick` (with the
 per-side `border-b-hairline` … forms) and `outline-focus` /

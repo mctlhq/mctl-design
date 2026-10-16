@@ -29,6 +29,8 @@ concurrency:
 
 permissions:
   contents: read
+  # gh run list, to find main's newest green CI run.
+  actions: read
 
 jobs:
   deploy:
@@ -55,20 +57,24 @@ jobs:
           repositories: mctl-gitops
 
       # workflow_run fires when CI *finishes*, so two quick merges can finish
-      # out of order and the older commit would deploy last. Deploy only
-      # while this commit is still main's tip; a newer commit's own run
-      # covers it otherwise (and holds the deploy if that run is red).
-      - name: Skip if main has moved past this commit
+      # out of order and the older commit would deploy last. Deploy only if
+      # this is main's newest green CI run: an older commit that finishes
+      # after a newer green one is skipped, but a green commit followed by a
+      # red one still deploys, so a red merge cannot strand a published
+      # /<version>/ path behind it.
+      - name: Skip unless this is main's newest green CI run
         id: tip
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          TIP=$(gh api "repos/${{ github.repository }}/commits/main" --jq .sha)
-          if [ "$TIP" = "$SHA" ]; then
+          NEWEST=$(gh run list --repo "${{ github.repository }}" --workflow CI \
+            --branch main --event push --status success --limit 1 \
+            --json headSha --jq '.[0].headSha')
+          if [ "$NEWEST" = "$SHA" ]; then
             echo "current=true" >> "$GITHUB_OUTPUT"
           else
-            echo "main is at $TIP; the run for that commit deploys instead of $SHA"
+            echo "newest green run on main is $NEWEST; it deploys instead of $SHA"
             echo "current=false" >> "$GITHUB_OUTPUT"
           fi
 
