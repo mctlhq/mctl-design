@@ -23,6 +23,14 @@ export const layout = {
   stack: '24px',
   proseWidth: '720px',
   pageWidth: '1400px',
+  siteHeaderHeight: '80px',
+  siteHeaderBlur: '12px',
+  siteWordmarkSize: '24px',
+  siteWordmarkWeight: '800',
+  siteWordmarkTracking: '2px',
+  siteWordmarkAccentGap: '2px',
+  siteNavSize: '0.95rem',
+  siteNavWeight: '500',
 } as const;
 
 export type Space = typeof space;

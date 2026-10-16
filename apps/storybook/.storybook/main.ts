@@ -24,7 +24,7 @@ const config: StorybookConfig = {
     `${head}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">`,
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">`,
   core: {
     // Suppress the default "What's new in Storybook" toast — a leftover
     // upstream artifact, not part of the MCTL showcase.
@@ -44,7 +44,7 @@ const config: StorybookConfig = {
     <meta property="og:image" content="https://ui.mctl.ai/brand/sidebar-dark.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
       :root { --font-display: 'Onest', system-ui, -apple-system, sans-serif; }
       /* Hide "Storybook X.Y.Z" version badge in sidebar footer */
