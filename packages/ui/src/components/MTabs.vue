@@ -56,7 +56,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
 
 <template>
   <div class="m-tabs">
-    <div class="m-tabs__list" role="tablist">
+    <div v-if="tabs.length" class="m-tabs__list" role="tablist">
       <button
         v-for="(tab, i) in tabs"
         :id="tabId(i)"

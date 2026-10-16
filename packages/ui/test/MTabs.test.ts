@@ -83,6 +83,8 @@ describe('MTabs', () => {
   it('does not point the panel at a missing tab when the list is empty', () => {
     const wrapper = mount(MTabs, { props: { tabs: [] } });
     expect(wrapper.find('[role="tabpanel"]').attributes('aria-labelledby')).toBeUndefined();
+    // tablist requires owned tabs; an empty one is not rendered at all.
+    expect(wrapper.find('[role="tablist"]').exists()).toBe(false);
   });
 
   it('has no axe violations', async () => {

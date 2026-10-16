@@ -162,9 +162,16 @@ for (const k of Object.keys(ext.transitionDuration)) add(`duration-${k}`, `trans
 for (const k of Object.keys(ext.opacity)) add(`opacity-${kebab(k)}`, `opacity.${k}`, `@utility opacity-${kebab(k)}`);
 // borderWidth.none is Tailwind's own border-none (border-style: none): no MCTL declaration.
 for (const k of Object.keys(ext.borderWidth)) {
+  // v3 also derives divideWidth from borderWidth (divide-y-hairline). v4 cannot
+  // name a theme key there, so the README routes to the (length:--var) form,
+  // whose variable theme.css must define; divide-*-none is Tailwind's divide-*-0.
   if (k === 'none') {
     add('border-none', 'borderWidth.none', null);
+    for (const side of ['x', 'y']) add(`divide-${side}-0`, `borderWidth.none (divide-${side})`, null);
     continue;
+  }
+  for (const side of ['x', 'y']) {
+    add(`divide-${side}-(length:--mctl-border-width-${k})`, `borderWidth.${k} (divide-${side})`, `theme:--mctl-border-width-${k}`);
   }
   for (const side of ['', 'x', 'y', 't', 'r', 'b', 'l', 's', 'e']) {
     const utility = `border${side && `-${side}`}-${k}`;
@@ -188,6 +195,8 @@ for (const group of Object.keys(ext)) {
   if (!covered.has(group)) problems.push(`tailwind v4 parity: preset group "${group}" is not mapped in check-generated`);
 }
 const parityCss = compiler.build([...parity.keys()]);
+// One preset key can need several candidates (per-side borders, modifiers).
+const presetKeys = new Set([...parity.values()].map(([key]) => key.replace(/ \(.*\)$/, '')));
 // CSS.escape-style: punctuation gets a backslash, a leading digit becomes a
 // code-point escape (2xl -> \32 xl).
 const escape = (c) =>
@@ -203,7 +212,9 @@ for (const [candidate, [key, source]] of parity) {
   }
   // The selector must end where the candidate does: `.bg-ink` is a prefix of
   // `.bg-ink-2`, and `.p-page` of `.p-pagew`.
-  if (!parityCss.includes(`.${escape(candidate)} {`)) {
+  // divide-* rules continue with ` > :not(:last-child)` instead of ` {`.
+  const sel = `.${escape(candidate)}`;
+  if (!parityCss.includes(`${sel} {`) && !parityCss.includes(`${sel} >`)) {
     problems.push(`tailwind v4 parity: ${key} -> \`${candidate}\` produces no rule`);
   }
 }
@@ -239,5 +250,5 @@ if (problems.length) {
   process.exit(1);
 }
 console.log(
-  `check-generated: ${refs} tailwind.css references, ${Object.keys(expected).length} asserted utilities, ${parity.size} preset keys at v4 parity and ${leaves.size} DTCG tokens are consistent.`,
+  `check-generated: ${refs} tailwind.css references, ${Object.keys(expected).length} asserted utilities, ${presetKeys.size} preset keys over ${parity.size} v4 candidates at parity, and ${leaves.size} DTCG tokens are consistent.`,
 );

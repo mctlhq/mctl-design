@@ -156,6 +156,7 @@ theme-aware colours (`bg-accent/50`) work. The differences, all deliberate:
 | `p-5`, `p-10` … (MCTL scale) | `p-mctl-5`, `p-mctl-10` … | keeps Tailwind's own numeric spacing intact |
 | `max-w-page` | `max-w-pagew` | in v4 `max-w-page` resolves to the page padding |
 | `max-w-prose` | `max-w-(--container-prose)` | `max-w-prose` is Tailwind's built-in 65ch |
+| `divide-y-hairline` … (divide width) | `divide-y-(length:--mctl-border-width-hairline)`; `divide-y-none` is `divide-y-0` | v4 divide widths take a number or a variable, not a named key |
 | `bg-accent/disabled` … (opacity key as modifier) | `bg-accent/(--mctl-opacity-disabled)` | v4 modifiers take a number or a variable, not a named key |
 
 `duration-*`, `opacity-*`, `border-hairline` / `border-thick` (with the
