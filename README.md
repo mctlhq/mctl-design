@@ -164,6 +164,8 @@ per-side `border-b-hairline` … forms) and `outline-focus` /
 `outline-offset-focus` keep their v3 names (emitted as `@utility`, since v4
 has no theme namespace for them). `border-none` is
 Tailwind's own, which sets `border-style: none` rather than a zero width.
+`outline-focus` also sets a `solid` style, as Tailwind's `outline-2` does, so
+unlike its v3 namesake it draws without a separate `outline` style utility.
 
 `pnpm check:generated` compiles every v3 preset key against the v4 sheet and
 fails on one that neither works nor appears in this table.

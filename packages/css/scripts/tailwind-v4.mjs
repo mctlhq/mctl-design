@@ -127,7 +127,10 @@ export function tailwindV4Css(t, version) {
   const u = (name, decl) => utilities.push(`@utility ${name} {\n  ${decl};\n}`);
   // Set --tw-duration like Tailwind's own duration-200: .transition reads
   // transition-duration from it, so `transition duration-base` holds no matter
-  // which rule lands later in the sheet.
+  // which rule lands later in the sheet. Registered here because Tailwind
+  // registers it (non-inheriting) only when one of its own duration-<n> is
+  // used; unregistered, duration-base would leak into every descendant's
+  // .transition.
   for (const [k, v] of Object.entries(motion.duration)) {
     u(`duration-${k}`, `--tw-duration: ${v};\n  transition-duration: ${v}`);
   }
@@ -157,7 +160,10 @@ export function tailwindV4Css(t, version) {
       u(`border${side && `-${side}`}-${k}`, `${style}: var(--tw-border-style, solid);\n  ${prop}: ${v}`);
     }
   }
-  u('outline-focus', 'outline-width: var(--focus-ring-width)');
+  // outline-style starts at `none` and preflight does not reset it, so width
+  // alone draws nothing. Same fallback as the borders, as Tailwind's
+  // outline-<n> does, so outline-dashed still composes.
+  u('outline-focus', 'outline-style: var(--tw-outline-style, solid);\n  outline-width: var(--focus-ring-width)');
   u('outline-offset-focus', 'outline-offset: var(--focus-ring-offset)');
 
   return `/* @mctlhq/css ${version} — Tailwind v4 theme. Import after "tailwindcss" and theme.css. */
@@ -167,6 +173,11 @@ ${stat.join('\n')}
 
 @theme inline reference {
 ${runtime.join('\n')}
+}
+
+@property --tw-duration {
+  syntax: "*";
+  inherits: false;
 }
 
 ${utilities.join('\n\n')}

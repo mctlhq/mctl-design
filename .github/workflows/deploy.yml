@@ -70,11 +70,18 @@ jobs:
         run: |
           NEWEST=$(gh run list --repo "${{ github.repository }}" --workflow CI \
             --branch main --event push --status success --limit 1 \
-            --json headSha --jq '.[0].headSha')
+            --json headSha --jq '.[0].headSha // empty')
+          # This run itself is a green run on main, so an empty list is an
+          # API or workflow-name problem, not a newer commit. Fail loudly
+          # rather than skip and leave ui.mctl.ai silently behind main.
+          if [ -z "$NEWEST" ]; then
+            echo "::error::could not determine main's newest green CI run"
+            exit 1
+          fi
           if [ "$NEWEST" = "$SHA" ]; then
             echo "current=true" >> "$GITHUB_OUTPUT"
           else
-            echo "newest green run on main is $NEWEST; it deploys instead of $SHA"
+            echo "::notice::newest green run on main is $NEWEST; it deploys instead of $SHA"
             echo "current=false" >> "$GITHUB_OUTPUT"
           fi
 

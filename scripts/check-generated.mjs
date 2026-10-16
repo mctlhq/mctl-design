@@ -69,10 +69,12 @@ const require = createRequire(join(process.cwd(), 'packages/css/package.json'));
 const { compile } = require('tailwindcss');
 const twIndex = join(dirname(require.resolve('tailwindcss/package.json')), 'index.css');
 const sheets = { tailwindcss: twIndex, './theme.css': THEME, './tailwind.css': TW };
-const compiler = await compile('@import "tailwindcss";\n@import "./theme.css";\n@import "./tailwind.css";', {
+const twEntry = '@import "tailwindcss";\n@import "./theme.css";\n@import "./tailwind.css";';
+const twOptions = {
   base: process.cwd(),
   loadStylesheet: async (id) => ({ path: sheets[id], base: process.cwd(), content: readFileSync(sheets[id], 'utf8') }),
-});
+};
+const compiler = await compile(twEntry, twOptions);
 const { default: preset } = await import(new URL('../packages/css/dist/tailwind-preset.js', import.meta.url));
 const ext = preset.theme.extend;
 const expected = {
@@ -103,7 +105,9 @@ const expected = {
   // Tailwind's static max-w-prose (65ch) outranks --spacing-prose and
   // --container-prose, which is why the README routes to the latter.
   'max-w-prose': 'max-width: 65ch',
-  'outline-focus': 'outline-width: var(--focus-ring-width)',
+  // A lone outline-focus must draw, as Tailwind's own outline-2 does.
+  'outline-focus': 'outline-style: var(--tw-outline-style, solid)',
+  'outline-2': 'outline-style: var(--tw-outline-style)',
 };
 const built = compiler.build(Object.keys(expected));
 for (const [utility, declaration] of Object.entries(expected)) {
@@ -113,6 +117,12 @@ for (const [utility, declaration] of Object.entries(expected)) {
   if (start === -1) problems.push(`tailwind v4: ${utility} produced no rule`);
   else if (end === -1) problems.push(`tailwind v4: cannot delimit the ${utility} rule -- the compiled output format changed`);
   else if (!built.slice(start, end).includes(declaration)) problems.push(`tailwind v4: ${utility} does not contain "${declaration}"`);
+}
+// A fresh compiler, so no Tailwind duration-<n> pulls in its own
+// registration: ours must be there, or duration-base inherits.
+const lone = (await compile(twEntry, twOptions)).build(['duration-base']);
+if (!/@property --tw-duration \{[^}]*inherits: false/.test(lone)) {
+  problems.push('tailwind v4: duration-base without a numeric duration-* leaves --tw-duration unregistered (inheriting)');
 }
 for (const [, name, ref] of built.matchAll(/(--[\w-]+):\s*var\((--[\w-]+)\);/g)) {
   if (name === ref) problems.push(`tailwind v4: compiled output emits self-referencing ${name}`);
