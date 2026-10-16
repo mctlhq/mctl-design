@@ -126,14 +126,19 @@ for (const k of Object.keys(ext.height)) add(`h-${k}`, `height.${k}`, `--spacing
 for (const k of Object.keys(ext.transitionTimingFunction)) add(`ease-${k}`, `transitionTimingFunction.${k}`, `--ease-${k}`);
 // Documented differences (README, "Tailwind -- npm") and @utility families.
 const kebab = (str) => str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-add('max-w-pagew', 'maxWidth.page', '--spacing-pagew');
-add('max-w-(--container-prose)', 'maxWidth.prose', '--container-prose');
+// Hand-mapped groups are still iterated, so a new key in them fails until it
+// is given a v4 mapping here (and a README row if it differs).
+const maxWidthV4 = { page: ['max-w-pagew', '--spacing-pagew'], prose: ['max-w-(--container-prose)', '--container-prose'] };
+for (const k of Object.keys(ext.maxWidth)) {
+  if (maxWidthV4[k]) add(maxWidthV4[k][0], `maxWidth.${k}`, maxWidthV4[k][1]);
+  else problems.push(`tailwind v4 parity: maxWidth.${k} has no v4 mapping in check-generated`);
+}
 for (const k of Object.keys(ext.transitionDuration)) add(`duration-${k}`, `transitionDuration.${k}`, `@utility duration-${k}`);
 for (const k of Object.keys(ext.opacity)) add(`opacity-${kebab(k)}`, `opacity.${k}`, `@utility opacity-${kebab(k)}`);
 // borderWidth.none is Tailwind's own border-none (border-style: none): no MCTL declaration.
 for (const k of Object.keys(ext.borderWidth)) add(`border-${k}`, `borderWidth.${k}`, k === 'none' ? null : `@utility border-${k}`);
-add('outline-focus', 'outlineWidth.focus', '@utility outline-focus');
-add('outline-offset-focus', 'outlineOffset.focus', '@utility outline-offset-focus');
+for (const k of Object.keys(ext.outlineWidth)) add(`outline-${k}`, `outlineWidth.${k}`, `@utility outline-${k}`);
+for (const k of Object.keys(ext.outlineOffset)) add(`outline-offset-${k}`, `outlineOffset.${k}`, `@utility outline-offset-${k}`);
 const covered = new Set([
   'colors', 'fontFamily', 'fontWeight', 'fontSize', 'letterSpacing', 'spacing', 'borderRadius',
   'boxShadow', 'screens', 'width', 'height', 'transitionTimingFunction', 'maxWidth',
@@ -154,7 +159,9 @@ for (const [candidate, [key, source]] of parity) {
   } else if (source?.startsWith('@utility') && !tw.includes(`${source} {`)) {
     problems.push(`tailwind v4 parity: ${key} -> tailwind.css has no ${source}`);
   }
-  if (!parityCss.includes(`.${escape(candidate)}`)) {
+  // The selector must end where the candidate does: `.bg-ink` is a prefix of
+  // `.bg-ink-2`, and `.p-page` of `.p-pagew`.
+  if (!parityCss.includes(`.${escape(candidate)} {`)) {
     problems.push(`tailwind v4 parity: ${key} -> \`${candidate}\` produces no rule`);
   }
 }
