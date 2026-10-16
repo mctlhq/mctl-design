@@ -73,6 +73,8 @@ const compiler = await compile('@import "tailwindcss";\n@import "./theme.css";\n
   base: process.cwd(),
   loadStylesheet: async (id) => ({ path: sheets[id], base: process.cwd(), content: readFileSync(sheets[id], 'utf8') }),
 });
+const { default: preset } = await import(new URL('../packages/css/dist/tailwind-preset.js', import.meta.url));
+const ext = preset.theme.extend;
 const expected = {
   'bg-surface-card': 'background-color: var(--surface-card)',
   'text-accent': 'color: var(--accent)',
@@ -91,7 +93,10 @@ const expected = {
   'opacity-50': 'opacity: 50%',
   'border-2': 'border-width: 2px',
   // --tw-duration is what .transition reads, so this is the order-independent part.
-  'duration-base': '--tw-duration: 200ms',
+  'duration-base': `--tw-duration: ${ext.transitionDuration.base}`,
+  // Tailwind's static max-w-prose (65ch) outranks --spacing-prose and
+  // --container-prose, which is why the README routes to the latter.
+  'max-w-prose': 'max-width: 65ch',
   'outline-focus': 'outline-width: var(--focus-ring-width)',
 };
 const built = compiler.build(Object.keys(expected));
@@ -112,8 +117,6 @@ for (const [, name, ref] of built.matchAll(/(--[\w-]+):\s*var\((--[\w-]+)\);/g))
 // the documented v4 replacement must work instead. Unknown utilities compile
 // to nothing without a warning, so a dropped family would otherwise go
 // unnoticed by everyone but the consumer.
-const { default: preset } = await import(new URL('../packages/css/dist/tailwind-preset.js', import.meta.url));
-const ext = preset.theme.extend;
 const flat = (obj, prefix = []) =>
   Object.entries(obj).flatMap(([k, v]) =>
     v && typeof v === 'object' && !Array.isArray(v) ? flat(v, [...prefix, k]) : [[...prefix, k]],
