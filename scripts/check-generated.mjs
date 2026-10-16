@@ -103,30 +103,37 @@ const flat = (obj, prefix = []) =>
     v && typeof v === 'object' && !Array.isArray(v) ? flat(v, [...prefix, k]) : [[...prefix, k]],
   );
 const name = (path) => path.filter((k) => k !== 'DEFAULT').join('-');
-const parity = new Map(); // candidate -> preset key it stands for
-const add = (candidate, key) => parity.set(candidate, key);
-for (const p of flat(ext.colors)) add(`bg-${name(p)}`, `colors.${p.join('.')}`);
-for (const k of Object.keys(ext.fontFamily)) add(`font-${k}`, `fontFamily.${k}`);
-for (const k of Object.keys(ext.fontWeight)) add(`font-${k}`, `fontWeight.${k}`);
-for (const k of Object.keys(ext.fontSize)) add(`text-${k}`, `fontSize.${k}`);
-for (const k of Object.keys(ext.letterSpacing)) add(`tracking-${k}`, `letterSpacing.${k}`);
-for (const k of Object.keys(ext.spacing)) add(/^\d+$/.test(k) ? `p-mctl-${k}` : `p-${k}`, `spacing.${k}`);
-for (const k of Object.keys(ext.borderRadius)) add(`rounded-${k}`, `borderRadius.${k}`);
-for (const k of Object.keys(ext.boxShadow)) add(`shadow-${k}`, `boxShadow.${k}`);
-for (const k of Object.keys(ext.screens)) add(`${k}:p-1`, `screens.${k}`);
-for (const k of Object.keys(ext.width)) add(`w-${k}`, `width.${k}`);
-for (const k of Object.keys(ext.height)) add(`h-${k}`, `height.${k}`);
-for (const k of Object.keys(ext.transitionTimingFunction)) add(`ease-${k}`, `transitionTimingFunction.${k}`);
-// Documented differences (README, "Tailwind -- npm"): the v4 replacement.
+// candidate -> [preset key, what tailwind.css must itself declare for it]. The
+// declaration matters as much as the compile: v4's default theme already has
+// rounded-sm, bg-lime-500, text-xs, sm: and friends, so those compile with
+// Tailwind's values even if this sheet stopped defining MCTL's.
+const parity = new Map();
+const add = (candidate, key, source) => parity.set(candidate, [key, source]);
+for (const p of flat(ext.colors)) add(`bg-${name(p)}`, `colors.${p.join('.')}`, `--color-${name(p)}`);
+for (const k of Object.keys(ext.fontFamily)) add(`font-${k}`, `fontFamily.${k}`, `--font-${k}`);
+for (const k of Object.keys(ext.fontWeight)) add(`font-${k}`, `fontWeight.${k}`, `--font-weight-${k}`);
+for (const k of Object.keys(ext.fontSize)) add(`text-${k}`, `fontSize.${k}`, `--text-${k}`);
+for (const k of Object.keys(ext.letterSpacing)) add(`tracking-${k}`, `letterSpacing.${k}`, `--tracking-${k}`);
+for (const k of Object.keys(ext.spacing)) {
+  const key = /^\d+$/.test(k) ? `mctl-${k}` : k;
+  add(`p-${key}`, `spacing.${k}`, `--spacing-${key}`);
+}
+for (const k of Object.keys(ext.borderRadius)) add(`rounded-${k}`, `borderRadius.${k}`, `--radius-${k}`);
+for (const k of Object.keys(ext.boxShadow)) add(`shadow-${k}`, `boxShadow.${k}`, `--shadow-${k}`);
+for (const k of Object.keys(ext.screens)) add(`${k}:p-1`, `screens.${k}`, `--breakpoint-${k}`);
+for (const k of Object.keys(ext.width)) add(`w-${k}`, `width.${k}`, `--spacing-${k}`);
+for (const k of Object.keys(ext.height)) add(`h-${k}`, `height.${k}`, `--spacing-${k}`);
+for (const k of Object.keys(ext.transitionTimingFunction)) add(`ease-${k}`, `transitionTimingFunction.${k}`, `--ease-${k}`);
+// Documented differences (README, "Tailwind -- npm") and @utility families.
 const kebab = (str) => str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-add('max-w-pagew', 'maxWidth.page');
-add('max-w-(--container-prose)', 'maxWidth.prose');
-for (const k of Object.keys(ext.transitionDuration)) add(`duration-${k}`, `transitionDuration.${k}`);
-for (const k of Object.keys(ext.opacity)) add(`opacity-${kebab(k)}`, `opacity.${k}`);
-// borderWidth.none is Tailwind's own border-none (border-style: none).
-for (const k of Object.keys(ext.borderWidth)) add(`border-${k}`, `borderWidth.${k}`);
-add('outline-focus', 'outlineWidth.focus');
-add('outline-offset-focus', 'outlineOffset.focus');
+add('max-w-pagew', 'maxWidth.page', '--spacing-pagew');
+add('max-w-(--container-prose)', 'maxWidth.prose', '--container-prose');
+for (const k of Object.keys(ext.transitionDuration)) add(`duration-${k}`, `transitionDuration.${k}`, `@utility duration-${k}`);
+for (const k of Object.keys(ext.opacity)) add(`opacity-${kebab(k)}`, `opacity.${k}`, `@utility opacity-${kebab(k)}`);
+// borderWidth.none is Tailwind's own border-none (border-style: none): no MCTL declaration.
+for (const k of Object.keys(ext.borderWidth)) add(`border-${k}`, `borderWidth.${k}`, k === 'none' ? null : `@utility border-${k}`);
+add('outline-focus', 'outlineWidth.focus', '@utility outline-focus');
+add('outline-offset-focus', 'outlineOffset.focus', '@utility outline-offset-focus');
 const covered = new Set([
   'colors', 'fontFamily', 'fontWeight', 'fontSize', 'letterSpacing', 'spacing', 'borderRadius',
   'boxShadow', 'screens', 'width', 'height', 'transitionTimingFunction', 'maxWidth',
@@ -140,7 +147,13 @@ const parityCss = compiler.build([...parity.keys()]);
 // code-point escape (2xl -> \32 xl).
 const escape = (c) =>
   c.replace(/[^a-zA-Z0-9_-]/g, (ch) => `\\${ch}`).replace(/^(\d)/, (d) => `\\3${d} `);
-for (const [candidate, key] of parity) {
+const declared = new Set([...tw.matchAll(/^\s*(--[\w-]+)\s*:/gm)].map((m) => m[1]));
+for (const [candidate, [key, source]] of parity) {
+  if (source?.startsWith('--') && !declared.has(source)) {
+    problems.push(`tailwind v4 parity: ${key} -> tailwind.css does not declare ${source}`);
+  } else if (source?.startsWith('@utility') && !tw.includes(`${source} {`)) {
+    problems.push(`tailwind v4 parity: ${key} -> tailwind.css has no ${source}`);
+  }
   if (!parityCss.includes(`.${escape(candidate)}`)) {
     problems.push(`tailwind v4 parity: ${key} -> \`${candidate}\` produces no rule`);
   }
