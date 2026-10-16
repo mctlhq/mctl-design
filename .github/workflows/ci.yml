@@ -73,6 +73,11 @@ jobs:
         # build. A token comment claiming "AA on paper" is not a check.
         run: pnpm check:contrast
 
+      - name: Check generated token exports
+        # tailwind.css (Tailwind v4 theme) and tokens.dtcg.json are built by
+        # string assembly; nothing else reads them before a consumer does.
+        run: pnpm check:generated
+
       - name: Check lockstep versions
         run: pnpm check:versions
 

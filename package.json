@@ -25,6 +25,7 @@
     "check:license": "node scripts/check-license.mjs",
     "check:token-version": "node scripts/check-token-version-bump.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
+    "check:generated": "node scripts/check-generated.mjs",
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {

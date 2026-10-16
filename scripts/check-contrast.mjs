@@ -9,7 +9,14 @@
 //
 //   node scripts/check-contrast.mjs            # gate
 //   node scripts/check-contrast.mjs --report   # print every pair
-import { tokens } from '../packages/tokens/dist/index.js';
+let tokens;
+try {
+  ({ tokens } = await import('../packages/tokens/dist/index.js'));
+} catch (error) {
+  if (error?.code !== 'ERR_MODULE_NOT_FOUND') throw error;
+  console.error('check-contrast: packages/tokens/dist is missing -- run `pnpm build` first.');
+  process.exit(1);
+}
 
 const TEXT = 4.5; // WCAG 1.4.3, normal-size text
 
@@ -57,6 +64,9 @@ for (const theme of ['dark', 'light']) {
     if (name === 'vermilion') continue;
     add(`${theme} accent.${name}.fg on primary`, a[theme].fg, a[theme].primary);
     add(`${theme} accent.${name}.fg on highlight`, a[theme].fg, a[theme].highlight);
+    // The soft tint is a background too (bg-accent-soft badges and pills).
+    add(`${theme} accent.${name}.primary on soft`, a[theme].primary, a[theme].soft);
+    add(`${theme} surface.fg on accent.${name}.soft`, s.fg, a[theme].soft);
   }
 
   // Code renders on the card surface (MCodeBlock, MYamlBlock, prose code).

@@ -14,10 +14,13 @@ withDefaults(
     tabs: MTgTab[];
     /** Apply safe-area-inset-bottom padding below the bar. */
     safeArea?: boolean;
-    /** Accessible name for the navigation landmark. */
+    /**
+     * Accessible name for the navigation landmark. Screen readers append
+     * "navigation", so name which one it is rather than repeating the role.
+     */
     ariaLabel?: string;
   }>(),
-  { safeArea: true, ariaLabel: 'Navigation' },
+  { safeArea: true, ariaLabel: 'Sections' },
 );
 
 // v-model: the active tab key. Kept locally when no v-model is bound, so the

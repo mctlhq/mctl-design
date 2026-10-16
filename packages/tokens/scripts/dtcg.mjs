@@ -7,8 +7,11 @@
 // than resolved hex, so a DTCG consumer (Style Dictionary, Terrazzo, Tokens
 // Studio / Figma) sees the same primitive -> semantic graph the TypeScript
 // sources express. The TS objects hold resolved strings, so the alias is
-// recovered by value: a hex is pointed back at the first primitive declared
-// with it. Values the format has no type for (clamp(), em letter spacing,
+// recovered by value. When several primitives share a hex, the one named
+// <group><Key> wins (syntax.dark.punctuation -> color.syntaxPunctuation, not
+// color.fg3, declared first with the same value); otherwise the first declared
+// does. A by-value recovery can still pick a twin the source did not name;
+// tokens.dtcg.json is checked for dangling aliases, not for that. Values the format has no type for (clamp(), em letter spacing,
 // "none") keep their CSS text in $value with no $type, and are marked under
 // $extensions so a tool can skip them deliberately rather than choke.
 
@@ -49,7 +52,9 @@ function leaf(path, value, aliases) {
   }
   const v = String(value);
   if (HEX.test(v)) {
-    const ref = ALIASED_GROUPS.has(group) ? aliases.get(v.toLowerCase()) : undefined;
+    const candidates = ALIASED_GROUPS.has(group) ? aliases.get(v.toLowerCase()) : undefined;
+    const named = group + path.at(-1).charAt(0).toUpperCase() + path.at(-1).slice(1);
+    const ref = candidates && (candidates.find((key) => key === named) ?? candidates[0]);
     return { $type: 'color', $value: ref ? `{color.${ref}}` : colorValue(v) };
   }
   if (v === '0') return { $type: 'dimension', $value: px(0) };
@@ -77,13 +82,14 @@ function leaf(path, value, aliases) {
 }
 
 export function toDtcg(tokens) {
-  // First primitive declared with each hex. vermilion* are compat aliases of
-  // terracotta and must never be what a semantic token points at.
+  // Every primitive declared with each hex, in declaration order. vermilion*
+  // are compat aliases of terracotta and must never be what a semantic token
+  // points at.
   const aliases = new Map();
   for (const [key, hex] of Object.entries(tokens.color)) {
     if (key.startsWith('vermilion')) continue;
     const k = hex.toLowerCase();
-    if (!aliases.has(k)) aliases.set(k, key);
+    aliases.set(k, [...(aliases.get(k) ?? []), key]);
   }
 
   const walk = (obj, path) => {

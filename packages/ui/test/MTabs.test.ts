@@ -61,6 +61,15 @@ describe('MTabs', () => {
     );
   });
 
+  it('falls back to the first tab when the bound value matches none', () => {
+    const wrapper = mount(MTabs, { props: { tabs, modelValue: 'gone' } });
+    expect(selected(wrapper)).toBe('One');
+    expect(wrapper.findAll('[role="tab"][tabindex="0"]')).toHaveLength(1);
+    expect(wrapper.find('[role="tabpanel"]').attributes('aria-labelledby')).toBe(
+      wrapper.find('[role="tab"][aria-selected="true"]').attributes('id'),
+    );
+  });
+
   it('has no axe violations', async () => {
     const wrapper = mount(MTabs, { props: { tabs }, attachTo: document.body });
     await expectNoAxeViolations(wrapper.element);

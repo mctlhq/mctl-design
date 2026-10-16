@@ -21,19 +21,25 @@ const isNative = computed(() => props.as === 'button');
 
 // A disabled non-button (a link, a RouterLink) cannot use the `disabled`
 // attribute, and `pointer-events: none` alone leaves it focusable and
-// Enter-activatable. Render it as a plain <a> with no href/to and no click
-// handler, out of the tab order -- the standard disabled-link placeholder.
-const tag = computed(() =>
-  props.disabled && typeof props.as !== 'string' ? 'a' : props.as,
-);
+// Enter-activatable. Render it as a plain placeholder with no href/to, no
+// event listeners, out of the tab order. Only a plain HTML tag is kept as is:
+// a component -- passed as an object or by name, "RouterLink" -- may require
+// the very prop being stripped (RouterLink throws without `to`), so it falls
+// back to <a>.
+const PLAIN_TAGS = new Set(['a', 'span', 'div']);
+const tag = computed(() => {
+  if (!props.disabled || isNative.value) return props.as;
+  return typeof props.as === 'string' && PLAIN_TAGS.has(props.as) ? props.as : 'a';
+});
 
 const bindings = computed(() => {
   if (isNative.value) {
     return { ...attrs, type: props.type, disabled: props.disabled || undefined };
   }
   if (!props.disabled) return attrs;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { href, to, onClick, ...rest } = attrs;
+  const rest = Object.fromEntries(
+    Object.entries(attrs).filter(([key]) => key !== 'href' && key !== 'to' && !/^on[A-Z]/.test(key)),
+  );
   return { ...rest, tabindex: -1, 'aria-disabled': 'true' };
 });
 </script>

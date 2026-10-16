@@ -23,13 +23,14 @@ const uid = getCurrentInstance()?.uid ?? 0;
 const tabId = (index: number) => `m-tab-${uid}-${index}`;
 const panelId = `m-tabpanel-${uid}`;
 
-const active = computed(() => model.value || props.tabs[0]?.value || '');
-const activeIndex = computed(() =>
-  Math.max(
-    0,
-    props.tabs.findIndex((tab) => tab.value === active.value),
-  ),
-);
+// Resolved through the index, so a value that matches no tab (a stale
+// persisted key, a tab removed after navigation) falls back to the first tab
+// instead of leaving every tab at tabindex="-1" and the list unreachable.
+const activeIndex = computed(() => {
+  const i = props.tabs.findIndex((tab) => tab.value === model.value);
+  return i === -1 ? 0 : i;
+});
+const active = computed(() => props.tabs[activeIndex.value]?.value ?? '');
 
 function select(value: string) {
   model.value = value;

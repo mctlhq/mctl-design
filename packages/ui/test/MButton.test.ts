@@ -61,6 +61,28 @@ describe('MButton', () => {
     expect(disabled.attributes('href')).toBeUndefined();
   });
 
+  it('falls back to <a> for a disabled component passed by name', () => {
+    const wrapper = mount(MButton, {
+      props: { as: 'RouterLink', disabled: true },
+      attrs: { to: '/x' },
+    });
+    expect(wrapper.element.tagName).toBe('A');
+    expect(wrapper.attributes('to')).toBeUndefined();
+  });
+
+  it('drops every listener on a disabled link, not only onClick', async () => {
+    const onClickCapture = vi.fn();
+    const onKeydown = vi.fn();
+    const wrapper = mount(MButton, {
+      props: { as: 'a', disabled: true },
+      attrs: { href: '/next', onClickCapture, onKeydown },
+    });
+    await wrapper.trigger('click');
+    await wrapper.trigger('keydown', { key: 'Enter' });
+    expect(onClickCapture).not.toHaveBeenCalled();
+    expect(onKeydown).not.toHaveBeenCalled();
+  });
+
   it('keeps consumer classes alongside its own', () => {
     const wrapper = mount(MButton, { attrs: { class: 'extra' } });
     expect(wrapper.classes()).toEqual(expect.arrayContaining(['m-button', 'extra']));
