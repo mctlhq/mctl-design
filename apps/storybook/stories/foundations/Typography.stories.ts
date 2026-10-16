@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { fontFamily, fontWeight, fontSize, text } from '@mctlhq/tokens';
+import { fontFamily, fontWeight, fontSize, text, publicText } from '@mctlhq/tokens';
 
 const meta: Meta = {
   title: 'Foundations/Typography',
@@ -15,9 +15,18 @@ export const Scale: Story = {
       weights: Object.entries(fontWeight),
       uiSizes: Object.entries(fontSize).filter(([, v]) => !String(v).includes('clamp')),
       styles: Object.entries(text),
+      publicStyles: Object.entries(publicText),
     }),
     template: `
       <div style="display:flex; flex-direction:column; gap:40px; max-width:760px;">
+        <section>
+          <h2>Public websites and documentation</h2>
+          <p>Onest for UI and reading; JetBrains Mono for code. Article text remains 16px with 1.75 leading.</p>
+          <div v-for="[name, style] in publicStyles" :key="name"
+            :style="{ fontFamily: name === 'code' ? 'var(--font-mono)' : 'var(--font-display)', fontSize: style.size, fontWeight: style.weight, lineHeight: style.leading, letterSpacing: style.tracking, marginBottom: '16px' }">
+            {{ name }} — Deploy services with a clear, readable interface.
+          </div>
+        </section>
         <section>
           <h3 style="font-family:var(--font-mono); text-transform:uppercase;
             letter-spacing:0.12em; font-size:12px; color:var(--surface-fg-subtle);">Type scale</h3>
