@@ -84,8 +84,15 @@ describe('MTabs', () => {
     expect(updates).toEqual(['two words']);
     expect(selected(wrapper)).toBe('One');
     expect(document.activeElement?.textContent?.trim()).toBe('Two');
-    await wrapper.setProps({ modelValue: 'two words' });
-    expect(selected(wrapper)).toBe('Two');
+    // Still unapplied: the next press steps from the focused tab, not the
+    // selected one, so roving advances instead of re-emitting the same value.
+    await wrapper.findAll('[role="tab"]')[1].trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+    expect(updates).toEqual(['two words', 'three']);
+    expect(document.activeElement?.textContent?.trim()).toBe('Three');
+    // The parent catches up with the latest emit; focus is already there.
+    await wrapper.setProps({ modelValue: 'three' });
+    expect(selected(wrapper)).toBe('Three');
     expect(document.activeElement?.getAttribute('tabindex')).toBe('0');
     wrapper.unmount();
   });
