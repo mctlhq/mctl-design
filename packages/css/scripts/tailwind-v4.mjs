@@ -130,7 +130,11 @@ export function tailwindV4Css(t, version) {
   // which rule lands later in the sheet. Registered here because Tailwind
   // registers it (non-inheriting) only when one of its own duration-<n> is
   // used; unregistered, duration-base would leak into every descendant's
-  // .transition.
+  // .transition. @property only: on engines without it (Safari < 16.4,
+  // Firefox < 128) the value still inherits unless the build also uses a
+  // Tailwind duration-<n>, whose `--tw-*: initial` reset then covers it. We
+  // do not emit that reset ourselves: a `@layer properties` first declared
+  // here would order after `utilities` and override duration-base itself.
   for (const [k, v] of Object.entries(motion.duration)) {
     u(`duration-${k}`, `--tw-duration: ${v};\n  transition-duration: ${v}`);
   }

@@ -39,7 +39,7 @@ let refs = 0;
 for (const [, options, body] of tw.matchAll(/@theme([^{]*)\{([^}]*)\}/g)) {
   const emitted = !/\breference\b/.test(options);
   for (const [, name, value] of body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
-    for (const [, ref] of value.matchAll(/var\((--[\w-]+)\)/g)) {
+    for (const [, ref] of value.matchAll(/var\((--[\w-]+)\s*[,)]/g)) {
       refs++;
       if (ref === name && emitted) problems.push(`${TW}: ${name} references itself in an emitted @theme block`);
       else if (ref !== name && !themeVars.has(ref)) problems.push(`${TW}: ${name} uses ${ref}, which theme.css does not define`);
@@ -50,7 +50,7 @@ for (const [, options, body] of tw.matchAll(/@theme([^{]*)\{([^}]*)\}/g)) {
 
 // @utility blocks sit outside @theme; their var() references must resolve too.
 for (const [, body] of tw.matchAll(/@utility [\w-]+\s*\{([^}]*)\}/g)) {
-  for (const [, ref] of body.matchAll(/var\((--[\w-]+)\)/g)) {
+  for (const [, ref] of body.matchAll(/var\((--[\w-]+)\s*[,)]/g)) {
     // --tw-* are Tailwind's own registered properties, not ours to define.
     if (ref.startsWith('--tw-')) continue;
     refs++;
@@ -106,17 +106,22 @@ const expected = {
   // --container-prose, which is why the README routes to the latter.
   'max-w-prose': 'max-width: 65ch',
   // A lone outline-focus must draw, as Tailwind's own outline-2 does.
-  'outline-focus': 'outline-style: var(--tw-outline-style, solid)',
+  'outline-focus': ['outline-style: var(--tw-outline-style, solid)', 'outline-width: var(--focus-ring-width)'],
+  'outline-offset-focus': 'outline-offset: var(--focus-ring-offset)',
   'outline-2': 'outline-style: var(--tw-outline-style)',
 };
 const built = compiler.build(Object.keys(expected));
-for (const [utility, declaration] of Object.entries(expected)) {
+for (const [utility, declarations] of Object.entries(expected)) {
   const selector = `.${utility.replace('/', '\\/')} {`;
   const start = built.indexOf(selector);
   const end = start === -1 ? -1 : built.indexOf('\n  }', start);
   if (start === -1) problems.push(`tailwind v4: ${utility} produced no rule`);
   else if (end === -1) problems.push(`tailwind v4: cannot delimit the ${utility} rule -- the compiled output format changed`);
-  else if (!built.slice(start, end).includes(declaration)) problems.push(`tailwind v4: ${utility} does not contain "${declaration}"`);
+  else {
+    for (const declaration of [declarations].flat()) {
+      if (!built.slice(start, end).includes(declaration)) problems.push(`tailwind v4: ${utility} does not contain "${declaration}"`);
+    }
+  }
 }
 // A fresh compiler, so no Tailwind duration-<n> pulls in its own
 // registration: ours must be there, or duration-base inherits.
