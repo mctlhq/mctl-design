@@ -39,6 +39,9 @@ jobs:
       # does not declare. A gate that has to be bypassed on its first run
       # teaches the bypass, so it sits one level above what is actually open.
       # See CONTRIBUTING.md -> Dependency overrides for the full condition.
+      # Advisories with no fix anywhere are skipped only through
+      # pnpm.auditConfig.ignoreGhsas, each one listed with its reason under
+      # CONTRIBUTING.md -> Audit exceptions.
       #
       # Placed right after the install because that is all it needs, and
       # because it is the one step here that can go red with no change to
