@@ -54,7 +54,26 @@ jobs:
           owner: mctlhq
           repositories: mctl-gitops
 
+      # workflow_run fires when CI *finishes*, so two quick merges can finish
+      # out of order and the older commit would deploy last. Deploy only
+      # while this commit is still main's tip; a newer commit's own run
+      # covers it otherwise (and holds the deploy if that run is red).
+      - name: Skip if main has moved past this commit
+        id: tip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          TIP=$(gh api "repos/${{ github.repository }}/commits/main" --jq .sha)
+          if [ "$TIP" = "$SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "main is at $TIP; the run for that commit deploys instead of $SHA"
+            echo "current=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Dispatch centralized release-deploy (SHA-tagged image)
+        if: steps.tip.outputs.current == 'true'
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
           SHA: ${{ github.event.workflow_run.head_sha }}

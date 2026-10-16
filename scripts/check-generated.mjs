@@ -48,6 +48,14 @@ for (const [, options, body] of tw.matchAll(/@theme([^{]*)\{([^}]*)\}/g)) {
   }
 }
 
+// @utility blocks sit outside @theme; their var() references must resolve too.
+for (const [, body] of tw.matchAll(/@utility [\w-]+\s*\{([^}]*)\}/g)) {
+  for (const [, ref] of body.matchAll(/var\((--[\w-]+)\)/g)) {
+    refs++;
+    if (!themeVars.has(ref)) problems.push(`${TW}: an @utility uses ${ref}, which theme.css does not define`);
+  }
+}
+
 // Zero references checked would read exactly like all references passing:
 // a parser that stopped matching the generator's output must fail, not pass.
 if (refs === 0) problems.push(`${TW}: no var() references found -- the @theme parser no longer matches this file`);
@@ -75,6 +83,11 @@ const expected = {
   'max-w-pagew': 'max-width: var(--spacing-pagew)',
   // The MCTL scale must not clobber Tailwind's own numeric keys.
   'p-5': 'padding: calc(var(--spacing) * 5)',
+  // The @utility families sit in namespaces Tailwind owns; its numeric
+  // utilities there must keep working.
+  'duration-200': 'transition-duration: 200ms',
+  'opacity-50': 'opacity: 50%',
+  'border-2': 'border-width: 2px',
   'duration-base': 'transition-duration: 200ms',
   'outline-focus': 'outline-width: var(--focus-ring-width)',
 };
