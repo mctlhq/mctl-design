@@ -147,8 +147,10 @@ will say so.
 
 `@mctlhq/css` keeps a `tailwindcss` devDependency only for the type behind
 `satisfies Partial<Config>` in `src/tailwind-preset.ts`, the one check on the
-preset's shape. The devDependency is on 4 while the peer is `^3.4.0`:
-installing tailwindcss 3 brings `braces@3`, whose advisory
+preset's shape. The peer is `^3.4.0 || ^4.0.0` -- v3 consumers take the JS
+preset, v4 consumers take `tailwind.css` -- but the preset itself is a v3
+preset, and the devDependency is on 4: installing tailwindcss 3 brings
+`braces@3`, whose advisory
 (GHSA-vfj7-8cjw-p6xm, `<= 3.0.3`) has no patched release. v4 still exports
 `Config` as its legacy JS-config type (`UserConfig`, kept for `@config`), the
 v3 shape, so the check still runs, but against v4's copy: a key v4 accepts
