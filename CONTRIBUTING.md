@@ -84,7 +84,6 @@ or above the floor.
 | `js-yaml@4` | prototype pollution / DoS |
 | `nanoid@3` | predictable IDs on non-integer input |
 | `postcss@8` | parsing DoS |
-| `postcss-selector-parser@6` | uncontrolled AST recursion |
 | `source-map-js@1` | GHSA on `<1.2.2`, reached through vite's postcss |
 | `ws@8` | DoS on excessive headers |
 
@@ -128,6 +127,19 @@ copy, `esbuild@0.25.12` under `storybook`, which is outside the affected range
 and is not what keeps this open. Raise the gate to `low` once `tsup` widens —
 and re-read `pnpm audit`'s paths first, because the second copy is the one
 that would make that assumption wrong for a future advisory.
+
+### Audit exceptions
+
+`pnpm.auditConfig.ignoreGhsas` in the root `package.json` lists advisories the
+audit gate skips. Each entry needs every one of these: no patched release
+exists in any version line the tree can use, the package does not reach a
+published `@mctlhq/*` package or the nginx image, and the maintainer approved
+it. Re-check each entry whenever its parent releases, and remove it once a fix
+can be resolved.
+
+| GHSA | Package | Why it is excepted |
+| --- | --- | --- |
+| `GHSA-hp3w-g68c-fv3c` | `sprintf-js@1.0.3` (DoS on unbounded precision specifiers) | Reached only through `@microsoft/api-extractor` → `@rushstack/ts-command-line` → `argparse@1`, pulled in by `vite-plugin-dts` (builds `@mctlhq/ui`'s `.d.ts`) and `tsup`. Every `sprintf-js` release is affected, and the latest api-extractor (7.59.4) still pins `argparse ~1.0.9`. Build-time only, fed our own sources, so the input that triggers it is not reachable. Drop when rushstack moves off `argparse@1`. |
 
 ## The vite toolchain
 
