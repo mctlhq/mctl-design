@@ -8,8 +8,8 @@ preset, and Vue 3 UI components, plus a Storybook showcase deployed at
 
 | Package | Description | Framework |
 |---|---|---|
-| `@mctlhq/tokens` | Design tokens — colors, surfaces, accents, typography, spacing | agnostic |
-| `@mctlhq/css` | CSS variables, global styles, prose styles, Tailwind preset | agnostic |
+| `@mctlhq/tokens` | Design tokens — colors, surfaces, accents, typography, spacing (TS, CSS, JSON, DTCG) | agnostic |
+| `@mctlhq/css` | CSS variables, global styles, prose styles, Tailwind v3 preset and v4 theme | agnostic |
 | `@mctlhq/ui` | Vue 3 component library | Vue 3 |
 
 `@mctlhq/tokens` and `@mctlhq/css` are framework-agnostic and can be consumed
@@ -66,7 +66,7 @@ moves under you.
 
 | Path | Moves when | Use for |
 |---|---|---|
-| `https://ui.mctl.ai/0.6.0/{mctl,global,prose}.css` | never | anything shipped to users |
+| `https://ui.mctl.ai/0.7.0/{mctl,global,prose}.css` | never | anything shipped to users |
 | `https://ui.mctl.ai/{mctl,global,prose}.css` | every merge to `main` | previews, internal tools, seeing a token change land |
 | `@mctlhq/css` on GitHub Packages | on a semver tag | builds that already have a Packages token |
 
@@ -74,7 +74,7 @@ All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.
 
-Each sheet names its own version on line 1 (`/* @mctlhq/css 0.6.0 … */`), so a
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.7.0 … */`), so a
 vendored copy records what it was taken from and a mismatch shows up in a diff.
 
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
@@ -83,9 +83,9 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://ui.mctl.ai/0.6.0/mctl.css">
-<link rel="stylesheet" href="https://ui.mctl.ai/0.6.0/global.css">
-<!-- docs / markdown only: https://ui.mctl.ai/0.6.0/prose.css -->
+<link rel="stylesheet" href="https://ui.mctl.ai/0.7.0/mctl.css">
+<link rel="stylesheet" href="https://ui.mctl.ai/0.7.0/global.css">
+<!-- docs / markdown only: https://ui.mctl.ai/0.7.0/prose.css -->
 ```
 
 Bumping to a new version is then a one-line edit made on purpose, not something
@@ -137,9 +137,48 @@ import '@mctlhq/ui/style.css';
 import { MButton } from '@mctlhq/ui';
 ```
 
-**Tailwind preset — npm** (`@mctlhq/css/tailwind-preset`), same registry.
+**Tailwind — npm**, same registry. Tailwind v3 takes the JS preset
+(`@mctlhq/css/tailwind-preset`). Tailwind v4 is configured in CSS, so it takes
+a theme sheet instead, imported after `theme.css`:
+
+```css
+@import "tailwindcss";
+@import "@mctlhq/css/theme.css";
+@import "@mctlhq/css/tailwind.css";
+```
+
+Utility names match the v3 preset (`bg-surface-card`, `text-accent`,
+`font-mono`, `shadow-md`, `text-hero`), and opacity modifiers on the
+theme-aware colours (`bg-accent/50`) work. The differences, all deliberate:
+
+| v3 preset | Tailwind v4 | Why |
+| --- | --- | --- |
+| `p-5`, `p-10` … (MCTL scale) | `p-mctl-5`, `p-mctl-10` … | keeps Tailwind's own numeric spacing intact |
+| `max-w-page` | `max-w-pagew` | in v4 `max-w-page` resolves to the page padding |
+| `max-w-prose` | `max-w-(--container-prose)` | `max-w-prose` is Tailwind's built-in 65ch |
+| `divide-y-hairline` … (divide width) | `divide-y-(length:--mctl-border-width-hairline)`; `divide-y-none` is `divide-y-0` | v4 divide widths take a number or a variable, not a named key |
+| `bg-ink/disabled` … (opacity key as modifier) | `bg-ink/45` (the token × 100) | v4 modifiers take a number, not a named key; the `--mctl-opacity-*` tokens are unitless, so `bg-ink/(--mctl-opacity-disabled)` would produce an invalid `color-mix()` |
+
+`duration-*`, `opacity-*`, `border-hairline` / `border-thick` (with the
+per-side `border-b-hairline` … forms) and `outline-focus` /
+`outline-offset-focus` keep their v3 names (emitted as `@utility`, since v4
+has no theme namespace for them). `border-none` is
+Tailwind's own, which sets `border-style: none` rather than a zero width.
+`outline-focus` also sets a `solid` style, as Tailwind's `outline-2` does, so
+unlike its v3 namesake it draws without a separate `outline` style utility.
+
+`pnpm check:generated` compiles every v3 preset key against the v4 sheet and
+fails on one that neither works nor appears in this table.
+
 `@mctlhq/css` theme/global/prose CSS remains published for offline or
 air-gapped builds; prefer the CDN for product apps.
+
+**Tokens for design tools — npm.** `@mctlhq/tokens/tokens.dtcg.json` is the
+token tree in the W3C Design Tokens (DTCG 2025.10) format, readable by Style
+Dictionary, Terrazzo and Tokens Studio / Figma. Semantic colours are aliases
+(`surface.dark.bg` is `{color.ink}`), not copies. Values the format has no
+type for — `clamp()` sizes, `em` letter spacing — keep their CSS text and are
+marked `$extensions["ai.mctl"].css`.
 
 ## Components
 

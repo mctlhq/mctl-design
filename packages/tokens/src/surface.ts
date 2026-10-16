@@ -21,7 +21,7 @@ export const surface = {
     lineStrong: color.paperLineStrong,
     fg: color.paperInk,
     fgMuted: color.paperFg,
-    fgSubtle: color.fg3,
+    fgSubtle: color.paperFgSubtle,
   },
 } as const;
 

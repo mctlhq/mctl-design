@@ -46,7 +46,9 @@ jobs:
       # Placed right after the install because that is all it needs, and
       # because it is the one step here that can go red with no change to
       # the tree: a newly published advisory fails every pull request and
-      # every push to main until it is answered. Cheap to learn early.
+      # every push to main until it is answered. Cheap to learn early. Since
+      # deploy.yml waits for this workflow, a red audit on main also holds
+      # the ui.mctl.ai deploy until it is answered.
       - name: Audit dependencies
         run: pnpm audit --audit-level moderate
 
@@ -56,11 +58,28 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Test
+        # Component contracts (v-model, keyboard, form behaviour) and an axe
+        # pass over the rendered DOM. jsdom has no layout, so colour contrast
+        # is not part of this step.
+        run: pnpm test
+
       - name: Build packages
         run: pnpm build
 
       - name: Build Storybook
         run: pnpm build:storybook
+
+      - name: Check colour contrast
+        # Every text/background pair the components render, per theme and
+        # accent, against WCAG AA. Reads the built tokens, so it follows the
+        # build. A token comment claiming "AA on paper" is not a check.
+        run: pnpm check:contrast
+
+      - name: Check generated token exports
+        # tailwind.css (Tailwind v4 theme) and tokens.dtcg.json are built by
+        # string assembly; nothing else reads them before a consumer does.
+        run: pnpm check:generated
 
       - name: Check lockstep versions
         run: pnpm check:versions
@@ -70,8 +89,8 @@ jobs:
 
       - name: Check token changes carry a version bump
         # ui.mctl.ai serves /<version>/mctl.css immutable for a year, and it
-        # deploys on every merge to main rather than on a tag — so this check
-        # is the only thing making that promise true.
+        # deploys on every green merge to main rather than on a tag — so this
+        # check is the only thing making that promise true.
         #
         # Ordered ahead of the cleanliness step on purpose. A failing step ends
         # the job, and on a version rollback the cleanliness step fails too —

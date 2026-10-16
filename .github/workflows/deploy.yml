@@ -6,8 +6,18 @@ name: Deploy to ui.mctl.ai
 # change must reach ui.mctl.ai as soon as it lands on main, with no hidden
 # "no release was cut" stall. publish.yml (npm packages on a semver tag) is a
 # separate release track and is unaffected.
+#
+# Gated on CI. It used to fire on the push itself, in parallel with ci.yml,
+# so a main that failed the token-version or generated-CSS checks still
+# shipped -- and /<version>/ is served immutable for a year, so a bad sheet
+# there cannot be taken back by the next commit. workflow_run starts this
+# only when CI finished on a push to main, and the job below runs only when
+# that run succeeded. It deploys the commit CI checked (head_sha), not
+# whatever main points at by now.
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
 
 # Serialize deploys: overlapping main merges must not fire competing
@@ -19,9 +29,14 @@ concurrency:
 
 permissions:
   contents: read
+  # gh run list, to find main's newest green CI run.
+  actions: read
 
 jobs:
   deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     steps:
       # Uses mctl-agents, the backend-only automation App — deliberately
@@ -41,10 +56,40 @@ jobs:
           owner: mctlhq
           repositories: mctl-gitops
 
+      # workflow_run fires when CI *finishes*, so two quick merges can finish
+      # out of order and the older commit would deploy last. Deploy only if
+      # this is main's newest green CI run: an older commit that finishes
+      # after a newer green one is skipped, but a green commit followed by a
+      # red one still deploys, so a red merge cannot strand a published
+      # /<version>/ path behind it.
+      - name: Skip unless this is main's newest green CI run
+        id: tip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          NEWEST=$(gh run list --repo "${{ github.repository }}" --workflow CI \
+            --branch main --event push --status success --limit 1 \
+            --json headSha --jq '.[0].headSha // empty')
+          # This run itself is a green run on main, so an empty list is an
+          # API or workflow-name problem, not a newer commit. Fail loudly
+          # rather than skip and leave ui.mctl.ai silently behind main.
+          if [ -z "$NEWEST" ]; then
+            echo "::error::could not determine main's newest green CI run"
+            exit 1
+          fi
+          if [ "$NEWEST" = "$SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::newest green run on main is $NEWEST; it deploys instead of $SHA"
+            echo "current=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Dispatch centralized release-deploy (SHA-tagged image)
+        if: steps.tip.outputs.current == 'true'
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
-          SHA: ${{ github.sha }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           TAG="${SHA:0:12}"
           gh workflow run release-deploy.yaml \

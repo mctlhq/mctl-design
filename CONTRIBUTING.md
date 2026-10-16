@@ -24,7 +24,12 @@ pnpm build            # build all packages
 pnpm build:storybook  # static showcase
 pnpm lint
 pnpm typecheck
+pnpm test             # component contracts + axe (packages/ui, vitest + jsdom)
 pnpm check:versions
+pnpm check:contrast        # text/background pairs per theme and accent meet
+                           # WCAG AA (run after pnpm build)
+pnpm check:generated       # tailwind.css and tokens.dtcg.json are internally
+                           # consistent (run after pnpm build)
 pnpm check:license         # README's License section still links to LICENSE,
                            # and every package.json license field matches
 pnpm check:token-version   # a token or generator change needs a version bump,
@@ -97,13 +102,15 @@ runtime at all. Drop the key once Storybook widens on its own — the scoping
 rule is about not clamping a future line *down*, which this does not do.
 
 The override does leave a version skew inside Storybook's test stack:
-`storybook@9.1.20` keeps `@vitest/expect@3.2.4` and `@vitest/spy@3.2.4`, while
+`storybook@9.1.21` keeps `@vitest/expect@3.2.4` and `@vitest/spy@3.2.4`, while
 `@vitest/mocker@4.1.11` brings its own `@vitest/spy@4.1.11`, so a mocked module
 would be spied by v4 and asserted by a v3 `expect`. That is safe here for one
 reason only, and it is not that the build passes: **nothing in this repo
 exercises the mocking path.** There are no `play` functions, no `storybook/test`
-import, no `@storybook/addon-vitest`, and `ci.yml` has no test step at all. If
-any of those arrive, re-check this key before trusting it.
+import and no `@storybook/addon-vitest`. The `Test` step in `ci.yml` runs
+`packages/ui`'s own `vitest` (a direct devDependency, already on 4.x) and does
+not load Storybook's test stack. If any of the Storybook pieces arrive,
+re-check this key before trusting it.
 
 CI runs `pnpm audit --audit-level moderate` as a gate, so a transitive bump
 that reintroduces one of these advisories fails the pull request rather than
@@ -140,8 +147,10 @@ will say so.
 
 `@mctlhq/css` keeps a `tailwindcss` devDependency only for the type behind
 `satisfies Partial<Config>` in `src/tailwind-preset.ts`, the one check on the
-preset's shape. The devDependency is on 4 while the peer is `^3.4.0`:
-installing tailwindcss 3 brings `braces@3`, whose advisory
+preset's shape. The peer is `^3.4.0 || ^4.0.0` -- v3 consumers take the JS
+preset, v4 consumers take `tailwind.css` -- but the preset itself is a v3
+preset, and the devDependency is on 4: installing tailwindcss 3 brings
+`braces@3`, whose advisory
 (GHSA-vfj7-8cjw-p6xm, `<= 3.0.3`) has no patched release. v4 still exports
 `Config` as its legacy JS-config type (`UserConfig`, kept for `@config`), the
 v3 shape, so the check still runs, but against v4's copy: a key v4 accepts

@@ -1,23 +1,55 @@
 <script setup lang="ts">
-withDefaults(
+import { computed, useAttrs, type Component } from 'vue';
+
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
   defineProps<{
     variant?: 'primary' | 'ghost';
     size?: 'sm' | 'md';
-    /** Render as a different element/component, e.g. 'a' for a link. */
-    as?: string;
+    /** Render as a different element or component, e.g. 'a' or RouterLink. */
+    as?: string | Component;
+    /** Native button type. Defaults to "button" so it never submits a form by accident. */
+    type?: 'button' | 'submit' | 'reset';
     disabled?: boolean;
   }>(),
-  { variant: 'primary', size: 'md', as: 'button', disabled: false },
+  { variant: 'primary', size: 'md', as: 'button', type: 'button', disabled: false },
 );
+
+const attrs = useAttrs();
+const isNative = computed(() => props.as === 'button');
+
+// A disabled non-button (a link, a RouterLink) cannot use the `disabled`
+// attribute, and `pointer-events: none` alone leaves it focusable and
+// Enter-activatable. Render it as a plain placeholder with no href/to, no
+// event listeners, out of the tab order. Only a plain HTML tag is kept as is:
+// a component -- passed as an object or by name, "RouterLink" -- may require
+// the very prop being stripped (RouterLink throws without `to`), so it falls
+// back to <a>.
+const PLAIN_TAGS = new Set(['a', 'span', 'div']);
+const tag = computed(() => {
+  if (!props.disabled || isNative.value) return props.as;
+  return typeof props.as === 'string' && PLAIN_TAGS.has(props.as) ? props.as : 'a';
+});
+
+const bindings = computed(() => {
+  if (isNative.value) {
+    return { ...attrs, type: props.type, disabled: props.disabled || undefined };
+  }
+  if (!props.disabled) return attrs;
+  const rest = Object.fromEntries(
+    Object.entries(attrs).filter(([key]) => key !== 'href' && key !== 'to' && !/^on[A-Z]/.test(key)),
+  );
+  return { ...rest, tabindex: -1, 'aria-disabled': 'true' };
+});
 </script>
 
 <template>
   <component
-    :is="as"
+    :is="tag"
+    v-bind="bindings"
     class="m-button"
     :class="[`m-button--${variant}`, `m-button--${size}`]"
-    :disabled="as === 'button' ? disabled : undefined"
-    :aria-disabled="disabled || undefined"
   >
     <slot />
   </component>

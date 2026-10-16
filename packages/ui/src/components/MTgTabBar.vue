@@ -12,30 +12,36 @@ export interface MTgTab {
 withDefaults(
   defineProps<{
     tabs: MTgTab[];
-    /** Currently active tab key — use with v-model. */
-    modelValue?: string;
     /** Apply safe-area-inset-bottom padding below the bar. */
     safeArea?: boolean;
-    /** Accessible name for the tablist (screen-reader announcement). */
+    /**
+     * Accessible name for the navigation landmark. Screen readers append
+     * "navigation", so name which one it is rather than repeating the role.
+     */
     ariaLabel?: string;
   }>(),
-  { modelValue: '', safeArea: true, ariaLabel: 'Navigation' },
+  { safeArea: true, ariaLabel: 'Sections' },
 );
 
-defineEmits<{ 'update:modelValue': [key: string] }>();
+// v-model: the active tab key. Kept locally when no v-model is bound, so the
+// bar also switches when used uncontrolled.
+const model = defineModel<string>({ default: '' });
+
+// A bottom tab bar switches app sections, not in-page panels: it renders a
+// navigation landmark with aria-current, not an ARIA tablist (which would
+// promise tabpanels and arrow-key roving that this bar does not have).
 </script>
 
 <template>
-  <nav class="m-tg-tabbar" :class="{ 'm-tg-tabbar--safe': safeArea }" role="tablist" :aria-label="ariaLabel">
+  <nav class="m-tg-tabbar" :class="{ 'm-tg-tabbar--safe': safeArea }" :aria-label="ariaLabel">
     <button
       v-for="tab in tabs"
       :key="tab.key"
       type="button"
-      role="tab"
       class="m-tg-tabbar__tab"
-      :class="{ 'm-tg-tabbar__tab--active': tab.key === modelValue }"
-      :aria-selected="tab.key === modelValue"
-      @click="$emit('update:modelValue', tab.key)"
+      :class="{ 'm-tg-tabbar__tab--active': tab.key === model }"
+      :aria-current="tab.key === model ? 'page' : undefined"
+      @click="model = tab.key"
     >
       <span v-if="tab.icon" class="m-tg-tabbar__icon" aria-hidden="true">{{ tab.icon }}</span>
       <span class="m-tg-tabbar__label">{{ tab.label }}</span>

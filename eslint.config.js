@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import vue from 'eslint-plugin-vue';
 import vueParser from 'vue-eslint-parser';
+import globals from 'globals';
 
 export default tseslint.config(
   { ignores: ['**/dist/**', '**/storybook-static/**', '**/.turbo/**', '**/node_modules/**'] },
@@ -25,6 +26,11 @@ export default tseslint.config(
     // typescript-eslint recommends turning it off for TS sources.
     files: ['**/*.ts', '**/*.vue'],
     rules: { 'no-undef': 'off' },
+  },
+  {
+    // Build scripts run on Node; nothing else declares its globals.
+    files: ['**/scripts/**/*.mjs'],
+    languageOptions: { globals: globals.node },
   },
   {
     rules: {

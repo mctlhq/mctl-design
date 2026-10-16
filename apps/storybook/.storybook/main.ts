@@ -2,8 +2,14 @@ import type { StorybookConfig } from '@storybook/vue3-vite';
 
 const config: StorybookConfig = {
   stories: ['../stories/**/*.stories.@(ts|tsx)'],
-  addons: ['@vueless/storybook-dark-mode'],
+  addons: ['@vueless/storybook-dark-mode', '@storybook/addon-a11y'],
   staticDirs: ['../public'],
+  // builder-vite roots Vite at apps/storybook, so Vite's default publicDir is
+  // this same public/ -- and the preview build copies it into storybook-static
+  // while Storybook copies staticDirs there in parallel. Both create brand/,
+  // and the loser fails with EEXIST (seen intermittently in CI). staticDirs
+  // alone does the copy.
+  viteFinal: (config) => ({ ...config, publicDir: false }),
   framework: {
     name: '@storybook/vue3-vite',
     options: {},
