@@ -136,6 +136,19 @@ will say so.
 | --- | --- | --- |
 | `GHSA-hp3w-g68c-fv3c` | `sprintf-js@1.0.3` (DoS on unbounded precision specifiers) | Reached only through `@microsoft/api-extractor` → `@rushstack/ts-command-line` → `argparse@1`, pulled in by `vite-plugin-dts` (builds `@mctlhq/ui`'s `.d.ts`) and `tsup`. The advisory covers every release (`<= 1.1.3`, no patched version, per the GitHub advisory database), and the latest api-extractor (7.59.4) still pins `argparse ~1.0.9`. Build-time only, fed our own sources, so the input that triggers it is not reachable. Drop when rushstack moves off `argparse@1`. |
 
+## tailwindcss in @mctlhq/css
+
+`@mctlhq/css` keeps a `tailwindcss` devDependency only for the type behind
+`satisfies Partial<Config>` in `src/tailwind-preset.ts`, the one check on the
+preset's shape. The devDependency is on 4 while the peer is `^3.4.0`:
+installing tailwindcss 3 brings `braces@3`, whose advisory
+(GHSA-vfj7-8cjw-p6xm, `<= 3.0.3`) has no patched release. v4 still exports
+`Config` as its legacy JS-config type (`UserConfig`, kept for `@config`), the
+v3 shape, so the check still runs, but against v4's copy: a key v4 accepts
+and v3 does not would typecheck here and be wrong for a v3 consumer. The built
+preset does not reference `tailwindcss`, so the published bytes do not depend
+on which major was installed.
+
 ## The vite toolchain
 
 `vite`, `@vitejs/plugin-vue` and `vite-plugin-dts` are declared once in the
