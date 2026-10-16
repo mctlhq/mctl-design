@@ -79,7 +79,7 @@ or above the floor.
 | `js-yaml@4` | prototype pollution / DoS |
 | `nanoid@3` | predictable IDs on non-integer input |
 | `postcss@8` | parsing DoS |
-| `postcss-selector-parser@6` | uncontrolled AST recursion |
+| `source-map-js@1` | GHSA on `<1.2.2`, reached through vite's postcss |
 | `ws@8` | DoS on excessive headers |
 
 Every selector is scoped to a major (`pkg@N`). Do not add an unscoped or
