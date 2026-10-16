@@ -82,6 +82,7 @@ describe('MTabs', () => {
     // the selected tab rather than moving to an unreachable one.
     await wrapper.find('[role="tab"][aria-selected="true"]').trigger('keydown', { key: 'ArrowRight' });
     await nextTick();
+    expect(document.activeElement?.textContent?.trim()).toBe('A');
     expect(document.activeElement?.getAttribute('aria-selected')).toBe('true');
     wrapper.unmount();
   });

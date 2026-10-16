@@ -148,7 +148,9 @@ const preset = {
         'control-sm': control.height.sm,
         'control-md': control.height.md,
         'control-lg': control.height.lg,
-        'site-header': layout.siteHeaderHeight,
+        // The runtime var, not the token: --site-header-height is the shell's
+        // documented override point, so h-site-header has to follow it.
+        'site-header': 'var(--site-header-height)',
       },
       opacity: { ...opacity },
       outlineWidth: { focus: 'var(--focus-ring-width)' },

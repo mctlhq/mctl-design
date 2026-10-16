@@ -74,6 +74,8 @@ export function tailwindV4Css(t, version) {
   }
   for (const k of ['display', 'mono', 'editorial']) r(`font-${k}`, `var(--font-${k})`);
   for (const k of ['sm', 'md', 'overlay']) r(`shadow-${k}`, `var(--shadow-${k})`);
+  // The shell's documented override point, so h-site-header follows it.
+  r('spacing-site-header', 'var(--site-header-height)');
 
   // Type.
   s('font-weight-light', fontWeight.light);
@@ -112,7 +114,6 @@ export function tailwindV4Css(t, version) {
   s('spacing-stack', layout.stack);
   for (const [k, v] of Object.entries(icon)) s(`spacing-icon-${k}`, v);
   for (const [k, v] of Object.entries(control.height)) s(`spacing-control-${k}`, v);
-  s('spacing-site-header', layout.siteHeaderHeight);
   // Widths. v4 resolves max-w-* from --spacing-* before --container-*, so
   // max-w-page here is the page *padding*, and max-w-prose is Tailwind's own
   // static 65ch. Use max-w-pagew (as the v3 preset's spacing already allowed)

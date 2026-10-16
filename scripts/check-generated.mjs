@@ -35,9 +35,11 @@ const themeVars = new Set([...readFileSync(THEME, 'utf8').matchAll(/(--[\w-]+)\s
 // A `reference` block is never emitted, so `--shadow-sm: var(--shadow-sm)`
 // there only tells utilities which runtime var to use. In an emitted block the
 // same line would be a self-reference that voids theme.css's value.
+let emittedDecls = 0;
 for (const [, options, body] of tw.matchAll(/@theme([^{]*)\{([^}]*)\}/g)) {
   if (/\breference\b/.test(options)) continue;
   for (const [, name, value] of body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+    emittedDecls++;
     for (const [, ref] of value.matchAll(/var\((--[\w-]+)\s*[,)]/g)) {
       if (ref === name) problems.push(`${TW}: ${name} references itself in an emitted @theme block`);
     }
@@ -56,7 +58,10 @@ for (const [, ref] of tw.matchAll(/var\((--[\w-]+)\s*[,)]/g)) {
 
 // Zero references checked would read exactly like all references passing:
 // a parser that stopped matching the generator's output must fail, not pass.
-if (refs === 0) problems.push(`${TW}: no var() references found -- the @theme parser no longer matches this file`);
+if (refs === 0) problems.push(`${TW}: no var() references found -- the var() scan no longer matches this file`);
+// The self-reference guard above is the only structural parse left; if the
+// @theme block regex stops matching, it would go quiet while refs stays high.
+if (emittedDecls === 0) problems.push(`${TW}: no declarations found in an emitted @theme block -- the @theme parser no longer matches this file`);
 
 // Compile it with the real Tailwind v4 (the devDependency of @mctlhq/css) and
 // check what the utilities resolve to: a theme sheet can be internally
@@ -83,6 +88,8 @@ const expected = {
   'text-hero': 'font-size: var(--text-hero)',
   'p-mctl-5': 'padding: var(--spacing-mctl-5)',
   'max-w-pagew': 'max-width: var(--spacing-pagew)',
+  // Follows the shell's runtime override, not a frozen 80px.
+  'h-site-header': 'height: var(--site-header-height)',
   // The MCTL scale must not clobber Tailwind's own numeric keys.
   'p-5': 'padding: calc(var(--spacing) * 5)',
   // The @utility families sit in namespaces Tailwind owns; its numeric

@@ -95,7 +95,9 @@ unversioned `https://ui.mctl.ai/mctl.css` still works and still floats with
 
 Flip surface and accent with `data-theme` (`dark` | `light`) and optional
 `data-accent` (`terracotta` default | `cyan` | `lime` | `lilac`). Omit
-`data-accent` to follow the CDN default.
+`data-accent` to follow the CDN default. On a nested scope, set both on the
+same element: `data-theme` alone resets the accent, and `data-accent` alone
+picks the dark palette (see [Public typography and state colors](#public-typography-and-state-colors)).
 
 Allow `https://ui.mctl.ai` in `style-src`, `img-src` (favicons and marks),
 and `https://fonts.gstatic.com` in `font-src` if the app ships a CSP.
