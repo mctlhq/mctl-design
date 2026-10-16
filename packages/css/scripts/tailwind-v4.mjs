@@ -125,7 +125,12 @@ export function tailwindV4Css(t, version) {
 
   const utilities = [];
   const u = (name, decl) => utilities.push(`@utility ${name} {\n  ${decl};\n}`);
-  for (const [k, v] of Object.entries(motion.duration)) u(`duration-${k}`, `transition-duration: ${v}`);
+  // Set --tw-duration like Tailwind's own duration-200: .transition reads
+  // transition-duration from it, so `transition duration-base` holds no matter
+  // which rule lands later in the sheet.
+  for (const [k, v] of Object.entries(motion.duration)) {
+    u(`duration-${k}`, `--tw-duration: ${v};\n  transition-duration: ${v}`);
+  }
   for (const [k, v] of Object.entries(opacity)) u(`opacity-${kebab(k)}`, `opacity: ${v}`);
   // v3's borderWidth scale also yields the per-side utilities (border-b-hairline
   // as a divider is the common one), so each width gets all nine shapes.
@@ -142,7 +147,10 @@ export function tailwindV4Css(t, version) {
   };
   for (const [k, v] of Object.entries(border.width)) {
     if (k === 'none') continue;
-    for (const [side, prop] of Object.entries(SIDES)) u(`border${side && `-${side}`}-${k}`, `${prop}: ${v}`);
+    // border-style too, as Tailwind's border-<n> does, so a width alone shows.
+    for (const [side, prop] of Object.entries(SIDES)) {
+      u(`border${side && `-${side}`}-${k}`, `border-style: var(--tw-border-style);\n  ${prop}: ${v}`);
+    }
   }
   u('outline-focus', 'outline-width: var(--focus-ring-width)');
   u('outline-offset-focus', 'outline-offset: var(--focus-ring-offset)');

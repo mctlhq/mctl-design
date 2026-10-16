@@ -51,6 +51,8 @@ for (const [, options, body] of tw.matchAll(/@theme([^{]*)\{([^}]*)\}/g)) {
 // @utility blocks sit outside @theme; their var() references must resolve too.
 for (const [, body] of tw.matchAll(/@utility [\w-]+\s*\{([^}]*)\}/g)) {
   for (const [, ref] of body.matchAll(/var\((--[\w-]+)\)/g)) {
+    // --tw-* are Tailwind's own registered properties, not ours to define.
+    if (ref.startsWith('--tw-')) continue;
     refs++;
     if (!themeVars.has(ref)) problems.push(`${TW}: an @utility uses ${ref}, which theme.css does not define`);
   }
@@ -88,7 +90,8 @@ const expected = {
   'duration-200': 'transition-duration: 200ms',
   'opacity-50': 'opacity: 50%',
   'border-2': 'border-width: 2px',
-  'duration-base': 'transition-duration: 200ms',
+  // --tw-duration is what .transition reads, so this is the order-independent part.
+  'duration-base': '--tw-duration: 200ms',
   'outline-focus': 'outline-width: var(--focus-ring-width)',
 };
 const built = compiler.build(Object.keys(expected));
