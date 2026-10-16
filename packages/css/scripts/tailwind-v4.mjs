@@ -81,6 +81,7 @@ export function tailwindV4Css(t, version) {
   s('font-weight-medium', fontWeight.medium);
   s('font-weight-semibold', fontWeight.semibold);
   s('font-weight-bold', fontWeight.bold);
+  s('font-weight-extrabold', fontWeight.extrabold);
   const text = (name, size, lh, ls) => {
     s(`text-${name}`, size);
     s(`text-${name}--line-height`, lh);
@@ -111,6 +112,7 @@ export function tailwindV4Css(t, version) {
   s('spacing-stack', layout.stack);
   for (const [k, v] of Object.entries(icon)) s(`spacing-icon-${k}`, v);
   for (const [k, v] of Object.entries(control.height)) s(`spacing-control-${k}`, v);
+  s('spacing-site-header', layout.siteHeaderHeight);
   // Widths. v4 resolves max-w-* from --spacing-* before --container-*, so
   // max-w-page here is the page *padding*, and max-w-prose is Tailwind's own
   // static 65ch. Use max-w-pagew (as the v3 preset's spacing already allowed)

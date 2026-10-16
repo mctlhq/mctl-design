@@ -3,6 +3,7 @@ import { computed, getCurrentInstance, nextTick } from 'vue';
 
 interface Tab {
   label: string;
+  /** Unique within `tabs`: it is the v-model value. */
   value: string;
 }
 
@@ -36,9 +37,11 @@ function select(value: string) {
   model.value = value;
 }
 
-// Roving arrow-key navigation across the tab list. Move DOM focus to the newly
-// selected tab so subsequent arrow presses keep working (the prior tab becomes
-// tabindex="-1").
+// Roving arrow-key navigation across the tab list. Move DOM focus to the tab
+// that ends up selected so subsequent arrow presses keep working (the prior
+// tab becomes tabindex="-1"). That is activeIndex, not `next`: with a repeated
+// value select() is a no-op, and focusing `next` would strand focus on an
+// unselected tabindex="-1" tab.
 function onKeydown(event: KeyboardEvent, index: number) {
   const last = props.tabs.length - 1;
   let next = -1;
@@ -49,7 +52,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
   if (next !== -1) {
     event.preventDefault();
     select(props.tabs[next].value);
-    nextTick(() => document.getElementById(tabId(next))?.focus());
+    nextTick(() => document.getElementById(tabId(activeIndex.value))?.focus());
   }
 }
 </script>

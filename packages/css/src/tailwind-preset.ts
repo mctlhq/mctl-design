@@ -89,6 +89,7 @@ const preset = {
         medium: String(fontWeight.medium),
         semibold: String(fontWeight.semibold),
         bold: String(fontWeight.bold),
+        extrabold: String(fontWeight.extrabold),
       },
       fontSize: {
         marker: [fontSize.marker, { lineHeight: lineHeight.tight, letterSpacing: letterSpacing.marker }],
@@ -147,6 +148,7 @@ const preset = {
         'control-sm': control.height.sm,
         'control-md': control.height.md,
         'control-lg': control.height.lg,
+        'site-header': layout.siteHeaderHeight,
       },
       opacity: { ...opacity },
       outlineWidth: { focus: 'var(--focus-ring-width)' },
