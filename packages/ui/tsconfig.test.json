@@ -1,0 +1,7 @@
+{
+  // Type-checks the tests and vitest config on top of the library sources.
+  // Kept apart from tsconfig.json, which vite-plugin-dts reads to emit the
+  // published declarations -- the tests must not reach dist/.
+  "extends": "./tsconfig.json",
+  "include": ["src", "test", "vite.config.ts", "vitest.config.ts"]
+}

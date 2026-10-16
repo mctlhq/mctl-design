@@ -36,6 +36,7 @@ const preset = {
           card: color.paperCard,
           ink: color.paperInk,
           fg: color.paperFg,
+          'fg-subtle': color.paperFgSubtle,
           line: color.paperLine,
           'line-strong': color.paperLineStrong,
         },

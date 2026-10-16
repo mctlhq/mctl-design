@@ -18,6 +18,13 @@
 // overriding of p-5 / p-10 / p-20 is exactly the surprise to avoid here. It is
 // available as p-mctl-5 etc.
 //
+// Not carried, because v4 has no theme namespace for them: the preset's
+// transitionDuration, opacity, borderWidth and outlineWidth/outlineOffset
+// keys. Their tokens are still CSS variables in theme.css, so v4 reaches them
+// with the var() shorthand (duration-(--mctl-motion-duration-base)); the
+// README lists each one, and scripts/check-generated.mjs fails on any preset
+// key that is neither emitted here nor on that documented list.
+//
 // Verified against tailwindcss 4.3 by compiling every mapped utility: no
 // self-referencing variable is emitted, and opacity modifiers on the runtime
 // colours (bg-accent/50) work through color-mix, which the v3 preset's hex
@@ -112,6 +119,7 @@ export function tailwindV4Css(t, version) {
   // static 65ch. Use max-w-pagew (as the v3 preset's spacing already allowed)
   // and max-w-(--container-prose).
   s('spacing-pagew', layout.pageWidth);
+  s('spacing-prose', layout.proseWidth);
   s('container-prose', layout.proseWidth);
 
   for (const [k, v] of Object.entries(radius)) s(`radius-${k}`, v);

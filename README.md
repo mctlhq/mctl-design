@@ -149,11 +149,20 @@ a theme sheet instead, imported after `theme.css`:
 
 Utility names match the v3 preset (`bg-surface-card`, `text-accent`,
 `font-mono`, `shadow-md`, `text-hero`), and opacity modifiers on the
-theme-aware colours (`bg-accent/50`) work. Three differences, all deliberate:
-the MCTL spacing scale is `p-mctl-5` rather than overriding Tailwind's own
-`p-5`; the page width is `max-w-pagew` (in v4 `max-w-page` is the page
-padding); and the prose width is `max-w-(--container-prose)`, because
-`max-w-prose` is Tailwind's built-in 65ch.
+theme-aware colours (`bg-accent/50`) work. The differences, all deliberate:
+
+| v3 preset | Tailwind v4 | Why |
+| --- | --- | --- |
+| `p-5`, `p-10` … (MCTL scale) | `p-mctl-5`, `p-mctl-10` … | keeps Tailwind's own numeric spacing intact |
+| `max-w-page` | `max-w-pagew` | in v4 `max-w-page` resolves to the page padding |
+| `max-w-prose` | `max-w-(--container-prose)` | `max-w-prose` is Tailwind's built-in 65ch |
+| `duration-base` … | `duration-(--mctl-motion-duration-base)` | v4 has no duration theme namespace |
+| `opacity-disabled` … | `opacity-(--mctl-opacity-disabled)` | no opacity namespace |
+| `border-hairline` … | `border-(length:--mctl-border-width-hairline)` | no border-width namespace |
+| `outline-focus`, `outline-offset-focus` | `outline-(length:--focus-ring-width)`, `outline-offset-(--focus-ring-offset)` | no outline namespace |
+
+`pnpm check:generated` compiles every v3 preset key against the v4 sheet and
+fails on one that neither works nor appears in this table.
 
 `@mctlhq/css` theme/global/prose CSS remains published for offline or
 air-gapped builds; prefer the CDN for product apps.

@@ -88,6 +88,60 @@ for (const [, name, ref] of built.matchAll(/(--[\w-]+):\s*var\((--[\w-]+)\);/g))
   if (name === ref) problems.push(`tailwind v4: compiled output emits self-referencing ${name}`);
 }
 
+// Parity with the v3 preset: every key it extends must yield a working v4
+// utility, or be one of the README's documented differences -- in which case
+// the documented v4 replacement must work instead. Unknown utilities compile
+// to nothing without a warning, so a dropped family would otherwise go
+// unnoticed by everyone but the consumer.
+const { default: preset } = await import(new URL('../packages/css/dist/tailwind-preset.js', import.meta.url));
+const ext = preset.theme.extend;
+const flat = (obj, prefix = []) =>
+  Object.entries(obj).flatMap(([k, v]) =>
+    v && typeof v === 'object' && !Array.isArray(v) ? flat(v, [...prefix, k]) : [[...prefix, k]],
+  );
+const name = (path) => path.filter((k) => k !== 'DEFAULT').join('-');
+const parity = new Map(); // candidate -> preset key it stands for
+const add = (candidate, key) => parity.set(candidate, key);
+for (const p of flat(ext.colors)) add(`bg-${name(p)}`, `colors.${p.join('.')}`);
+for (const k of Object.keys(ext.fontFamily)) add(`font-${k}`, `fontFamily.${k}`);
+for (const k of Object.keys(ext.fontWeight)) add(`font-${k}`, `fontWeight.${k}`);
+for (const k of Object.keys(ext.fontSize)) add(`text-${k}`, `fontSize.${k}`);
+for (const k of Object.keys(ext.letterSpacing)) add(`tracking-${k}`, `letterSpacing.${k}`);
+for (const k of Object.keys(ext.spacing)) add(/^\d+$/.test(k) ? `p-mctl-${k}` : `p-${k}`, `spacing.${k}`);
+for (const k of Object.keys(ext.borderRadius)) add(`rounded-${k}`, `borderRadius.${k}`);
+for (const k of Object.keys(ext.boxShadow)) add(`shadow-${k}`, `boxShadow.${k}`);
+for (const k of Object.keys(ext.screens)) add(`${k}:p-1`, `screens.${k}`);
+for (const k of Object.keys(ext.width)) add(`w-${k}`, `width.${k}`);
+for (const k of Object.keys(ext.height)) add(`h-${k}`, `height.${k}`);
+for (const k of Object.keys(ext.transitionTimingFunction)) add(`ease-${k}`, `transitionTimingFunction.${k}`);
+// Documented differences (README, "Tailwind -- npm"): the v4 replacement.
+const kebab = (s) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+add('max-w-pagew', 'maxWidth.page');
+add('max-w-(--container-prose)', 'maxWidth.prose');
+for (const k of Object.keys(ext.transitionDuration)) add(`duration-(--mctl-motion-duration-${k})`, `transitionDuration.${k}`);
+for (const k of Object.keys(ext.opacity)) add(`opacity-(--mctl-opacity-${kebab(k)})`, `opacity.${k}`);
+for (const k of Object.keys(ext.borderWidth)) add(`border-(length:--mctl-border-width-${k})`, `borderWidth.${k}`);
+add('outline-(length:--focus-ring-width)', 'outlineWidth.focus');
+add('outline-offset-(--focus-ring-offset)', 'outlineOffset.focus');
+const covered = new Set([
+  'colors', 'fontFamily', 'fontWeight', 'fontSize', 'letterSpacing', 'spacing', 'borderRadius',
+  'boxShadow', 'screens', 'width', 'height', 'transitionTimingFunction', 'maxWidth',
+  'transitionDuration', 'opacity', 'borderWidth', 'outlineWidth', 'outlineOffset',
+]);
+for (const group of Object.keys(ext)) {
+  if (!covered.has(group)) problems.push(`tailwind v4 parity: preset group "${group}" is not mapped in check-generated`);
+}
+const parityCss = compiler.build([...parity.keys()]);
+// CSS.escape-style: punctuation gets a backslash, a leading digit becomes a
+// code-point escape (2xl -> \32 xl).
+const escape = (c) =>
+  c.replace(/[^a-zA-Z0-9_-]/g, (ch) => `\\${ch}`).replace(/^(\d)/, (d) => `\\3${d} `);
+for (const [candidate, key] of parity) {
+  if (!parityCss.includes(`.${escape(candidate)}`)) {
+    problems.push(`tailwind v4 parity: ${key} -> \`${candidate}\` produces no rule`);
+  }
+}
+
 // tokens.dtcg.json
 const dtcg = JSON.parse(readFileSync(DTCG, 'utf8'));
 const leaves = new Map();
@@ -119,5 +173,5 @@ if (problems.length) {
   process.exit(1);
 }
 console.log(
-  `check-generated: ${refs} tailwind.css references, ${Object.keys(expected).length} compiled utilities and ${leaves.size} DTCG tokens are consistent.`,
+  `check-generated: ${refs} tailwind.css references, ${Object.keys(expected).length} asserted utilities, ${parity.size} preset keys at v4 parity and ${leaves.size} DTCG tokens are consistent.`,
 );

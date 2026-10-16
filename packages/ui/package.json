@@ -28,7 +28,7 @@
     "build": "vite build",
     "dev": "vite build --watch",
     "test": "vitest run",
-    "typecheck": "vue-tsc --noEmit",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.test.json",
     "lint": "eslint src test",
     "clean": "rm -rf dist .turbo"
   },
