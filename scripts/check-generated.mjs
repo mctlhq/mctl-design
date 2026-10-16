@@ -5,12 +5,16 @@
 //   packages/css/dist/tailwind.css     every var() in the runtime block names
 //                                      a variable theme.css defines, and no
 //                                      theme variable references itself (that
-//                                      would void theme.css's value at runtime)
+//                                      would void theme.css's value at runtime);
+//                                      then it is compiled with tailwindcss 4
+//                                      and the mapped utilities are asserted
 //   packages/tokens/dist/tokens.dtcg.json
 //                                      every alias resolves to a token of the
 //                                      same $type; colours carry a hex and
 //                                      dimensions a px/rem unit
 import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 
 const TW = 'packages/css/dist/tailwind.css';
 const THEME = 'packages/css/dist/theme.css';
@@ -48,6 +52,42 @@ for (const [, options, body] of tw.matchAll(/@theme([^{]*)\{([^}]*)\}/g)) {
 // a parser that stopped matching the generator's output must fail, not pass.
 if (refs === 0) problems.push(`${TW}: no var() references found -- the @theme parser no longer matches this file`);
 
+// Compile it with the real Tailwind v4 (the devDependency of @mctlhq/css) and
+// check what the utilities resolve to: a theme sheet can be internally
+// consistent and still map a utility to the wrong variable.
+const require = createRequire(join(process.cwd(), 'packages/css/package.json'));
+const { compile } = require('tailwindcss');
+const twIndex = join(dirname(require.resolve('tailwindcss/package.json')), 'index.css');
+const sheets = { tailwindcss: twIndex, './theme.css': THEME, './tailwind.css': TW };
+const compiler = await compile('@import "tailwindcss";\n@import "./theme.css";\n@import "./tailwind.css";', {
+  base: process.cwd(),
+  loadStylesheet: async (id) => ({ path: sheets[id], base: process.cwd(), content: readFileSync(sheets[id], 'utf8') }),
+});
+const expected = {
+  'bg-surface-card': 'background-color: var(--surface-card)',
+  'text-accent': 'color: var(--accent)',
+  'bg-accent/50': 'color-mix(in oklab, var(--accent) 50%, transparent)',
+  'text-syntax-key': 'color: var(--syntax-key)',
+  'font-mono': 'font-family: var(--font-mono)',
+  'shadow-md': '--tw-shadow: var(--shadow-md)',
+  'text-hero': 'font-size: var(--text-hero)',
+  'p-mctl-5': 'padding: var(--spacing-mctl-5)',
+  'max-w-pagew': 'max-width: var(--spacing-pagew)',
+  // The MCTL scale must not clobber Tailwind's own numeric keys.
+  'p-5': 'padding: calc(var(--spacing) * 5)',
+};
+const built = compiler.build(Object.keys(expected));
+for (const [utility, declaration] of Object.entries(expected)) {
+  const selector = `.${utility.replace('/', '\\/')} {`;
+  const start = built.indexOf(selector);
+  const rule = start === -1 ? '' : built.slice(start, built.indexOf('\n  }', start));
+  if (!rule) problems.push(`tailwind v4: ${utility} produced no rule`);
+  else if (!rule.includes(declaration)) problems.push(`tailwind v4: ${utility} does not contain "${declaration}"`);
+}
+for (const [, name, ref] of built.matchAll(/(--[\w-]+):\s*var\((--[\w-]+)\);/g)) {
+  if (name === ref) problems.push(`tailwind v4: compiled output emits self-referencing ${name}`);
+}
+
 // tokens.dtcg.json
 const dtcg = JSON.parse(readFileSync(DTCG, 'utf8'));
 const leaves = new Map();
@@ -78,4 +118,6 @@ if (problems.length) {
   console.error(`\ncheck-generated: ${problems.length} problem(s).`);
   process.exit(1);
 }
-console.log(`check-generated: ${refs} tailwind.css references and ${leaves.size} DTCG tokens are consistent.`);
+console.log(
+  `check-generated: ${refs} tailwind.css references, ${Object.keys(expected).length} compiled utilities and ${leaves.size} DTCG tokens are consistent.`,
+);
