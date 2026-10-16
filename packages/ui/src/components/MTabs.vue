@@ -41,8 +41,10 @@ function select(value: string) {
 // selected tab so subsequent arrow presses keep working (the prior tab becomes
 // tabindex="-1"). Focus goes to `next` even before the model catches up, so a
 // parent that applies v-model asynchronously (a router push) still roves.
-// Only when `next` repeats the current value is select() a no-op; focus then
-// stays on the selected tab rather than an unselected tabindex="-1" one.
+// Only when `next` carries the model's current value is select() a no-op; focus
+// then goes to the selected tab, which with a repeated value is not `next`.
+// Compared against the model, not the focused tab: Home on the first tab or
+// End on the last makes `next` the focused tab itself.
 function onKeydown(event: KeyboardEvent, index: number) {
   const last = props.tabs.length - 1;
   let next = -1;
@@ -52,7 +54,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
   else if (event.key === 'End') next = last;
   if (next !== -1) {
     event.preventDefault();
-    const target = props.tabs[next].value === props.tabs[index].value ? activeIndex.value : next;
+    const target = props.tabs[next].value === model.value ? activeIndex.value : next;
     select(props.tabs[next].value);
     nextTick(() => document.getElementById(tabId(target))?.focus());
   }

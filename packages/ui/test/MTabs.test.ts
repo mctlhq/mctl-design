@@ -97,6 +97,28 @@ describe('MTabs', () => {
     wrapper.unmount();
   });
 
+  it('keeps focus on Home/End at the edges while the model is pending', async () => {
+    const updates: string[] = [];
+    const wrapper = mount(MTabs, {
+      props: { tabs, modelValue: 'one', 'onUpdate:modelValue': (v: string) => updates.push(v) },
+      attachTo: document.body,
+    });
+    const tab = (i: number) => wrapper.findAll('[role="tab"]')[i];
+    await tab(0).trigger('keydown', { key: 'End' });
+    await nextTick();
+    expect(document.activeElement?.textContent?.trim()).toBe('Three');
+    // End on the last tab: `next` is the focused tab itself, which must not
+    // send focus back to the still-selected first tab.
+    await tab(2).trigger('keydown', { key: 'End' });
+    await nextTick();
+    expect(document.activeElement?.textContent?.trim()).toBe('Three');
+    await tab(2).trigger('keydown', { key: 'Home' });
+    await nextTick();
+    expect(document.activeElement?.textContent?.trim()).toBe('One');
+    expect(updates).toEqual(['three', 'three', 'one']);
+    wrapper.unmount();
+  });
+
   it('selects a single tab when values repeat', async () => {
     const dup = [
       { label: 'A', value: 'x' },
