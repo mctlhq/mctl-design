@@ -33,3 +33,23 @@ export default meta;
 type Story = StoryObj<typeof MTabs>;
 
 export const Default: Story = {};
+
+/** No v-model: the tabs keep their own state. */
+export const Uncontrolled: Story = {
+  render: () => ({
+    components: { MTabs },
+    setup: () => ({
+      tabs: [
+        { label: 'Overview', value: 'overview' },
+        { label: 'Config', value: 'config' },
+      ],
+    }),
+    template: `
+      <MTabs :tabs="tabs" style="max-width:560px">
+        <template #default="{ active }">
+          <p>Active tab: {{ active }}</p>
+        </template>
+      </MTabs>
+    `,
+  }),
+};
