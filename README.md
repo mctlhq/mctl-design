@@ -156,10 +156,12 @@ theme-aware colours (`bg-accent/50`) work. The differences, all deliberate:
 | `p-5`, `p-10` … (MCTL scale) | `p-mctl-5`, `p-mctl-10` … | keeps Tailwind's own numeric spacing intact |
 | `max-w-page` | `max-w-pagew` | in v4 `max-w-page` resolves to the page padding |
 | `max-w-prose` | `max-w-(--container-prose)` | `max-w-prose` is Tailwind's built-in 65ch |
+| `bg-accent/disabled` … (opacity key as modifier) | `bg-accent/(--mctl-opacity-disabled)` | v4 modifiers take a number or a variable, not a named key |
 
-`duration-*`, `opacity-*`, `border-hairline` / `border-thick` and
-`outline-focus` / `outline-offset-focus` keep their v3 names (emitted as
-`@utility`, since v4 has no theme namespace for them). `border-none` is
+`duration-*`, `opacity-*`, `border-hairline` / `border-thick` (with the
+per-side `border-b-hairline` … forms) and `outline-focus` /
+`outline-offset-focus` keep their v3 names (emitted as `@utility`, since v4
+has no theme namespace for them). `border-none` is
 Tailwind's own, which sets `border-style: none` rather than a zero width.
 
 `pnpm check:generated` compiles every v3 preset key against the v4 sheet and

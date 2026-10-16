@@ -108,7 +108,13 @@ const name = (path) => path.filter((k) => k !== 'DEFAULT').join('-');
 // rounded-sm, bg-lime-500, text-xs, sm: and friends, so those compile with
 // Tailwind's values even if this sheet stopped defining MCTL's.
 const parity = new Map();
-const add = (candidate, key, source) => parity.set(candidate, [key, source]);
+const add = (candidate, key, source) => {
+  // Two preset keys yielding one candidate would silently drop one of them.
+  if (parity.has(candidate) && parity.get(candidate)[0] !== key) {
+    throw new Error(`check-generated: ${key} and ${parity.get(candidate)[0]} both map to ${candidate}`);
+  }
+  parity.set(candidate, [key, source]);
+};
 for (const p of flat(ext.colors)) add(`bg-${name(p)}`, `colors.${p.join('.')}`, `--color-${name(p)}`);
 for (const k of Object.keys(ext.fontFamily)) add(`font-${k}`, `fontFamily.${k}`, `--font-${k}`);
 for (const k of Object.keys(ext.fontWeight)) add(`font-${k}`, `fontWeight.${k}`, `--font-weight-${k}`);
@@ -136,7 +142,22 @@ for (const k of Object.keys(ext.maxWidth)) {
 for (const k of Object.keys(ext.transitionDuration)) add(`duration-${k}`, `transitionDuration.${k}`, `@utility duration-${k}`);
 for (const k of Object.keys(ext.opacity)) add(`opacity-${kebab(k)}`, `opacity.${k}`, `@utility opacity-${kebab(k)}`);
 // borderWidth.none is Tailwind's own border-none (border-style: none): no MCTL declaration.
-for (const k of Object.keys(ext.borderWidth)) add(`border-${k}`, `borderWidth.${k}`, k === 'none' ? null : `@utility border-${k}`);
+for (const k of Object.keys(ext.borderWidth)) {
+  if (k === 'none') {
+    add('border-none', 'borderWidth.none', null);
+    continue;
+  }
+  for (const side of ['', 'x', 'y', 't', 'r', 'b', 'l', 's', 'e']) {
+    const utility = `border${side && `-${side}`}-${k}`;
+    add(utility, `borderWidth.${k}${side && ` (${side})`}`, `@utility ${utility}`);
+  }
+}
+// v3 also reads theme.opacity as the colour-opacity modifier (bg-accent/disabled).
+// v4 modifiers take a number or (--var), so the README routes these to the raw
+// token, which theme.css must define.
+for (const k of Object.keys(ext.opacity)) {
+  add(`bg-accent/(--mctl-opacity-${kebab(k)})`, `opacity.${k} (modifier)`, `theme:--mctl-opacity-${kebab(k)}`);
+}
 for (const k of Object.keys(ext.outlineWidth)) add(`outline-${k}`, `outlineWidth.${k}`, `@utility outline-${k}`);
 for (const k of Object.keys(ext.outlineOffset)) add(`outline-offset-${k}`, `outlineOffset.${k}`, `@utility outline-offset-${k}`);
 const covered = new Set([
@@ -156,6 +177,8 @@ const declared = new Set([...tw.matchAll(/^\s*(--[\w-]+)\s*:/gm)].map((m) => m[1
 for (const [candidate, [key, source]] of parity) {
   if (source?.startsWith('--') && !declared.has(source)) {
     problems.push(`tailwind v4 parity: ${key} -> tailwind.css does not declare ${source}`);
+  } else if (source?.startsWith('theme:') && !themeVars.has(source.slice(6))) {
+    problems.push(`tailwind v4 parity: ${key} -> theme.css does not define ${source.slice(6)}`);
   } else if (source?.startsWith('@utility') && !tw.includes(`${source} {`)) {
     problems.push(`tailwind v4 parity: ${key} -> tailwind.css has no ${source}`);
   }

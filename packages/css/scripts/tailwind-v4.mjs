@@ -127,8 +127,22 @@ export function tailwindV4Css(t, version) {
   const u = (name, decl) => utilities.push(`@utility ${name} {\n  ${decl};\n}`);
   for (const [k, v] of Object.entries(motion.duration)) u(`duration-${k}`, `transition-duration: ${v}`);
   for (const [k, v] of Object.entries(opacity)) u(`opacity-${kebab(k)}`, `opacity: ${v}`);
+  // v3's borderWidth scale also yields the per-side utilities (border-b-hairline
+  // as a divider is the common one), so each width gets all nine shapes.
+  const SIDES = {
+    '': 'border-width',
+    x: 'border-inline-width',
+    y: 'border-block-width',
+    t: 'border-top-width',
+    r: 'border-right-width',
+    b: 'border-bottom-width',
+    l: 'border-left-width',
+    s: 'border-inline-start-width',
+    e: 'border-inline-end-width',
+  };
   for (const [k, v] of Object.entries(border.width)) {
-    if (k !== 'none') u(`border-${k}`, `border-width: ${v}`);
+    if (k === 'none') continue;
+    for (const [side, prop] of Object.entries(SIDES)) u(`border${side && `-${side}`}-${k}`, `${prop}: ${v}`);
   }
   u('outline-focus', 'outline-width: var(--focus-ring-width)');
   u('outline-offset-focus', 'outline-offset: var(--focus-ring-offset)');
