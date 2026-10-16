@@ -62,12 +62,12 @@ function onKeydown(event: KeyboardEvent, index: number) {
         :id="tabId(i)"
         :key="tab.value"
         class="m-tabs__tab"
-        :class="{ 'm-tabs__tab--active': tab.value === active }"
+        :class="{ 'm-tabs__tab--active': i === activeIndex }"
         type="button"
         role="tab"
-        :aria-selected="tab.value === active"
+        :aria-selected="i === activeIndex"
         :aria-controls="panelId"
-        :tabindex="tab.value === active ? 0 : -1"
+        :tabindex="i === activeIndex ? 0 : -1"
         @click="select(tab.value)"
         @keydown="onKeydown($event, i)"
       >
@@ -78,7 +78,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
       :id="panelId"
       class="m-tabs__panel"
       role="tabpanel"
-      :aria-labelledby="tabId(activeIndex)"
+      :aria-labelledby="tabs.length ? tabId(activeIndex) : undefined"
       tabindex="0"
     >
       <slot :active="active" />

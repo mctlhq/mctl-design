@@ -70,6 +70,21 @@ describe('MTabs', () => {
     );
   });
 
+  it('selects a single tab when values repeat', () => {
+    const dup = [
+      { label: 'A', value: 'x' },
+      { label: 'B', value: 'x' },
+    ];
+    const wrapper = mount(MTabs, { props: { tabs: dup, modelValue: 'x' } });
+    expect(wrapper.findAll('[role="tab"][aria-selected="true"]')).toHaveLength(1);
+    expect(wrapper.findAll('[role="tab"][tabindex="0"]')).toHaveLength(1);
+  });
+
+  it('does not point the panel at a missing tab when the list is empty', () => {
+    const wrapper = mount(MTabs, { props: { tabs: [] } });
+    expect(wrapper.find('[role="tabpanel"]').attributes('aria-labelledby')).toBeUndefined();
+  });
+
   it('has no axe violations', async () => {
     const wrapper = mount(MTabs, { props: { tabs }, attachTo: document.body });
     await expectNoAxeViolations(wrapper.element);

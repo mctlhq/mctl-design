@@ -31,16 +31,22 @@ const themeVars = new Set([...readFileSync(THEME, 'utf8').matchAll(/(--[\w-]+)\s
 // A `reference` block is never emitted, so `--shadow-sm: var(--shadow-sm)`
 // there only tells utilities which runtime var to use. In an emitted block the
 // same line would be a self-reference that voids theme.css's value.
+let refs = 0;
 for (const [, options, body] of tw.matchAll(/@theme([^{]*)\{([^}]*)\}/g)) {
   const emitted = !/\breference\b/.test(options);
   for (const [, name, value] of body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
     for (const [, ref] of value.matchAll(/var\((--[\w-]+)\)/g)) {
+      refs++;
       if (ref === name && emitted) problems.push(`${TW}: ${name} references itself in an emitted @theme block`);
       else if (ref !== name && !themeVars.has(ref)) problems.push(`${TW}: ${name} uses ${ref}, which theme.css does not define`);
       else if (ref === name && !themeVars.has(ref)) problems.push(`${TW}: ${name} points at ${ref}, which theme.css does not define`);
     }
   }
 }
+
+// Zero references checked would read exactly like all references passing:
+// a parser that stopped matching the generator's output must fail, not pass.
+if (refs === 0) problems.push(`${TW}: no var() references found -- the @theme parser no longer matches this file`);
 
 // tokens.dtcg.json
 const dtcg = JSON.parse(readFileSync(DTCG, 'utf8'));
@@ -72,4 +78,4 @@ if (problems.length) {
   console.error(`\ncheck-generated: ${problems.length} problem(s).`);
   process.exit(1);
 }
-console.log(`check-generated: tailwind.css and ${leaves.size} DTCG tokens are consistent.`);
+console.log(`check-generated: ${refs} tailwind.css references and ${leaves.size} DTCG tokens are consistent.`);

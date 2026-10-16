@@ -11,9 +11,11 @@
 // <group><Key> wins (syntax.dark.punctuation -> color.syntaxPunctuation, not
 // color.fg3, declared first with the same value); otherwise the first declared
 // does. A by-value recovery can still pick a twin the source did not name;
-// tokens.dtcg.json is checked for dangling aliases, not for that. Values the format has no type for (clamp(), em letter spacing,
-// "none") keep their CSS text in $value with no $type, and are marked under
-// $extensions so a tool can skip them deliberately rather than choke.
+// tokens.dtcg.json is checked for dangling aliases, not for that.
+//
+// Values the format has no type for (clamp(), em letter spacing, "none") keep
+// their CSS text in $value with no $type, and are marked under $extensions so
+// a tool can skip them deliberately rather than choke.
 
 const ALIASED_GROUPS = new Set(['surface', 'accent', 'status', 'syntax']);
 const EXT = 'ai.mctl';
