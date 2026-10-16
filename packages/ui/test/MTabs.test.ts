@@ -70,6 +70,26 @@ describe('MTabs', () => {
     );
   });
 
+  it('moves focus before an asynchronously controlled model catches up', async () => {
+    // A listener that does not write back: the parent has not applied the
+    // emitted value yet, as with a router push still resolving. (Without any
+    // listener defineModel would update its local copy itself.)
+    const updates: string[] = [];
+    const wrapper = mount(MTabs, {
+      props: { tabs, modelValue: 'one', 'onUpdate:modelValue': (v: string) => updates.push(v) },
+      attachTo: document.body,
+    });
+    await wrapper.find('[role="tab"][tabindex="0"]').trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+    expect(updates).toEqual(['two words']);
+    expect(selected(wrapper)).toBe('One');
+    expect(document.activeElement?.textContent?.trim()).toBe('Two');
+    await wrapper.setProps({ modelValue: 'two words' });
+    expect(selected(wrapper)).toBe('Two');
+    expect(document.activeElement?.getAttribute('tabindex')).toBe('0');
+    wrapper.unmount();
+  });
+
   it('selects a single tab when values repeat', async () => {
     const dup = [
       { label: 'A', value: 'x' },

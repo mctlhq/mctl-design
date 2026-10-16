@@ -37,11 +37,12 @@ function select(value: string) {
   model.value = value;
 }
 
-// Roving arrow-key navigation across the tab list. Move DOM focus to the tab
-// that ends up selected so subsequent arrow presses keep working (the prior
-// tab becomes tabindex="-1"). That is activeIndex, not `next`: with a repeated
-// value select() is a no-op, and focusing `next` would strand focus on an
-// unselected tabindex="-1" tab.
+// Roving arrow-key navigation across the tab list. Move DOM focus to the newly
+// selected tab so subsequent arrow presses keep working (the prior tab becomes
+// tabindex="-1"). Focus goes to `next` even before the model catches up, so a
+// parent that applies v-model asynchronously (a router push) still roves.
+// Only when `next` repeats the current value is select() a no-op; focus then
+// stays on the selected tab rather than an unselected tabindex="-1" one.
 function onKeydown(event: KeyboardEvent, index: number) {
   const last = props.tabs.length - 1;
   let next = -1;
@@ -51,8 +52,9 @@ function onKeydown(event: KeyboardEvent, index: number) {
   else if (event.key === 'End') next = last;
   if (next !== -1) {
     event.preventDefault();
+    const target = props.tabs[next].value === props.tabs[index].value ? activeIndex.value : next;
     select(props.tabs[next].value);
-    nextTick(() => document.getElementById(tabId(activeIndex.value))?.focus());
+    nextTick(() => document.getElementById(tabId(target))?.focus());
   }
 }
 </script>
