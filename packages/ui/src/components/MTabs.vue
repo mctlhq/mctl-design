@@ -60,7 +60,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
       <button
         v-for="(tab, i) in tabs"
         :id="tabId(i)"
-        :key="tab.value"
+        :key="i"
         class="m-tabs__tab"
         :class="{ 'm-tabs__tab--active': i === activeIndex }"
         type="button"

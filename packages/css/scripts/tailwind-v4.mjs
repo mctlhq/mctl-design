@@ -18,22 +18,19 @@
 // overriding of p-5 / p-10 / p-20 is exactly the surprise to avoid here. It is
 // available as p-mctl-5 etc.
 //
-// Not carried, because v4 has no theme namespace for them: the preset's
-// transitionDuration, opacity, borderWidth and outlineWidth/outlineOffset
-// keys. Their tokens are still CSS variables in theme.css, so v4 reaches them
-// with the var() shorthand (duration-(--mctl-motion-duration-base)); the
-// README lists each one, and scripts/check-generated.mjs fails on any preset
-// key that is neither emitted here nor on that documented list.
-//
-// Verified against tailwindcss 4.3 by compiling every mapped utility: no
-// self-referencing variable is emitted, and opacity modifiers on the runtime
-// colours (bg-accent/50) work through color-mix, which the v3 preset's hex
-// var() values never could.
+// Families with no v4 theme namespace -- the preset's transitionDuration,
+// opacity, borderWidth and outlineWidth/outlineOffset -- are emitted as
+// @utility blocks, so duration-base, opacity-disabled, border-hairline and
+// outline-focus keep their v3 names. The one exception is border-none:
+// Tailwind's own border-none (border-style: none) already exists and already
+// removes the border, so it is not redefined. scripts/check-generated.mjs
+// compiles every preset key against this sheet and fails on one that neither
+// works nor is a documented difference in the README.
 
 const kebab = (s) => String(s).replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 
 export function tailwindV4Css(t, version) {
-  const { color, hue, space, layout, radius, breakpoint, icon, control, motion } = t;
+  const { color, hue, space, layout, radius, breakpoint, icon, control, motion, opacity, border } = t;
   const { fontWeight, fontSize, lineHeight, letterSpacing } = t.typography;
 
   const stat = [];
@@ -126,6 +123,16 @@ export function tailwindV4Css(t, version) {
   for (const [k, v] of Object.entries(breakpoint)) s(`breakpoint-${k}`, v);
   for (const [k, v] of Object.entries(motion.easing)) s(`ease-${kebab(k)}`, v);
 
+  const utilities = [];
+  const u = (name, decl) => utilities.push(`@utility ${name} {\n  ${decl};\n}`);
+  for (const [k, v] of Object.entries(motion.duration)) u(`duration-${k}`, `transition-duration: ${v}`);
+  for (const [k, v] of Object.entries(opacity)) u(`opacity-${kebab(k)}`, `opacity: ${v}`);
+  for (const [k, v] of Object.entries(border.width)) {
+    if (k !== 'none') u(`border-${k}`, `border-width: ${v}`);
+  }
+  u('outline-focus', 'outline-width: var(--focus-ring-width)');
+  u('outline-offset-focus', 'outline-offset: var(--focus-ring-offset)');
+
   return `/* @mctlhq/css ${version} — Tailwind v4 theme. Import after "tailwindcss" and theme.css. */
 @theme {
 ${stat.join('\n')}
@@ -134,5 +141,7 @@ ${stat.join('\n')}
 @theme inline reference {
 ${runtime.join('\n')}
 }
+
+${utilities.join('\n\n')}
 `;
 }

@@ -75,14 +75,17 @@ const expected = {
   'max-w-pagew': 'max-width: var(--spacing-pagew)',
   // The MCTL scale must not clobber Tailwind's own numeric keys.
   'p-5': 'padding: calc(var(--spacing) * 5)',
+  'duration-base': 'transition-duration: 200ms',
+  'outline-focus': 'outline-width: var(--focus-ring-width)',
 };
 const built = compiler.build(Object.keys(expected));
 for (const [utility, declaration] of Object.entries(expected)) {
   const selector = `.${utility.replace('/', '\\/')} {`;
   const start = built.indexOf(selector);
-  const rule = start === -1 ? '' : built.slice(start, built.indexOf('\n  }', start));
-  if (!rule) problems.push(`tailwind v4: ${utility} produced no rule`);
-  else if (!rule.includes(declaration)) problems.push(`tailwind v4: ${utility} does not contain "${declaration}"`);
+  const end = start === -1 ? -1 : built.indexOf('\n  }', start);
+  if (start === -1) problems.push(`tailwind v4: ${utility} produced no rule`);
+  else if (end === -1) problems.push(`tailwind v4: cannot delimit the ${utility} rule -- the compiled output format changed`);
+  else if (!built.slice(start, end).includes(declaration)) problems.push(`tailwind v4: ${utility} does not contain "${declaration}"`);
 }
 for (const [, name, ref] of built.matchAll(/(--[\w-]+):\s*var\((--[\w-]+)\);/g)) {
   if (name === ref) problems.push(`tailwind v4: compiled output emits self-referencing ${name}`);
@@ -115,14 +118,15 @@ for (const k of Object.keys(ext.width)) add(`w-${k}`, `width.${k}`);
 for (const k of Object.keys(ext.height)) add(`h-${k}`, `height.${k}`);
 for (const k of Object.keys(ext.transitionTimingFunction)) add(`ease-${k}`, `transitionTimingFunction.${k}`);
 // Documented differences (README, "Tailwind -- npm"): the v4 replacement.
-const kebab = (s) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+const kebab = (str) => str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 add('max-w-pagew', 'maxWidth.page');
 add('max-w-(--container-prose)', 'maxWidth.prose');
-for (const k of Object.keys(ext.transitionDuration)) add(`duration-(--mctl-motion-duration-${k})`, `transitionDuration.${k}`);
-for (const k of Object.keys(ext.opacity)) add(`opacity-(--mctl-opacity-${kebab(k)})`, `opacity.${k}`);
-for (const k of Object.keys(ext.borderWidth)) add(`border-(length:--mctl-border-width-${k})`, `borderWidth.${k}`);
-add('outline-(length:--focus-ring-width)', 'outlineWidth.focus');
-add('outline-offset-(--focus-ring-offset)', 'outlineOffset.focus');
+for (const k of Object.keys(ext.transitionDuration)) add(`duration-${k}`, `transitionDuration.${k}`);
+for (const k of Object.keys(ext.opacity)) add(`opacity-${kebab(k)}`, `opacity.${k}`);
+// borderWidth.none is Tailwind's own border-none (border-style: none).
+for (const k of Object.keys(ext.borderWidth)) add(`border-${k}`, `borderWidth.${k}`);
+add('outline-focus', 'outlineWidth.focus');
+add('outline-offset-focus', 'outlineOffset.focus');
 const covered = new Set([
   'colors', 'fontFamily', 'fontWeight', 'fontSize', 'letterSpacing', 'spacing', 'borderRadius',
   'boxShadow', 'screens', 'width', 'height', 'transitionTimingFunction', 'maxWidth',
