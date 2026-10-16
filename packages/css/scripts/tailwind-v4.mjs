@@ -147,9 +147,14 @@ export function tailwindV4Css(t, version) {
   };
   for (const [k, v] of Object.entries(border.width)) {
     if (k === 'none') continue;
-    // border-style too, as Tailwind's border-<n> does, so a width alone shows.
+    // The matching side's style too, as Tailwind's border-<n> does, so
+    // border-dashed still composes. With a fallback: Tailwind only registers
+    // @property --tw-border-style when one of its own border utilities is
+    // used, and an unset var() here would make the style `none` -- an
+    // invisible border.
     for (const [side, prop] of Object.entries(SIDES)) {
-      u(`border${side && `-${side}`}-${k}`, `border-style: var(--tw-border-style);\n  ${prop}: ${v}`);
+      const style = prop.replace('-width', '-style');
+      u(`border${side && `-${side}`}-${k}`, `${style}: var(--tw-border-style, solid);\n  ${prop}: ${v}`);
     }
   }
   u('outline-focus', 'outline-width: var(--focus-ring-width)');

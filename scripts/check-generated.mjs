@@ -93,6 +93,9 @@ const expected = {
   'opacity-50': 'opacity: 50%',
   'border-2': 'border-width: 2px',
   // ...and next to the per-side @utility shapes, physical and logical.
+  // A lone MCTL border utility must still draw: Tailwind registers
+  // --tw-border-style only for its own utilities, so the fallback matters.
+  'border-b-hairline': 'border-bottom-style: var(--tw-border-style, solid)',
   'border-t-2': 'border-top-width: 2px',
   'border-x-2': 'border-inline-width: 2px',
   // --tw-duration is what .transition reads, so this is the order-independent part.
