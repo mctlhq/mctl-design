@@ -1,3 +1,9 @@
+// The devDependency is tailwindcss 4 while the preset targets the ^3.4.0 peer:
+// tailwindcss 3 cannot be installed without braces@3, whose advisory
+// (GHSA-vfj7-8cjw-p6xm) has no patched release. v4 still exports `Config` as
+// its legacy JS-config type (`UserConfig`, kept for `@config`), which is the v3
+// config shape -- so `satisfies` below still guards that shape, but it is v4's
+// copy of it. A v3-only key that v4 dropped would not be caught here.
 import type { Config } from 'tailwindcss';
 import {
   color,
