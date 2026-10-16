@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # check:token-version diffs against origin/main, and a branch that
           # started more than a shallow fetch behind it has no merge base
