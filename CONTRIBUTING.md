@@ -129,19 +129,11 @@ that would make that assumption wrong for a future advisory.
 
 ### Audit exceptions
 
-`pnpm.auditConfig.ignoreGhsas` in the root `package.json` lists advisories the
-audit gate skips. Each entry needs every one of these: no patched release
-exists in any version line the tree can use, the package does not reach a
-published `@mctlhq/*` package or the nginx image, and the maintainer approved
-it. Re-check each entry whenever its parent releases, and remove it once a fix
-can be resolved. `ignoreGhsas` is global, not scoped to a path, so the re-check
-is also `pnpm why <package>`: if the package ever appears under a published
-package's `dependencies`, the exception no longer holds, and nothing else
-will say so.
-
-| GHSA | Package | Why it is excepted |
-| --- | --- | --- |
-| `GHSA-hp3w-g68c-fv3c` | `sprintf-js@1.0.3` (DoS on unbounded precision specifiers) | Reached only through `@microsoft/api-extractor` → `@rushstack/ts-command-line` → `argparse@1`, pulled in by `vite-plugin-dts` (builds `@mctlhq/ui`'s `.d.ts`) and `tsup`. The advisory covers every release (`<= 1.1.3`, no patched version, per the GitHub advisory database), and the latest api-extractor (7.59.4) still pins `argparse ~1.0.9`. Build-time only, fed our own sources, so the input that triggers it is not reachable. Drop when rushstack moves off `argparse@1`. |
+There are no ignored advisories. `sprintf-js` and its API Extractor dependency
+chain were removed by replacing `vite-plugin-dts` with `vue-tsc` declaration
+emission followed by `rollup-plugin-dts` bundling. The published UI entry still
+contains the component declarations rather than references to unshipped files.
+`tsup` does not use its optional API Extractor peer for the tokens/CSS builds.
 
 ## tailwindcss in @mctlhq/css
 
@@ -160,17 +152,13 @@ on which major was installed.
 
 ## The vite toolchain
 
-`vite`, `@vitejs/plugin-vue` and `vite-plugin-dts` are declared once in the
+`vite` and `@vitejs/plugin-vue` are declared once in the
 `catalog:` block of `pnpm-workspace.yaml`.
 
 `vite` and `@vitejs/plugin-vue` are the shared ones — `packages/ui` and
 `apps/storybook` both declared the same range and had to be kept in step by
 hand, and the catalog makes the next major a one-line change. Add anything
 else both of them consume here rather than to two manifests.
-
-`vite-plugin-dts` has a single consumer (`packages/ui`) and is catalogued
-anyway, so the whole vite toolchain and the reason each version is where it is
-live in one file — in particular the note explaining why it is held at 4.x.
 
 `packages/ui` also pins `build.target` explicitly rather than taking vite's
 default, so the published browser floor of `@mctlhq/ui` does not move when
