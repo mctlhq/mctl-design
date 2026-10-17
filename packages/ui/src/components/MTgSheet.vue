@@ -104,7 +104,7 @@ useDialog({ dialog: sheetRef, overlay: rootRef, open: () => props.modelValue, on
 }
 
 .m-tg-sheet__title {
-  font-family: var(--font-display);
+  font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 17px;
   font-weight: 600;
   color: var(--tg-ink, #15171b);

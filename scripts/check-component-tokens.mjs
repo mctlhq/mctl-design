@@ -7,15 +7,19 @@
 // var() on purpose, for Mini Apps that load telegram.css without theme.css.
 //
 // Every component, MTg included, is also checked for a var() with no
-// fallback whose name nothing defines -- the built @mctlhq/css sheets, a
-// `--name:` in a component, or a `'--name'` key bound through :style. Such
-// a declaration is invalid at computed-value time and silently drops out
-// (MModal and MTooltip had no shadow until 0.12.x for exactly this). Reads
-// packages/css/dist, so run after `pnpm build`.
+// fallback whose name nothing it can rely on defines: a component may rely
+// on theme.css, global.css and prose.css, an MTg component on telegram.css
+// alone, and either on what the same file defines (a `--name:` declaration,
+// or a `'--name'` key of a :style binding). Such a declaration is invalid
+// at computed-value time and silently drops out (MModal and MTooltip had no
+// shadow until 0.12.1 for exactly this). Comments are ignored on both sides,
+// and `--x: var(--x)` defines nothing (tailwind.css re-exports that way).
+// Reads packages/css/dist, so run after `pnpm build`.
 //
 // Known limits, so nobody reads more into a pass than it says:
-// - only <style> blocks are read; a literal in a template `style` or
-//   `:style` binding is not seen;
+// - the literal rules read only <style> blocks; a literal in a template
+//   `style` or `:style` binding is not seen;
+// - a double-quoted or computed :style key is not seen as a definition;
 // - the MTg exemption covers the whole file, not just its var() fallbacks;
 // - easings are not checked: MTgSheet keeps a curve no token matches;
 // - only box-shadow is checked for shadows: text-shadow and
@@ -95,19 +99,30 @@ export function findLiterals(source) {
   return found;
 }
 
-// Custom properties a source defines: `--name:` declarations, and `'--name'`
-// keys of a :style binding.
+// CSS and HTML comments blanked out, keeping offsets (and so line numbers).
+export function stripComments(source) {
+  return source.replace(/\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g, (c) => c.replace(/[^\n]/g, ' '));
+}
+
+// Custom properties a source defines: `--name:` declarations that are not
+// a bare `var(--name)` of themselves, and `'--name'` keys of a :style
+// binding.
 export function definedIn(source) {
+  const text = stripComments(source);
   return [
-    ...[...source.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]),
-    ...[...source.matchAll(/'(--[\w-]+)'/g)].map((m) => m[1]),
+    ...[...text.matchAll(/(--[\w-]+)\s*:\s*([^;{}]*)/g)]
+      .filter(([, name, value]) => value.trim() !== `var(${name})`)
+      .map((m) => m[1]),
+    ...[...text.matchAll(/:style="([^"]*)"/g)].flatMap(([, binding]) =>
+      [...binding.matchAll(/'(--[\w-]+)'/g)].map((m) => m[1]),
+    ),
   ];
 }
 
 // var(--name) with no fallback, where nothing defines --name.
 export function findUndefined(source, defined) {
   const found = [];
-  for (const m of source.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)) {
+  for (const m of stripComments(source).matchAll(/var\(\s*(--[\w-]+)\s*\)/g)) {
     if (!defined.has(m[1])) {
       found.push({ line: source.slice(0, m.index).split('\n').length, name: m[1] });
     }
@@ -128,12 +143,17 @@ if (process.argv.includes('--selftest')) {
 .c { outline-offset: calc(-1 * var(--focus-ring-offset)); margin: 0 1px; box-shadow: var(--control-focus-shadow); }
 .d { box-shadow: 0 0 0 var(--focus-ring-width) color-mix(in srgb, var(--accent) 20%, transparent); }
 </style>`;
-  // An undefined name without a fallback is caught; a defined one, one with
-  // a fallback, and one the component defines itself are not.
+  // Caught: an undefined name without a fallback, one only "defined" as a
+  // self-reference, in a comment or by a mere quoted read. Not caught: a
+  // defined name, one with a fallback, one the file defines itself, and a
+  // var() inside a comment.
   const vars = `<style>
 .a { --local: 1px; box-shadow: var(--mctl-shadow-overlay); color: var(--surface-fg); }
 .b { width: var(--local); height: var(--bound); z-index: var(--nowhere, 1); }
-</style><div :style="{ '--bound': '1px' }" />`;
+.c { --selfref: var(--selfref); color: var(--selfref); /* --commented: 1px; var(--gone) */ }
+.d { width: var(--commented); height: var(--read); }
+</style><div :style="{ '--bound': '1px' }" /><!-- var(--html-comment) -->
+<script>getComputedStyle(el).getPropertyValue('--read');</script>`;
   const defined = new Set(['--surface-fg', ...definedIn(vars)]);
   const undef = findUndefined(vars, defined).map((f) => f.name);
   const badFound = findLiterals(bad).map((f) => f.why);
@@ -144,10 +164,10 @@ if (process.argv.includes('--selftest')) {
     problems.push(
       `bad fixture reported\n    ${badFound.join('\n    ')}\n  expected\n    ${expected.join('\n    ')}`,
     );
-  if (undef.join(' ') !== '--mctl-shadow-overlay')
-    problems.push(
-      `undefined vars reported: ${undef.join(' ') || 'none'}, expected --mctl-shadow-overlay`,
-    );
+  // --selfref twice: its own declaration's value is an undefined use too.
+  const wantUndef = '--mctl-shadow-overlay --selfref --selfref --commented --read';
+  if (undef.join(' ') !== wantUndef)
+    problems.push(`undefined vars reported: ${undef.join(' ') || 'none'}, expected ${wantUndef}`);
   if (goodFound.length)
     problems.push(
       `false positives in the good fixture: ${goodFound.map((f) => f.text).join('; ')}`,
@@ -163,26 +183,30 @@ if (process.argv.includes('--selftest')) {
 }
 
 const cssDist = join(root, 'packages/css/dist');
-if (!existsSync(cssDist)) {
-  console.error('check-component-tokens: packages/css/dist is missing -- run `pnpm build` first.');
-  process.exit(1);
-}
+const sheet = (name) => {
+  const path = join(cssDist, name);
+  if (!existsSync(path)) {
+    console.error(`check-component-tokens: ${path} is missing -- run \`pnpm build\` first.`);
+    process.exit(1);
+  }
+  return definedIn(readFileSync(path, 'utf8'));
+};
+// What each family of component may rely on being loaded.
+const themeDefined = ['theme.css', 'global.css', 'prose.css'].flatMap(sheet);
+const telegramDefined = sheet('telegram.css');
 // Recursive, so a component moved into a subdirectory stays covered.
 const all = readdirSync(dir, { recursive: true }).filter((f) => f.endsWith('.vue'));
 const sources = Object.fromEntries(all.map((f) => [f, readFileSync(join(dir, f), 'utf8')]));
-const defined = new Set([
-  ...readdirSync(cssDist)
-    .filter((f) => f.endsWith('.css'))
-    .flatMap((f) => definedIn(readFileSync(join(cssDist, f), 'utf8'))),
-  ...Object.values(sources).flatMap(definedIn),
-]);
-const files = all.filter((f) => !basename(f).startsWith('MTg'));
+const isTelegram = (f) => basename(f).startsWith('MTg');
+const definedFor = (f) =>
+  new Set([...(isTelegram(f) ? telegramDefined : themeDefined), ...definedIn(sources[f])]);
+const files = all.filter((f) => !isTelegram(f));
 const failures = [
   ...files.flatMap((f) =>
     findLiterals(sources[f]).map((x) => `${f}:${x.line}  ${x.text}  -- ${x.why}`),
   ),
   ...all.flatMap((f) =>
-    findUndefined(sources[f], defined).map(
+    findUndefined(sources[f], definedFor(f)).map(
       (x) =>
         `${f}:${x.line}  var(${x.name})  -- nothing defines ${x.name} and there is no fallback`,
     ),
