@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # --- Build stage: compile packages and the static Storybook bundle ---
-FROM node:22-alpine AS builder
+FROM node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 AS builder
 WORKDIR /app
 RUN corepack enable
 
@@ -18,8 +18,9 @@ RUN pnpm build && pnpm build:storybook
 # /tmp, so the container needs no capabilities and works with a read-only
 # root filesystem (base-service step-2 defaults). The numeric USER lets the
 # kubelet verify runAsNonRoot.
-FROM nginxinc/nginx-unprivileged:1.30-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:1.30-alpine@sha256:782bb89768cc87b7f95c18b95baa1af250e5d451f26794f59363540161147c01 AS runtime
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY --from=builder /app/apps/storybook/storybook-static /usr/share/nginx/html
 USER 101:101
 EXPOSE 8080
