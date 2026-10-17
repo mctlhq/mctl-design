@@ -40,12 +40,24 @@ const FOCUSABLE = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
-function isVisible(el: HTMLElement): boolean {
+function isTabbable(el: HTMLElement): boolean {
+  // Taken out of the tab order on purpose, whatever its tag.
+  const tabindex = el.getAttribute('tabindex');
+  if (tabindex !== null && Number(tabindex) < 0) return false;
   if (el.closest('[hidden], [inert]')) return false;
-  // checkVisibility covers display:none and closed <details>; environments
-  // without it (older browsers, jsdom) keep the element.
-  const check = (el as HTMLElement & { checkVisibility?: () => boolean }).checkVisibility;
-  return check ? check.call(el) : true;
+  // checkVisibility covers display:none, closed <details> and, with the
+  // option, visibility:hidden (which browsers refuse to focus). The option has
+  // two names: visibilityProperty, and checkVisibilityCSS in browsers that
+  // predate it (Safari 17). Environments without it (jsdom) keep the element.
+  const check = (
+    el as HTMLElement & {
+      checkVisibility?: (options?: {
+        visibilityProperty?: boolean;
+        checkVisibilityCSS?: boolean;
+      }) => boolean;
+    }
+  ).checkVisibility;
+  return check ? check.call(el, { visibilityProperty: true, checkVisibilityCSS: true }) : true;
 }
 
 /** The overlay's ancestor that is a direct child of <body>. */
@@ -147,12 +159,14 @@ export function useDialog(options: DialogOptions) {
   function focusables(): HTMLElement[] {
     const root = options.dialog.value;
     if (!root) return [];
-    return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(isVisible);
+    return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(isTabbable);
   }
 
   function onKeydown(event: KeyboardEvent) {
     if (!isTopmost()) return;
     if (event.key === 'Escape') {
+      // Escape during IME composition cancels the composition, not the dialog.
+      if (event.isComposing) return;
       if (dismissible()) {
         event.preventDefault();
         options.onDismiss();

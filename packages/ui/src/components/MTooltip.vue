@@ -97,7 +97,7 @@ onBeforeUnmount(() => {
   position: absolute;
   left: 50%;
   transform: translateX(-50%) translateY(4px);
-  z-index: var(--mctl-z-index-overlay, 1000);
+  z-index: var(--mctl-z-index-overlay, 800);
   /* Long text wraps instead of running off the viewport. */
   width: max-content;
   max-width: min(20rem, calc(100vw - 2 * var(--mctl-space-4)));

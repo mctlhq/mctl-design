@@ -38,6 +38,11 @@ headings below and are all included in 0.8.0.
 - `MTooltip` meets WCAG 1.4.13: Escape hides it without moving focus (and
   does not also close a dialog around it), the pointer can move onto the
   bubble, and long text wraps instead of overflowing. (#111)
+- `MModal` and `MTgSheet`: the focus trap skips controls with a negative
+  `tabindex` or `visibility: hidden`, Escape that cancels IME composition no
+  longer closes the dialog, and the z-index fallback without `mctl.css` is
+  900, matching the token. `MTooltip`'s fallback is 800, also matching its
+  token. (#112)
 - `MAlert` is `role="alert"` only for `tone="bad"`; `info` and `warn` are
   `role="status"`, and `live="none"` renders a static notice. Before, every
   alert interrupted screen readers. (#113)

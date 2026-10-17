@@ -40,6 +40,68 @@ describe('MModal dialog behaviour', () => {
     wrapper.unmount();
   });
 
+  it('leaves out controls removed from the tab order', async () => {
+    const wrapper = mount(MModal, {
+      props: { open: true, title: 'Settings', dismissible: false },
+      slots: {
+        default: () => [
+          h('button', 'First'),
+          h('button', 'Last'),
+          h('button', { tabindex: '-1' }, 'Skipped'),
+        ],
+      },
+      attachTo: document.body,
+    });
+    await flushPromises();
+    const [first, last] = Array.from(dialog().querySelectorAll('button'));
+    last.focus();
+    key('Tab');
+    expect(document.activeElement).toBe(first);
+    wrapper.unmount();
+  });
+
+  it('leaves out controls the browser reports as not visible', async () => {
+    // jsdom has no checkVisibility; stand in for a browser that has it.
+    const seen: unknown[] = [];
+    Object.defineProperty(HTMLElement.prototype, 'checkVisibility', {
+      configurable: true,
+      value(this: HTMLElement, options: unknown) {
+        seen.push(options);
+        return this.textContent !== 'Hidden';
+      },
+    });
+    try {
+      const wrapper = mount(MModal, {
+        props: { open: true, title: 'Settings', dismissible: false },
+        slots: {
+          default: () => [h('button', 'First'), h('button', 'Last'), h('button', 'Hidden')],
+        },
+        attachTo: document.body,
+      });
+      await flushPromises();
+      const [first, last] = Array.from(dialog().querySelectorAll('button'));
+      last.focus();
+      key('Tab');
+      expect(document.activeElement).toBe(first);
+      expect(seen[0]).toEqual({ visibilityProperty: true, checkVisibilityCSS: true });
+      wrapper.unmount();
+    } finally {
+      Reflect.deleteProperty(HTMLElement.prototype, 'checkVisibility');
+    }
+  });
+
+  it('does not close on an Escape that cancels IME composition', async () => {
+    const wrapper = modalWithButtons();
+    await flushPromises();
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', isComposing: true, bubbles: true }),
+    );
+    expect(wrapper.emitted('update:open')).toBeUndefined();
+    key('Escape');
+    expect(wrapper.emitted('update:open')?.[0]).toEqual([false]);
+    wrapper.unmount();
+  });
+
   it('makes the rest of the page inert while open and restores it on close', async () => {
     const app = document.createElement('div');
     app.id = 'app';
