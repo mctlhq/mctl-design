@@ -15,8 +15,7 @@ RUN pnpm build && pnpm build:storybook
 
 # --- Runtime stage: nginx serving the static showcase. No Node runtime. ---
 # nginx-unprivileged runs as uid 101 and keeps its pid and temp files under
-# /tmp, so (once the transitional port-80 listener in nginx.conf is gone)
-# the container needs no capabilities and works with a read-only
+# /tmp, so the container needs no capabilities and works with a read-only
 # root filesystem (base-service step-2 defaults). The numeric USER lets the
 # kubelet verify runAsNonRoot.
 FROM nginxinc/nginx-unprivileged:1.30-alpine AS runtime
