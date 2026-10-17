@@ -263,8 +263,9 @@ scale to documentation headings. Adapters retain engine-specific article
 width, sidebar, table overflow and mobile navigation.
 
 Forms use `--control-bg`, `--control-disabled-bg`, `--control-border`,
-`--control-focus-shadow` and, on an invalid field, `--control-focus-shadow-invalid`. Feedback uses `--status-{ok,warn,bad}-soft` with the
-matching foreground. Overlays use `--overlay-scrim` and `--shadow-overlay`;
+`--control-focus-shadow` and, on an invalid field,
+`--control-focus-shadow-invalid`. Feedback uses `--status-{ok,warn,bad}-soft`
+with the matching foreground. Overlays use `--overlay-scrim` and `--shadow-overlay`;
 public background grids use `--site-grid-line`. Derived colors recompute at
 every scoped theme or accent boundary, and the two attributes nest
 independently, so `data-accent="cyan"` inside `data-theme="light"` gets the
