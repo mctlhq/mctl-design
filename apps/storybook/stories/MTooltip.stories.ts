@@ -5,6 +5,14 @@ const meta: Meta<typeof MTooltip> = {
   title: 'Components/MTooltip',
   component: MTooltip,
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Shown on hover or when the slotted control has focus (WCAG 1.4.13): Escape hides it without moving focus, the pointer can move onto the bubble, and long text wraps. Pass `tipId` to the control as `aria-describedby`.',
+      },
+    },
+  },
   argTypes: {
     text: { control: 'text' },
     placement: { control: 'inline-radio', options: ['top', 'bottom'] },
@@ -30,3 +38,8 @@ type Story = StoryObj<typeof MTooltip>;
 
 export const Top: Story = {};
 export const Bottom: Story = { args: { placement: 'bottom' } };
+export const LongText: Story = {
+  args: {
+    text: 'Provisions a namespace, a database and an ingress in about two minutes; the first deploy starts as soon as the image is pushed.',
+  },
+};

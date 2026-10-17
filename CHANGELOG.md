@@ -9,6 +9,14 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## Unreleased
+
+### Fixed
+
+- `MTooltip` meets WCAG 1.4.13: Escape hides it without moving focus (and
+  does not also close a dialog around it), the pointer can move onto the
+  bubble, and long text wraps instead of overflowing. (#111)
+
 ## 0.8.0 — 2026-10-17
 
 ### Added
