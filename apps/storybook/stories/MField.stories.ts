@@ -6,6 +6,14 @@ const meta: Meta<typeof MField> = {
   title: 'Components/MField',
   component: MField,
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'MInput, MTextarea and MSelect inside MField pick up its id, aria-describedby, aria-invalid and aria-required on their own. Other controls get the same values as slot props (`id`, `describedBy`, `required`). One control per field.',
+      },
+    },
+  },
   argTypes: {
     label: { control: 'text' },
     hint: { control: 'text' },
@@ -25,10 +33,8 @@ const meta: Meta<typeof MField> = {
       return { args, value };
     },
     template: `
-      <MField v-bind="args" for="team" style="max-width:420px">
-        <template #default="{ describedBy, required }">
-          <MInput id="team" v-model="value" placeholder="my-team" :invalid="!!args.error" :aria-describedby="describedBy" :required="required" :aria-required="required" />
-        </template>
+      <MField v-bind="args" style="max-width:420px">
+        <MInput v-model="value" placeholder="my-team" />
       </MField>
     `,
   }),
@@ -47,7 +53,7 @@ export const Form: Story = {
     components: { MField, MInput, MTextarea, MSelect },
     setup() {
       const team = ref('');
-      const db = ref('postgres');
+      const db = ref('');
       const notes = ref('');
       const options = [
         { label: 'PostgreSQL', value: 'postgres' },
@@ -58,16 +64,14 @@ export const Form: Story = {
     },
     template: `
       <div style="display:flex; flex-direction:column; gap:24px; max-width:420px;">
-        <MField label="Team name" for="t" required hint="Becomes your namespace.">
-          <template #default="{ describedBy, required }">
-            <MInput id="t" v-model="team" placeholder="my-team" :aria-describedby="describedBy" :required="required" :aria-required="required" />
-          </template>
+        <MField label="Team name" required hint="Becomes your namespace.">
+          <MInput v-model="team" placeholder="my-team" />
         </MField>
-        <MField label="Database" for="d">
-          <MSelect id="d" v-model="db" :options="options" />
+        <MField label="Database">
+          <MSelect v-model="db" :options="options" placeholder="Choose a database" />
         </MField>
-        <MField label="What will you build?" for="n">
-          <MTextarea id="n" v-model="notes" placeholder="Tell us about your project" />
+        <MField label="What will you build?">
+          <MTextarea v-model="notes" placeholder="Tell us about your project" />
         </MField>
       </div>
     `,

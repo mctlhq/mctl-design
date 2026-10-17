@@ -15,6 +15,14 @@ headings below and are all included in 0.8.0.
 
 - `MModal` and `MTgSheet`: an `ariaLabel` prop names the dialog when there
   is no visible title (defaults `'Dialog'` and `'Sheet'`). (#97)
+- `MField` wires `MInput`, `MTextarea` and `MSelect` in its slot on its
+  own: id, `aria-describedby`, `aria-invalid` and `aria-required`. Without
+  `for`, the label points at the control's own `id`, or at a generated one.
+  An explicit `aria-describedby` on the control still wins, and the slot
+  props stay for other controls. (#113)
+- `MSelect`: a `placeholder` prop, shown as a disabled empty option. (#113)
+- `MNav`: an `ariaLabel` prop names the landmark (default `'Main'`). (#113)
+- `MTable`: a `label` prop names the scroll region (default `'Table'`). (#113)
 
 ### Fixed
 
@@ -36,6 +44,11 @@ headings below and are all included in 0.8.0.
   longer closes the dialog, and the z-index fallback without `mctl.css` is
   900, matching the token. `MTooltip`'s fallback is 800, also matching its
   token. (#112)
+- `MAlert` is `role="alert"` only for `tone="bad"`; `info` and `warn` are
+  `role="status"`, and `live="none"` renders a static notice. Before, every
+  alert interrupted screen readers. (#113)
+- `MCodeBlock`, `MYamlBlock` and `MTable` scroll regions are focusable, so
+  keyboard users can scroll long lines and wide tables. (#113)
 
 ## 0.8.0 — 2026-10-17
 

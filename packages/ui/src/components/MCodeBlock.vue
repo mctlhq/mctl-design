@@ -17,7 +17,11 @@ withDefaults(
       <span v-if="filename" class="m-code-block__filename">{{ filename }}</span>
       <span v-if="lang" class="m-code-block__lang">{{ lang }}</span>
     </figcaption>
-    <pre class="m-code-block__pre"><code class="m-code-block__code">{{ code }}</code></pre>
+    <!-- tabindex: long lines scroll sideways, and the keyboard has to reach them. -->
+    <pre
+      class="m-code-block__pre"
+      tabindex="0"
+    ><code class="m-code-block__code">{{ code }}</code></pre>
   </figure>
 </template>
 
@@ -59,6 +63,11 @@ withDefaults(
   font-family: var(--font-mono);
   font-size: var(--mctl-typography-font-size-marker);
   line-height: 1.7;
+}
+
+.m-code-block__pre:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .m-code-block__code {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { h } from 'vue';
+import { h, nextTick } from 'vue';
 import MField from '../src/components/MField.vue';
 import MInput from '../src/components/MInput.vue';
 import MTextarea from '../src/components/MTextarea.vue';
@@ -110,5 +110,86 @@ describe('MField', () => {
       await expectNoAxeViolations(wrapper.element);
       wrapper.unmount();
     }
+  });
+});
+
+describe('MField auto-wiring', () => {
+  it.each([
+    ['MInput', MInput, 'input'],
+    ['MTextarea', MTextarea, 'textarea'],
+    ['MSelect', MSelect, 'select'],
+  ] as const)(
+    'labels and describes %s with no wiring by the consumer',
+    async (_n, control, tag) => {
+      const wrapper = mount(MField, {
+        props: { label: 'Namespace', hint: 'Lowercase letters only', required: true },
+        slots: {
+          default: () => h(control as never, control === MSelect ? { options: ['dev'] } : {}),
+        },
+        attachTo: document.body,
+      });
+      const el = wrapper.find(tag);
+      expect(wrapper.find('label').attributes('for')).toBe(el.attributes('id'));
+      const describedBy = el.attributes('aria-describedby');
+      expect(describedBy && document.getElementById(describedBy)?.textContent).toBe(
+        'Lowercase letters only',
+      );
+      expect(el.attributes('aria-required')).toBe('true');
+      await expectNoAxeViolations(wrapper.element);
+
+      await wrapper.setProps({ error: 'Already taken' });
+      expect(el.attributes('aria-invalid')).toBe('true');
+      expect(el.attributes('aria-describedby')).toBe(
+        wrapper.find('[role="alert"]').attributes('id'),
+      );
+      wrapper.unmount();
+    },
+  );
+
+  it('points the label at an id set on the control itself', async () => {
+    const wrapper = mount(MField, {
+      props: { label: 'Username' },
+      slots: { default: () => h(MInput, { id: 'username' }) },
+    });
+    // The control registers during the field's render; the label follows.
+    await nextTick();
+    expect(wrapper.find('input').attributes('id')).toBe('username');
+    expect(wrapper.find('label').attributes('for')).toBe('username');
+  });
+
+  it.each([
+    ['MInput', MInput, 'input'],
+    ['MTextarea', MTextarea, 'textarea'],
+    ['MSelect', MSelect, 'select'],
+  ] as const)('keeps an explicit id and aria-describedby on %s', (_n, control, tag) => {
+    const wrapper = mount(MField, {
+      props: { label: 'Namespace', for: 'ns', hint: 'Hint' },
+      slots: {
+        default: () =>
+          h(control as never, {
+            id: 'ns',
+            'aria-describedby': 'custom',
+            ...(control === MSelect ? { options: ['dev'] } : {}),
+          }),
+      },
+    });
+    const el = wrapper.find(tag);
+    expect(el.attributes('id')).toBe('ns');
+    expect(el.attributes('aria-describedby')).toBe('custom');
+  });
+});
+
+describe('MSelect placeholder', () => {
+  it('shows a disabled empty option while nothing is chosen', async () => {
+    const wrapper = mount(MSelect, {
+      props: { options: ['dev', 'prod'], placeholder: 'Choose an environment' },
+    });
+    const first = wrapper.find('option');
+    expect(first.text()).toBe('Choose an environment');
+    expect(first.attributes('value')).toBe('');
+    expect(first.attributes('disabled')).toBeDefined();
+    expect((wrapper.find('select').element as HTMLSelectElement).value).toBe('');
+    await wrapper.find('select').setValue('prod');
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['prod']);
   });
 });

@@ -13,7 +13,8 @@ const meta: Meta<typeof MNav> = {
   title: 'Components/MNav',
   component: MNav,
   tags: ['autodocs'],
-  args: { items },
+  argTypes: { ariaLabel: { control: 'text' } },
+  args: { items, ariaLabel: 'Main' },
   render: (args) => ({
     components: { MNav },
     setup: () => ({ args }),

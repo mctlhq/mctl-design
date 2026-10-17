@@ -1,14 +1,27 @@
 <script setup lang="ts">
-withDefaults(
+import { computed } from 'vue';
+
+const props = withDefaults(
   defineProps<{
     tone?: 'info' | 'warn' | 'bad';
+    /**
+     * Live-region role. Defaults to `alert` (assertive) for `bad` and
+     * `status` (polite) otherwise; `none` for a static notice that should
+     * not be announced.
+     */
+    live?: 'alert' | 'status' | 'none';
   }>(),
-  { tone: 'info' },
+  { tone: 'info', live: undefined },
 );
+
+const role = computed(() => {
+  const live = props.live ?? (props.tone === 'bad' ? 'alert' : 'status');
+  return live === 'none' ? undefined : live;
+});
 </script>
 
 <template>
-  <div class="m-alert" :class="`m-alert--${tone}`" role="alert">
+  <div class="m-alert" :class="`m-alert--${tone}`" :role="role">
     <slot />
   </div>
 </template>
