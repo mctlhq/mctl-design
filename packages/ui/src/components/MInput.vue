@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useField } from '../composables/useField';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     /** v-model value. */
     modelValue?: string;
@@ -18,7 +18,7 @@ withDefaults(
 defineEmits<{ 'update:modelValue': [value: string] }>();
 
 // Inside MField: its id and message wiring, unless set explicitly.
-const field = useField();
+const field = useField(() => props.id);
 </script>
 
 <template>

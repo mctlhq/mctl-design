@@ -17,8 +17,9 @@ headings below and are all included in 0.8.0.
   is no visible title (defaults `'Dialog'` and `'Sheet'`). (#97)
 - `MField` wires `MInput`, `MTextarea` and `MSelect` in its slot on its
   own: id, `aria-describedby`, `aria-invalid` and `aria-required`. Without
-  `for`, it generates the id. An explicit `id` or `aria-describedby` on the
-  control still wins, and the slot props stay for other controls. (#113)
+  `for`, the label points at the control's own `id`, or at a generated one.
+  An explicit `aria-describedby` on the control still wins, and the slot
+  props stay for other controls. (#113)
 - `MSelect`: a `placeholder` prop, shown as a disabled empty option. (#113)
 - `MNav`: an `ariaLabel` prop names the landmark (default `'Main'`). (#113)
 - `MTable`: a `label` prop names the scroll region. (#113)

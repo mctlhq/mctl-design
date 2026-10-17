@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { h } from 'vue';
+import { h, nextTick } from 'vue';
 import MField from '../src/components/MField.vue';
 import MInput from '../src/components/MInput.vue';
 import MTextarea from '../src/components/MTextarea.vue';
@@ -145,6 +145,17 @@ describe('MField auto-wiring', () => {
       wrapper.unmount();
     },
   );
+
+  it('points the label at an id set on the control itself', async () => {
+    const wrapper = mount(MField, {
+      props: { label: 'Username' },
+      slots: { default: () => h(MInput, { id: 'username' }) },
+    });
+    // The control registers during the field's render; the label follows.
+    await nextTick();
+    expect(wrapper.find('input').attributes('id')).toBe('username');
+    expect(wrapper.find('label').attributes('for')).toBe('username');
+  });
 
   it('keeps an explicit id and aria-describedby on the control', () => {
     const wrapper = mount(MField, {

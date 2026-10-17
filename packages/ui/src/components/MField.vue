@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, provide } from 'vue';
+import { computed, getCurrentInstance, provide, shallowRef } from 'vue';
 import { fieldKey } from '../composables/useField';
 
 const props = withDefaults(
   defineProps<{
     label?: string;
-    /** Associates the label/help with the control via id. */
+    /**
+     * Id of the control the label names. Optional for MInput, MTextarea and
+     * MSelect, which wire themselves; a custom control takes `id` from the
+     * slot props instead.
+     */
     for?: string;
     /** Help text shown below the control. */
     hint?: string;
@@ -19,8 +23,10 @@ const props = withDefaults(
 // Without `for`, the field names its control itself: MInput, MTextarea and
 // MSelect in the slot pick up this id, aria-describedby, aria-invalid and
 // aria-required from the field, so the consumer does not have to wire them.
+// A control with its own `id` lends it to the label instead.
 const uid = getCurrentInstance()?.uid ?? 0;
-const controlId = computed(() => props.for || `m-field-control-${uid}`);
+const explicitId = shallowRef<(() => string | undefined) | null>(null);
+const controlId = computed(() => props.for || explicitId.value?.() || `m-field-control-${uid}`);
 // Only emitted when a message is actually shown.
 const messageId = computed(() => (props.error || props.hint ? `m-field-msg-${uid}` : undefined));
 
@@ -29,6 +35,12 @@ provide(fieldKey, {
   describedBy: messageId,
   invalid: computed(() => Boolean(props.error)),
   required: computed(() => props.required),
+  register(getId) {
+    explicitId.value = getId;
+    return () => {
+      if (explicitId.value === getId) explicitId.value = null;
+    };
+  },
 });
 </script>
 

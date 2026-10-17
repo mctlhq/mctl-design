@@ -30,7 +30,7 @@ const props = withDefaults(
 defineEmits<{ 'update:modelValue': [value: string] }>();
 
 // Inside MField: its id and message wiring, unless set explicitly.
-const field = useField();
+const field = useField(() => props.id);
 const isInvalid = computed(() => props.invalid || Boolean(field?.invalid.value));
 
 const attrs = useAttrs();
