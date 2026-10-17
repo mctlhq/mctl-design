@@ -23,9 +23,24 @@ try {
 
 // Custom-property rules of a sheet, in source order.
 function parseRules(text) {
-  const css = text.replace(/\/\*[\s\S]*?\*\//g, ' ');
-  // Top-level rules only: theme.css has no at-rules, and a nested one would
-  // be silently skipped here, so refuse it.
+  let css = text.replace(/\/\*[\s\S]*?\*\//g, ' ');
+  // The reduced-motion block only zeroes motion durations, which no case
+  // reads; drop it, but refuse it if it ever sets anything else.
+  css = css.replace(
+    /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{((?:[^{}]*\{[^{}]*\})*)[^{}]*\}/g,
+    (block, inner) => {
+      for (const [, name] of inner.matchAll(/(--?[a-z-]+)\s*:/g)) {
+        if (!name.startsWith('--mctl-motion-')) {
+          throw new Error(
+            `check-themes: the reduced-motion block sets ${name}; check it here first.`,
+          );
+        }
+      }
+      return '';
+    },
+  );
+  // Top-level rules only: any other at-rule would be silently skipped here,
+  // so refuse it.
   if (/@(media|supports|layer|scope|container)/.test(css)) {
     throw new Error('check-themes: the sheet has an at-rule; teach this check about it first.');
   }
@@ -36,7 +51,9 @@ function parseRules(text) {
       const i = part.indexOf(':');
       if (i === -1) continue;
       const name = part.slice(0, i).trim();
-      if (name.startsWith('--')) decls.push([name, part.slice(i + 1)]);
+      // color-scheme is inherited like a custom property, so it resolves
+      // the same way.
+      if (name.startsWith('--') || name === 'color-scheme') decls.push([name, part.slice(i + 1)]);
     }
     for (const selector of selectorText.split(',').map((t) => t.trim())) {
       rules.push({ selector: parseSelector(selector), decls, order: rules.length });
@@ -253,6 +270,7 @@ function run(rules) {
     const got = computeChain(rules, chain[0]?.root ? chain : [html(), ...chain]);
     const expect = {
       '--surface-bg': surface[theme].bg,
+      'color-scheme': theme,
       '--focus-ring': accent[name][theme].primary,
       ...Object.fromEntries(Object.entries(ROLES).map(([v, r]) => [v, accent[name][theme][r]])),
     };
@@ -282,7 +300,7 @@ if (process.argv.includes('--selftest')) {
   }
   raw.push('}');
   const themeBlock = (theme, selector, accentDecls) =>
-    `${selector} { --surface-bg: var(--mctl-surface-${theme}-bg); ${accentDecls(theme)} }`;
+    `${selector} { color-scheme: ${theme}; --surface-bg: var(--mctl-surface-${theme}-bg); ${accentDecls(theme)} }`;
   const aliases = (name) =>
     name === 'terracotta'
       ? `[data-accent='terracotta'], [data-accent='vermilion']`
