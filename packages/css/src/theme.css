@@ -18,11 +18,24 @@
   --surface-fg-muted: var(--mctl-surface-dark-fg-muted);
   --surface-fg-subtle: var(--mctl-surface-dark-fg-subtle);
 
-  /* Accent — terracotta is the default. */
-  --accent: var(--mctl-accent-terracotta-dark-primary);
-  --accent-highlight: var(--mctl-accent-terracotta-dark-highlight);
-  --accent-fg: var(--mctl-accent-terracotta-dark-fg);
-  --accent-soft: var(--mctl-accent-terracotta-dark-soft);
+  /* Every accent's palette for this theme. --accent itself is picked from
+     these at each theme or accent boundary, further down. */
+  --_accent-terracotta-primary: var(--mctl-accent-terracotta-dark-primary);
+  --_accent-terracotta-highlight: var(--mctl-accent-terracotta-dark-highlight);
+  --_accent-terracotta-fg: var(--mctl-accent-terracotta-dark-fg);
+  --_accent-terracotta-soft: var(--mctl-accent-terracotta-dark-soft);
+  --_accent-cyan-primary: var(--mctl-accent-cyan-dark-primary);
+  --_accent-cyan-highlight: var(--mctl-accent-cyan-dark-highlight);
+  --_accent-cyan-fg: var(--mctl-accent-cyan-dark-fg);
+  --_accent-cyan-soft: var(--mctl-accent-cyan-dark-soft);
+  --_accent-lime-primary: var(--mctl-accent-lime-dark-primary);
+  --_accent-lime-highlight: var(--mctl-accent-lime-dark-highlight);
+  --_accent-lime-fg: var(--mctl-accent-lime-dark-fg);
+  --_accent-lime-soft: var(--mctl-accent-lime-dark-soft);
+  --_accent-lilac-primary: var(--mctl-accent-lilac-dark-primary);
+  --_accent-lilac-highlight: var(--mctl-accent-lilac-dark-highlight);
+  --_accent-lilac-fg: var(--mctl-accent-lilac-dark-fg);
+  --_accent-lilac-soft: var(--mctl-accent-lilac-dark-soft);
 
   /* Named accent primaries for Tailwind swatches (bg-accent-cyan, etc.). */
   --accent-terracotta: var(--mctl-accent-terracotta-dark-primary);
@@ -85,10 +98,22 @@
   --surface-fg-muted: var(--mctl-surface-light-fg-muted);
   --surface-fg-subtle: var(--mctl-surface-light-fg-subtle);
 
-  --accent: var(--mctl-accent-terracotta-light-primary);
-  --accent-highlight: var(--mctl-accent-terracotta-light-highlight);
-  --accent-fg: var(--mctl-accent-terracotta-light-fg);
-  --accent-soft: var(--mctl-accent-terracotta-light-soft);
+  --_accent-terracotta-primary: var(--mctl-accent-terracotta-light-primary);
+  --_accent-terracotta-highlight: var(--mctl-accent-terracotta-light-highlight);
+  --_accent-terracotta-fg: var(--mctl-accent-terracotta-light-fg);
+  --_accent-terracotta-soft: var(--mctl-accent-terracotta-light-soft);
+  --_accent-cyan-primary: var(--mctl-accent-cyan-light-primary);
+  --_accent-cyan-highlight: var(--mctl-accent-cyan-light-highlight);
+  --_accent-cyan-fg: var(--mctl-accent-cyan-light-fg);
+  --_accent-cyan-soft: var(--mctl-accent-cyan-light-soft);
+  --_accent-lime-primary: var(--mctl-accent-lime-light-primary);
+  --_accent-lime-highlight: var(--mctl-accent-lime-light-highlight);
+  --_accent-lime-fg: var(--mctl-accent-lime-light-fg);
+  --_accent-lime-soft: var(--mctl-accent-lime-light-soft);
+  --_accent-lilac-primary: var(--mctl-accent-lilac-light-primary);
+  --_accent-lilac-highlight: var(--mctl-accent-lilac-light-highlight);
+  --_accent-lilac-fg: var(--mctl-accent-lilac-light-fg);
+  --_accent-lilac-soft: var(--mctl-accent-lilac-light-soft);
 
   --accent-terracotta: var(--mctl-accent-terracotta-light-primary);
   --accent-cyan: var(--mctl-accent-cyan-light-primary);
@@ -111,62 +136,48 @@
   --shadow-overlay: var(--mctl-shadow-light-overlay);
 }
 
+/*
+ * Accent choice, independent of theme. Exactly one --_pick-* is `initial`
+ * (the guaranteed-invalid value), so its var() falls back to that accent's
+ * colour; the others hold an empty value and contribute nothing. Theme and
+ * accent are then combined wherever either is set (below), so a nested
+ * data-accent inside data-theme="light" gets the light palette, and a nested
+ * data-theme keeps the accent chosen above it. The empty value is written as
+ * two preserved comments so minifiers keep it. The root default is bare
+ * :root, so an unknown data-accent on <html> still falls back to it; an
+ * accent block wins on <html> only by coming after this one (same
+ * specificity), which check:themes pins with root-element cases. --accent
+ * therefore computes to the colour padded with whitespace; every
+ * use is a single-value position, where that is the same colour.
+ */
+:root,
 [data-accent='terracotta'],
 [data-accent='vermilion'] {
-  --accent: var(--mctl-accent-terracotta-dark-primary);
-  --accent-highlight: var(--mctl-accent-terracotta-dark-highlight);
-  --accent-fg: var(--mctl-accent-terracotta-dark-fg);
-  --accent-soft: var(--mctl-accent-terracotta-dark-soft);
-}
-
-[data-theme='light'][data-accent='terracotta'],
-[data-theme='light'][data-accent='vermilion'] {
-  --accent: var(--mctl-accent-terracotta-light-primary);
-  --accent-highlight: var(--mctl-accent-terracotta-light-highlight);
-  --accent-fg: var(--mctl-accent-terracotta-light-fg);
-  --accent-soft: var(--mctl-accent-terracotta-light-soft);
+  --_pick-terracotta: initial;
+  --_pick-cyan: /*!*/ /*!*/;
+  --_pick-lime: /*!*/ /*!*/;
+  --_pick-lilac: /*!*/ /*!*/;
 }
 
 [data-accent='cyan'] {
-  --accent: var(--mctl-accent-cyan-dark-primary);
-  --accent-highlight: var(--mctl-accent-cyan-dark-highlight);
-  --accent-fg: var(--mctl-accent-cyan-dark-fg);
-  --accent-soft: var(--mctl-accent-cyan-dark-soft);
-}
-
-[data-theme='light'][data-accent='cyan'] {
-  --accent: var(--mctl-accent-cyan-light-primary);
-  --accent-highlight: var(--mctl-accent-cyan-light-highlight);
-  --accent-fg: var(--mctl-accent-cyan-light-fg);
-  --accent-soft: var(--mctl-accent-cyan-light-soft);
+  --_pick-terracotta: /*!*/ /*!*/;
+  --_pick-cyan: initial;
+  --_pick-lime: /*!*/ /*!*/;
+  --_pick-lilac: /*!*/ /*!*/;
 }
 
 [data-accent='lime'] {
-  --accent: var(--mctl-accent-lime-dark-primary);
-  --accent-highlight: var(--mctl-accent-lime-dark-highlight);
-  --accent-fg: var(--mctl-accent-lime-dark-fg);
-  --accent-soft: var(--mctl-accent-lime-dark-soft);
-}
-
-[data-theme='light'][data-accent='lime'] {
-  --accent: var(--mctl-accent-lime-light-primary);
-  --accent-highlight: var(--mctl-accent-lime-light-highlight);
-  --accent-fg: var(--mctl-accent-lime-light-fg);
-  --accent-soft: var(--mctl-accent-lime-light-soft);
+  --_pick-terracotta: /*!*/ /*!*/;
+  --_pick-cyan: /*!*/ /*!*/;
+  --_pick-lime: initial;
+  --_pick-lilac: /*!*/ /*!*/;
 }
 
 [data-accent='lilac'] {
-  --accent: var(--mctl-accent-lilac-dark-primary);
-  --accent-highlight: var(--mctl-accent-lilac-dark-highlight);
-  --accent-fg: var(--mctl-accent-lilac-dark-fg);
-  --accent-soft: var(--mctl-accent-lilac-dark-soft);
-}
-
-[data-theme='light'][data-accent='lilac'] {
-  --accent: var(--mctl-accent-lilac-light-primary);
-  --accent-highlight: var(--mctl-accent-lilac-light-highlight);
-  --accent-fg: var(--mctl-accent-lilac-light-fg);
-  --accent-soft: var(--mctl-accent-lilac-light-soft);
+  --_pick-terracotta: /*!*/ /*!*/;
+  --_pick-cyan: /*!*/ /*!*/;
+  --_pick-lime: /*!*/ /*!*/;
+  --_pick-lilac: initial;
 }
 
 /* Public typography is shared; adapters own document structure and spacing. */
@@ -241,6 +252,26 @@
 :root,
 [data-theme],
 [data-accent] {
+  --accent:
+    var(--_pick-terracotta, var(--_accent-terracotta-primary))
+    var(--_pick-cyan, var(--_accent-cyan-primary))
+    var(--_pick-lime, var(--_accent-lime-primary))
+    var(--_pick-lilac, var(--_accent-lilac-primary));
+  --accent-highlight:
+    var(--_pick-terracotta, var(--_accent-terracotta-highlight))
+    var(--_pick-cyan, var(--_accent-cyan-highlight))
+    var(--_pick-lime, var(--_accent-lime-highlight))
+    var(--_pick-lilac, var(--_accent-lilac-highlight));
+  --accent-fg:
+    var(--_pick-terracotta, var(--_accent-terracotta-fg))
+    var(--_pick-cyan, var(--_accent-cyan-fg))
+    var(--_pick-lime, var(--_accent-lime-fg))
+    var(--_pick-lilac, var(--_accent-lilac-fg));
+  --accent-soft:
+    var(--_pick-terracotta, var(--_accent-terracotta-soft))
+    var(--_pick-cyan, var(--_accent-cyan-soft))
+    var(--_pick-lime, var(--_accent-lime-soft))
+    var(--_pick-lilac, var(--_accent-lilac-soft));
   --focus-ring: var(--accent);
   --control-bg: var(--surface-bg);
   --control-disabled-bg: var(--surface-elevated);

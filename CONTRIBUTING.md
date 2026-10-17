@@ -30,6 +30,9 @@ pnpm test             # component contracts + axe (packages/ui, vitest + jsdom)
 pnpm check:versions
 pnpm check:contrast        # text/background pairs per theme and accent meet
                            # WCAG AA (run after pnpm build)
+pnpm check:themes          # data-theme and data-accent nest independently at
+                           # any depth (run after pnpm build)
+pnpm check:themes:selftest # the check still fails a sheet with the 0.8.0 bug
 pnpm check:generated       # tailwind.css and tokens.dtcg.json are internally
                            # consistent (run after pnpm build)
 pnpm check:license         # README's License section still links to LICENSE,

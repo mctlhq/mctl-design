@@ -75,6 +75,14 @@ jobs:
         # build. A token comment claiming "AA on paper" is not a check.
         run: pnpm check:contrast
 
+      - name: Check nested theme scopes
+        # data-theme and data-accent nest at any depth in any combination;
+        # resolves the cascade over the built theme.css (no browser in CI).
+        # The selftest proves the resolver still fails the 0.8.0 pairing.
+        run: |
+          pnpm check:themes:selftest
+          pnpm check:themes
+
       - name: Check generated token exports
         # tailwind.css (Tailwind v4 theme) and tokens.dtcg.json are built by
         # string assembly; nothing else reads them before a consumer does.
