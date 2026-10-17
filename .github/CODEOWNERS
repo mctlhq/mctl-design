@@ -1,3 +1,4 @@
-# Requests a review automatically; branch protection does not require
-# code-owner approval, so this does not gate merges.
+# Marks the owner in the files view and requests their review on PRs opened
+# by anyone else (GitHub never requests the author). Branch protection does
+# not require code-owner approval, so this does not gate merges.
 * @mashkovd
