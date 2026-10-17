@@ -29,6 +29,13 @@ headings below and are all included in 0.8.0.
 - `theme.css` no longer declares `--focus-ring`, `--site-header-bg` and
   `--site-header-border` twice; they are set once, with the other derived
   colours. (#117)
+- `MTgOrderCard` activates on Space keyup after a keydown on the card,
+  like a native button, rather than on keydown; Escape or leaving the card
+  cancels the press. (#116)
+- `MTgEmptyState`: the loading state is `role="status"` and the error state
+  `role="alert"`, so both are announced; the emoji icons are replaced with
+  stroke SVGs, and the loading pulse respects `prefers-reduced-motion`.
+  (#116)
 
 ## 0.9.0 — 2026-10-17
 
