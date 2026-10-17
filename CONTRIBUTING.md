@@ -53,8 +53,14 @@ Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`,
 
 All published packages are versioned lockstep with the repository. To cut a
 release, bump the version in **every** `package.json` (root + each package) to
-the same `X.Y.Z`, then tag `X.Y.Z` (no `v` prefix). `pnpm check:versions` is
-enforced in CI and before publish.
+the same `X.Y.Z`, add its entry to `CHANGELOG.md`, then tag `X.Y.Z` (no `v`
+prefix) on `main`. The tag publishes the packages to GitHub Packages; a
+prerelease tag such as `0.9.0-rc.1` publishes under the `next` dist-tag.
+`pnpm check:versions` is enforced in CI and before publish.
+
+`ui.mctl.ai` serves a version's CSS as soon as it reaches `main`, before any
+tag, so tag every version that changes `packages/{tokens,css}` — otherwise
+npm consumers fall behind the CDN.
 
 ## Adding a component
 
