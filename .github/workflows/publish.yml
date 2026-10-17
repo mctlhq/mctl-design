@@ -93,6 +93,10 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: 22
+          # setup-node v5+ caches automatically when package.json names a
+          # packageManager (pnpm here), but this job never installs pnpm, so
+          # the cache step would fail looking for its store.
+          package-manager-cache: false
 
       - name: Point next at this release
         run: |
