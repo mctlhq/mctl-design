@@ -9,7 +9,16 @@ const meta: Meta<typeof MTgOrderCard> = {
     direction: { control: 'select', options: ['BUY', 'SELL'] },
     status: {
       control: 'select',
-      options: ['active', 'reserved', 'accepted', 'pending', 'completed', 'cancelled', 'rejected', 'expired'],
+      options: [
+        'active',
+        'reserved',
+        'accepted',
+        'pending',
+        'completed',
+        'cancelled',
+        'rejected',
+        'expired',
+      ],
     },
     delta: { control: { type: 'number', step: 0.1 } },
   },

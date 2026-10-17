@@ -26,8 +26,11 @@
       "cache": false,
       "persistent": true
     },
+    // The shared config lives at the repo root, outside each package, so
+    // it has to be named or an edit to it replays a stale cached result.
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/eslint.config.js"]
     },
     "typecheck": {
       "dependsOn": ["^build"]

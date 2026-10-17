@@ -30,7 +30,7 @@ jobs:
       # slug claude-code-action hard-fails with "Workflow initiated by
       # non-human actor" and, since main requires an approving review, such a
       # PR is structurally unmergeable (#36).
-      allowed-bots: "mctl-claude-remote,github-actions,dependabot,mctl-agents"
+      allowed-bots: 'mctl-claude-remote,github-actions,dependabot,mctl-agents'
 
       # Tier 3 — a bad change here leaves this repository or changes how the
       # site is served: packages/tokens and packages/css are published as

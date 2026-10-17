@@ -57,11 +57,7 @@ function normalize(opt: string | Option): Option {
       v-bind="controlAttrs"
       @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
     >
-      <option
-        v-for="opt in options.map(normalize)"
-        :key="opt.value"
-        :value="opt.value"
-      >
+      <option v-for="opt in options.map(normalize)" :key="opt.value" :value="opt.value">
         {{ opt.label }}
       </option>
     </select>

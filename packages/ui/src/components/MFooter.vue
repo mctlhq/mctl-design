@@ -12,12 +12,7 @@ withDefaults(
   <footer class="m-footer">
     <div class="m-footer__inner">
       <nav v-if="links.length" class="m-footer__links" aria-label="Footer navigation">
-        <a
-          v-for="link in links"
-          :key="link.href"
-          :href="link.href"
-          class="m-footer__link"
-        >
+        <a v-for="link in links" :key="link.href" :href="link.href" class="m-footer__link">
           {{ link.label }}
         </a>
       </nav>

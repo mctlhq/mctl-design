@@ -23,9 +23,7 @@ const labelFor = computed(() => props.for || undefined);
 // reference it with aria-describedby (the control lives in the slot, so the
 // consumer wires it). Only emitted when a message is actually shown.
 const uid = getCurrentInstance()?.uid ?? 0;
-const messageId = computed(() =>
-  props.error || props.hint ? `m-field-msg-${uid}` : undefined,
-);
+const messageId = computed(() => (props.error || props.hint ? `m-field-msg-${uid}` : undefined));
 </script>
 
 <template>

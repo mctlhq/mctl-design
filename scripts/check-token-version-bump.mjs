@@ -136,8 +136,7 @@ if (!SHAPE.test(current)) {
 
 const base = process.env.BASE_REF || 'origin/main';
 
-const git = (...args) =>
-  execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
 
 // Skip only when the base ref genuinely is not there — a fork without the
 // remote, or a local run on a fresh clone. Everything else must be loud: a
@@ -178,7 +177,6 @@ const SOURCES = [
   'packages/css/scripts/',
 ];
 const touched = changed.filter((f) => SOURCES.some((s) => f.startsWith(s)));
-
 
 // Already-published version directories are frozen, and this runs before the
 // early exit below because the diffs that reach them touch no source at all.
@@ -245,7 +243,6 @@ if (frozen.length > 0) {
 // rollback touches no source at all.
 const previous = JSON.parse(git('show', `${base}:package.json`)).version;
 
-
 // A version moving backwards puts an already-published directory back under the
 // build, and without this the author never hears that. `frozen` is empty on the
 // first push — nothing under a published directory is *committed* as changed
@@ -295,4 +292,6 @@ if (current === previous) {
   process.exit(1);
 }
 
-console.log(`check-token-version-bump: ${previous} -> ${current} for ${touched.length} changed source file(s).`);
+console.log(
+  `check-token-version-bump: ${previous} -> ${current} for ${touched.length} changed source file(s).`,
+);

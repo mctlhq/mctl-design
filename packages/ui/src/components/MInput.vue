@@ -27,7 +27,7 @@ defineEmits<{ 'update:modelValue': [value: string] }>();
     :disabled="disabled"
     :aria-invalid="invalid || undefined"
     @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-  >
+  />
 </template>
 
 <style scoped>

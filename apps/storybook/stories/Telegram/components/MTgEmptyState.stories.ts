@@ -10,7 +10,11 @@ const meta: Meta<typeof MTgEmptyState> = {
     title: { control: 'text' },
     description: { control: 'text' },
   },
-  args: { variant: 'empty', title: 'Nothing here yet', description: 'Your orders will appear here.' },
+  args: {
+    variant: 'empty',
+    title: 'Nothing here yet',
+    description: 'Your orders will appear here.',
+  },
 };
 
 export default meta;
@@ -23,7 +27,11 @@ export const Loading: Story = {
 };
 
 export const Error: Story = {
-  args: { variant: 'error', title: 'Something went wrong', description: 'Pull to refresh or try again later.' },
+  args: {
+    variant: 'error',
+    title: 'Something went wrong',
+    description: 'Pull to refresh or try again later.',
+  },
 };
 
 export const WithAction: Story = {

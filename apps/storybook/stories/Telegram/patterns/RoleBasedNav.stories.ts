@@ -10,16 +10,22 @@ export default meta;
 type Story = StoryObj;
 
 const allTabs = [
-  { key: 'book',    label: 'Book',    icon: '📒', minRole: 'user' },
-  { key: 'create',  label: 'Create',  icon: '➕', minRole: 'user' },
-  { key: 'orders',  label: 'Orders',  icon: '📊', minRole: 'user' },
-  { key: 'deals',   label: 'Deals',   icon: '🤝', minRole: 'user' },
-  { key: 'alerts',  label: 'Alerts',  icon: '🔔', minRole: 'user' },
+  { key: 'book', label: 'Book', icon: '📒', minRole: 'user' },
+  { key: 'create', label: 'Create', icon: '➕', minRole: 'user' },
+  { key: 'orders', label: 'Orders', icon: '📊', minRole: 'user' },
+  { key: 'deals', label: 'Deals', icon: '🤝', minRole: 'user' },
+  { key: 'alerts', label: 'Alerts', icon: '🔔', minRole: 'user' },
   { key: 'profile', label: 'Profile', icon: '👤', minRole: 'user' },
-  { key: 'admin',   label: 'Admin',   icon: '🛡️', minRole: 'moderator' },
+  { key: 'admin', label: 'Admin', icon: '🛡️', minRole: 'moderator' },
 ];
 
-const roleRank: Record<string, number> = { user: 0, trusted_user: 1, moderator: 2, admin: 3, super_admin: 4 };
+const roleRank: Record<string, number> = {
+  user: 0,
+  trusted_user: 1,
+  moderator: 2,
+  admin: 3,
+  super_admin: 4,
+};
 
 export const RoleSelector: Story = {
   render: () => ({
@@ -29,7 +35,7 @@ export const RoleSelector: Story = {
       const active = ref('book');
       const roles = ['user', 'trusted_user', 'moderator', 'admin'];
       const tabs = computed(() =>
-        allTabs.filter(t => roleRank[role.value] >= roleRank[t.minRole])
+        allTabs.filter((t) => roleRank[role.value] >= roleRank[t.minRole]),
       );
       return { role, active, roles, tabs };
     },

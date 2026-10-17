@@ -3,9 +3,7 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
-  plugins: [
-    vue(),
-  ],
+  plugins: [vue()],
   build: {
     // Pinned, not inherited. vite 7 moved the default from 'modules'
     // (es2020, chrome87, edge88, firefox78, safari14) to

@@ -10,11 +10,51 @@ export default meta;
 type Story = StoryObj;
 
 const orders = [
-  { direction: 'BUY'  as const, pair: 'EUR / RUB',  rate: '93.50 RUB',  delta: 2.1,  methods: ['SWIFT', 'SEPA'],     volume: '500–5k EUR',  author: '@ivan_trader' },
-  { direction: 'SELL' as const, pair: 'USDT / RUB', rate: '91.20 RUB',  delta: -1.4, methods: ['Tinkoff', 'SBP'],    volume: '1k–20k USDT', author: '@crypto_desk' },
-  { direction: 'BUY'  as const, pair: 'EUR / USDT', rate: '1.084 USDT', delta: 0.3,  methods: ['SEPA'],             volume: '200–2k EUR',  author: '@eurobroker' },
-  { direction: 'SELL' as const, pair: 'EUR / RUB',  rate: '92.80 RUB',  delta: -0.7, methods: ['SWIFT'],            volume: '1k–10k EUR',  author: '@oldtimer' },
-  { direction: 'BUY'  as const, pair: 'USDT / RUB', rate: '90.50 RUB',  delta: 1.8,  methods: ['SBP', 'Tinkoff'],   volume: '5k–50k USDT', author: '@stablebuyer' },
+  {
+    direction: 'BUY' as const,
+    pair: 'EUR / RUB',
+    rate: '93.50 RUB',
+    delta: 2.1,
+    methods: ['SWIFT', 'SEPA'],
+    volume: '500–5k EUR',
+    author: '@ivan_trader',
+  },
+  {
+    direction: 'SELL' as const,
+    pair: 'USDT / RUB',
+    rate: '91.20 RUB',
+    delta: -1.4,
+    methods: ['Tinkoff', 'SBP'],
+    volume: '1k–20k USDT',
+    author: '@crypto_desk',
+  },
+  {
+    direction: 'BUY' as const,
+    pair: 'EUR / USDT',
+    rate: '1.084 USDT',
+    delta: 0.3,
+    methods: ['SEPA'],
+    volume: '200–2k EUR',
+    author: '@eurobroker',
+  },
+  {
+    direction: 'SELL' as const,
+    pair: 'EUR / RUB',
+    rate: '92.80 RUB',
+    delta: -0.7,
+    methods: ['SWIFT'],
+    volume: '1k–10k EUR',
+    author: '@oldtimer',
+  },
+  {
+    direction: 'BUY' as const,
+    pair: 'USDT / RUB',
+    rate: '90.50 RUB',
+    delta: 1.8,
+    methods: ['SBP', 'Tinkoff'],
+    volume: '5k–50k USDT',
+    author: '@stablebuyer',
+  },
 ];
 
 export const Filtered: Story = {
@@ -23,7 +63,7 @@ export const Filtered: Story = {
     setup() {
       const filter = ref<'ALL' | 'BUY' | 'SELL'>('ALL');
       const visible = computed(() =>
-        filter.value === 'ALL' ? orders : orders.filter(o => o.direction === filter.value)
+        filter.value === 'ALL' ? orders : orders.filter((o) => o.direction === filter.value),
       );
       return { filter, visible };
     },

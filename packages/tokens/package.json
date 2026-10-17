@@ -16,7 +16,9 @@
     "./tokens.dtcg.json": "./dist/tokens.dtcg.json",
     "./tokens.css": "./dist/tokens.css"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

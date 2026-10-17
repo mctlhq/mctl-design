@@ -5,5 +5,13 @@ export default {
   input: '.types/index.d.ts',
   output: { file: 'dist/index.d.ts', format: 'es' },
   external: ['vue'],
-  plugins: [dts(), { name: 'clean-types', closeBundle() { rmSync('.types', { recursive: true, force: true }); } }],
+  plugins: [
+    dts(),
+    {
+      name: 'clean-types',
+      closeBundle() {
+        rmSync('.types', { recursive: true, force: true });
+      },
+    },
+  ],
 };

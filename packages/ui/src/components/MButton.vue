@@ -38,7 +38,9 @@ const bindings = computed(() => {
   }
   if (!props.disabled) return attrs;
   const rest = Object.fromEntries(
-    Object.entries(attrs).filter(([key]) => key !== 'href' && key !== 'to' && !/^on[A-Z]/.test(key)),
+    Object.entries(attrs).filter(
+      ([key]) => key !== 'href' && key !== 'to' && !/^on[A-Z]/.test(key),
+    ),
   );
   return { ...rest, tabindex: -1, 'aria-disabled': 'true' };
 });
@@ -67,7 +69,8 @@ const bindings = computed(() => {
   border-radius: var(--mctl-radius-sm);
   cursor: pointer;
   text-decoration: none;
-  transition: background var(--mctl-motion-duration-fast) var(--mctl-motion-easing-standard),
+  transition:
+    background var(--mctl-motion-duration-fast) var(--mctl-motion-easing-standard),
     color var(--mctl-motion-duration-fast) var(--mctl-motion-easing-standard),
     border-color var(--mctl-motion-duration-fast) var(--mctl-motion-easing-standard);
 }

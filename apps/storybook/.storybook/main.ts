@@ -32,10 +32,7 @@ const config: StorybookConfig = {
     disableTelemetry: true,
   },
   managerHead: (head) =>
-    `${head.replace(
-      /<link rel="icon"[^>]*>/gi,
-      '',
-    )}
+    `${head.replace(/<link rel="icon"[^>]*>/gi, '')}
     <title>MCTL UI</title>
     <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg?v=9dc770313d10">
     <meta property="og:title" content="MCTL UI">

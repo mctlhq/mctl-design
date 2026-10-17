@@ -12,7 +12,12 @@ const meta: Meta<typeof MTextarea> = {
     disabled: { control: 'boolean' },
     invalid: { control: 'boolean' },
   },
-  args: { placeholder: "Tell us what you'd like to deploy", rows: 4, disabled: false, invalid: false },
+  args: {
+    placeholder: "Tell us what you'd like to deploy",
+    rows: 4,
+    disabled: false,
+    invalid: false,
+  },
   render: (args) => ({
     components: { MTextarea },
     setup() {
