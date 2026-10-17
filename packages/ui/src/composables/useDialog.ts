@@ -46,14 +46,18 @@ function isTabbable(el: HTMLElement): boolean {
   if (tabindex !== null && Number(tabindex) < 0) return false;
   if (el.closest('[hidden], [inert]')) return false;
   // checkVisibility covers display:none, closed <details> and, with the
-  // option, visibility:hidden (which browsers refuse to focus); environments
-  // without it (older browsers, jsdom) keep the element.
+  // option, visibility:hidden (which browsers refuse to focus). The option has
+  // two names: visibilityProperty, and checkVisibilityCSS in browsers that
+  // predate it (Safari 17). Environments without it (jsdom) keep the element.
   const check = (
     el as HTMLElement & {
-      checkVisibility?: (options?: { visibilityProperty?: boolean }) => boolean;
+      checkVisibility?: (options?: {
+        visibilityProperty?: boolean;
+        checkVisibilityCSS?: boolean;
+      }) => boolean;
     }
   ).checkVisibility;
-  return check ? check.call(el, { visibilityProperty: true }) : true;
+  return check ? check.call(el, { visibilityProperty: true, checkVisibilityCSS: true }) : true;
 }
 
 /** The overlay's ancestor that is a direct child of <body>. */
@@ -159,9 +163,10 @@ export function useDialog(options: DialogOptions) {
   }
 
   function onKeydown(event: KeyboardEvent) {
-    // Escape during IME composition cancels the composition, not the dialog.
-    if (!isTopmost() || event.isComposing) return;
+    if (!isTopmost()) return;
     if (event.key === 'Escape') {
+      // Escape during IME composition cancels the composition, not the dialog.
+      if (event.isComposing) return;
       if (dismissible()) {
         event.preventDefault();
         options.onDismiss();
