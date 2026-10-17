@@ -21,6 +21,9 @@ try {
   process.exit(1);
 }
 
+// What the sheet's reduced-motion block sets, name -> value; null if absent.
+let reducedMotion = null;
+
 // Custom-property rules of a sheet, in source order.
 function parseRules(text) {
   let css = text.replace(/\/\*[\s\S]*?\*\//g, ' ');
@@ -29,7 +32,9 @@ function parseRules(text) {
   css = css.replace(
     /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{((?:[^{}]*\{[^{}]*\})*)[^{}]*\}/g,
     (block, inner) => {
-      for (const [, name] of inner.matchAll(/[{;]\s*([-\w]+)\s*:/g)) {
+      reducedMotion = {};
+      for (const [, name, value] of inner.matchAll(/[{;]\s*([-\w]+)\s*:\s*([^;}]*)/g)) {
+        reducedMotion[name] = value.trim();
         if (!name.startsWith('--mctl-motion-')) {
           throw new Error(
             `check-themes: the reduced-motion block sets ${name}; check it here first.`,
@@ -368,6 +373,22 @@ if (!existsSync(SHEET)) {
   process.exit(1);
 }
 const failures = run(parseRules(readFileSync(SHEET, 'utf8')));
+
+// The reduced-motion block has to exist and zero every motion duration that
+// is not already zero, so deleting it, mistyping a name, or adding a duration
+// token without zeroing it fails here rather than silently.
+const ZERO = new Set(['0ms', '0s', 'var(--mctl-motion-duration-instant)']);
+if (!reducedMotion) {
+  failures.push('theme.css has no @media (prefers-reduced-motion: reduce) block');
+} else {
+  for (const [k, v] of Object.entries(tokens.motion.duration)) {
+    if (parseFloat(v) === 0) continue;
+    const name = `--mctl-motion-duration-${k}`;
+    if (!ZERO.has(reducedMotion[name])) {
+      failures.push(`reduced motion: ${name} is ${reducedMotion[name] ?? 'not set'}, expected 0`);
+    }
+  }
+}
 if (failures.length) {
   console.log(failures.map((f) => `FAIL ${f}`).join('\n'));
   console.error(
@@ -375,4 +396,6 @@ if (failures.length) {
   );
   process.exit(1);
 }
-console.log(`check-themes: all ${cases.length} nesting cases resolve to the right palette.`);
+console.log(
+  `check-themes: all ${cases.length} nesting cases resolve to the right palette, and reduced motion zeroes every duration.`,
+);

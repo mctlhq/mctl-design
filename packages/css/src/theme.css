@@ -293,9 +293,9 @@
    component transition built on them stops animating. */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --mctl-motion-duration-fast: 0ms;
-    --mctl-motion-duration-base: 0ms;
-    --mctl-motion-duration-slow: 0ms;
-    --mctl-motion-duration-emphasis: 0ms;
+    --mctl-motion-duration-fast: var(--mctl-motion-duration-instant);
+    --mctl-motion-duration-base: var(--mctl-motion-duration-instant);
+    --mctl-motion-duration-slow: var(--mctl-motion-duration-instant);
+    --mctl-motion-duration-emphasis: var(--mctl-motion-duration-instant);
   }
 }
