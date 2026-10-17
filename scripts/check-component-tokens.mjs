@@ -6,6 +6,13 @@
 // reach. MTg*.vue is exempt: those components keep literal fallbacks inside
 // var() on purpose, for Mini Apps that load telegram.css without theme.css.
 //
+// Every component, MTg included, is also checked for a var() with no
+// fallback whose name nothing defines -- the built @mctlhq/css sheets, a
+// `--name:` in a component, or a `'--name'` key bound through :style. Such
+// a declaration is invalid at computed-value time and silently drops out
+// (MModal and MTooltip had no shadow until 0.12.x for exactly this). Reads
+// packages/css/dist, so run after `pnpm build`.
+//
 // Known limits, so nobody reads more into a pass than it says:
 // - only <style> blocks are read; a literal in a template `style` or
 //   `:style` binding is not seen;
@@ -13,7 +20,7 @@
 // - easings are not checked: MTgSheet keeps a curve no token matches;
 // - only box-shadow is checked for shadows: text-shadow and
 //   filter: drop-shadow() are not (MLogo's glow has no matching token).
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { basename, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -37,7 +44,7 @@ const RULES = [
     test: (prop, value) => /^border(-[a-z]+)*-radius$/.test(prop) && PX.test(value),
   },
   {
-    why: 'a literal shadow (use --control-focus-shadow*, --shadow-* or --mctl-shadow-*)',
+    why: 'a literal shadow (use --control-focus-shadow* or --shadow-*)',
     test: (prop, value) => prop === 'box-shadow' && PX.test(value),
   },
   {
@@ -88,6 +95,26 @@ export function findLiterals(source) {
   return found;
 }
 
+// Custom properties a source defines: `--name:` declarations, and `'--name'`
+// keys of a :style binding.
+export function definedIn(source) {
+  return [
+    ...[...source.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]),
+    ...[...source.matchAll(/'(--[\w-]+)'/g)].map((m) => m[1]),
+  ];
+}
+
+// var(--name) with no fallback, where nothing defines --name.
+export function findUndefined(source, defined) {
+  const found = [];
+  for (const m of source.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)) {
+    if (!defined.has(m[1])) {
+      found.push({ line: source.slice(0, m.index).split('\n').length, name: m[1] });
+    }
+  }
+  return found;
+}
+
 if (process.argv.includes('--selftest')) {
   // One declaration per rule, in RULES order, so each must be caught once
   // and under its own rule.
@@ -101,6 +128,14 @@ if (process.argv.includes('--selftest')) {
 .c { outline-offset: calc(-1 * var(--focus-ring-offset)); margin: 0 1px; box-shadow: var(--control-focus-shadow); }
 .d { box-shadow: 0 0 0 var(--focus-ring-width) color-mix(in srgb, var(--accent) 20%, transparent); }
 </style>`;
+  // An undefined name without a fallback is caught; a defined one, one with
+  // a fallback, and one the component defines itself are not.
+  const vars = `<style>
+.a { --local: 1px; box-shadow: var(--mctl-shadow-overlay); color: var(--surface-fg); }
+.b { width: var(--local); height: var(--bound); z-index: var(--nowhere, 1); }
+</style><div :style="{ '--bound': '1px' }" />`;
+  const defined = new Set(['--surface-fg', ...definedIn(vars)]);
+  const undef = findUndefined(vars, defined).map((f) => f.name);
   const badFound = findLiterals(bad).map((f) => f.why);
   const goodFound = findLiterals(good);
   const expected = RULES.map((r) => r.why);
@@ -108,6 +143,10 @@ if (process.argv.includes('--selftest')) {
   if (badFound.join('\n') !== expected.join('\n'))
     problems.push(
       `bad fixture reported\n    ${badFound.join('\n    ')}\n  expected\n    ${expected.join('\n    ')}`,
+    );
+  if (undef.join(' ') !== '--mctl-shadow-overlay')
+    problems.push(
+      `undefined vars reported: ${undef.join(' ') || 'none'}, expected --mctl-shadow-overlay`,
     );
   if (goodFound.length)
     problems.push(
@@ -118,25 +157,44 @@ if (process.argv.includes('--selftest')) {
     process.exit(1);
   }
   console.log(
-    `check-component-tokens: selftest ok (each of ${RULES.length} rules catches its literal once, no false positives).`,
+    `check-component-tokens: selftest ok (each of ${RULES.length} rules catches its literal once, no false positives, undefined var() caught).`,
   );
   process.exit(0);
 }
 
+const cssDist = join(root, 'packages/css/dist');
+if (!existsSync(cssDist)) {
+  console.error('check-component-tokens: packages/css/dist is missing -- run `pnpm build` first.');
+  process.exit(1);
+}
 // Recursive, so a component moved into a subdirectory stays covered.
-const files = readdirSync(dir, { recursive: true }).filter(
-  (f) => f.endsWith('.vue') && !basename(f).startsWith('MTg'),
-);
-const failures = files.flatMap((f) =>
-  findLiterals(readFileSync(join(dir, f), 'utf8')).map(
-    (x) => `${f}:${x.line}  ${x.text}  -- ${x.why}`,
+const all = readdirSync(dir, { recursive: true }).filter((f) => f.endsWith('.vue'));
+const sources = Object.fromEntries(all.map((f) => [f, readFileSync(join(dir, f), 'utf8')]));
+const defined = new Set([
+  ...readdirSync(cssDist)
+    .filter((f) => f.endsWith('.css'))
+    .flatMap((f) => definedIn(readFileSync(join(cssDist, f), 'utf8'))),
+  ...Object.values(sources).flatMap(definedIn),
+]);
+const files = all.filter((f) => !basename(f).startsWith('MTg'));
+const failures = [
+  ...files.flatMap((f) =>
+    findLiterals(sources[f]).map((x) => `${f}:${x.line}  ${x.text}  -- ${x.why}`),
   ),
-);
+  ...all.flatMap((f) =>
+    findUndefined(sources[f], defined).map(
+      (x) =>
+        `${f}:${x.line}  var(${x.name})  -- nothing defines ${x.name} and there is no fallback`,
+    ),
+  ),
+];
 if (failures.length) {
   console.error(failures.join('\n'));
   console.error(
-    `\ncheck-component-tokens: ${failures.length} literal value(s) in component styles.`,
+    `\ncheck-component-tokens: ${failures.length} literal or undefined value(s) in component styles.`,
   );
   process.exit(1);
 }
-console.log(`check-component-tokens: ${files.length} components take these values from tokens.`);
+console.log(
+  `check-component-tokens: ${files.length} components take these values from tokens, and every var() in ${all.length} resolves.`,
+);

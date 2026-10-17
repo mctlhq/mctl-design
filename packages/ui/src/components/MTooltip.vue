@@ -109,7 +109,7 @@ onBeforeUnmount(() => {
   border: var(--mctl-border-width-hairline) solid var(--surface-line-strong);
   border-radius: var(--mctl-radius-md);
   padding: var(--mctl-space-1) var(--mctl-space-3);
-  box-shadow: var(--mctl-shadow-overlay);
+  box-shadow: var(--shadow-overlay);
   opacity: 0;
   pointer-events: none;
   transition:

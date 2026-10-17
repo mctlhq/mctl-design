@@ -9,6 +9,15 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## Unreleased
+
+### Fixed
+
+- `MModal` and `MTooltip` drew no shadow: they used `--mctl-shadow-overlay`,
+  which nothing defines, so the declaration was invalid. They now use the
+  theme-scoped `--shadow-overlay`. `check:component-tokens` now fails on any
+  `var()` with no fallback whose name nothing defines.
+
 ## 0.12.0 — 2026-10-17
 
 ### Added

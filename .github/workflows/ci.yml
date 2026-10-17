@@ -93,8 +93,9 @@ jobs:
       - name: Check components use tokens
         # Borders, focus rings, opacities, durations and z-index in component
         # styles come from tokens, so a token change and reduced motion reach
-        # them. Reads the .vue sources only; MTg* keep literal var() fallbacks
-        # on purpose and are exempt.
+        # them; MTg* keep literal var() fallbacks on purpose and are exempt.
+        # Also fails a var() with no fallback whose name nothing defines,
+        # which reads the built packages/css/dist, so it runs after the build.
         run: |
           pnpm check:component-tokens:selftest
           pnpm check:component-tokens
