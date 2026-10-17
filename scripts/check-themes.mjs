@@ -26,6 +26,7 @@ let reducedMotion = null;
 
 // Custom-property rules of a sheet, in source order.
 function parseRules(text) {
+  reducedMotion = null;
   let css = text.replace(/\/\*[\s\S]*?\*\//g, ' ');
   // The reduced-motion block only zeroes motion durations, which no case
   // reads; drop it, but refuse it if it ever sets anything else.
@@ -293,6 +294,24 @@ function run(rules) {
 
 // Self-test: the resolver passes a sheet wired the 0.9.0 way and fails one
 // with the 0.8.0 same-element pairing, both built from the tokens here.
+// The reduced-motion block has to exist and zero every motion duration that
+// is not already zero, so deleting it, mistyping a name, or adding a duration
+// token without zeroing it fails here rather than silently. Reads what the
+// last parseRules call recorded.
+function motionFailures() {
+  const ZERO = new Set(['0ms', '0s', 'var(--mctl-motion-duration-instant)']);
+  if (!reducedMotion) return ['theme.css has no @media (prefers-reduced-motion: reduce) block'];
+  const out = [];
+  for (const [k, v] of Object.entries(tokens.motion.duration)) {
+    if (parseFloat(v) === 0) continue;
+    const name = `--mctl-motion-duration-${k}`;
+    if (!ZERO.has(reducedMotion[name])) {
+      out.push(`reduced motion: ${name} is ${reducedMotion[name] ?? 'not set'}, expected 0`);
+    }
+  }
+  return out;
+}
+
 if (process.argv.includes('--selftest')) {
   const raw = [':root {'];
   for (const theme of THEMES) {
@@ -351,7 +370,30 @@ if (process.argv.includes('--selftest')) {
 
   const wiredFailures = run(parseRules(wired));
   const pairedFailures = run(parseRules(paired));
-  if (wiredFailures.length || !pairedFailures.length) {
+
+  // The reduced-motion guard: a block that sets anything but motion tokens
+  // is refused, one that leaves a duration non-zero fails, and one that
+  // zeroes them all passes.
+  const motionBlock = (decls) =>
+    `${wired}\n@media (prefers-reduced-motion: reduce) { :root { ${decls} } }`;
+  const zeroAll = Object.keys(tokens.motion.duration)
+    .map((k) => `--mctl-motion-duration-${k}: 0ms;`)
+    .join(' ');
+  const motionProblems = [];
+  try {
+    parseRules(motionBlock('--mctl-color-ink2: #fff;'));
+    motionProblems.push('a reduced-motion block setting --mctl-color-ink2 was accepted');
+  } catch (error) {
+    if (!error.message.includes('reduced-motion block sets --mctl-color-ink2')) throw error;
+  }
+  parseRules(motionBlock(`${zeroAll} --mctl-motion-duration-slow: 200ms;`));
+  if (!motionFailures().length) motionProblems.push('a non-zero slow duration passed');
+  parseRules(wired);
+  if (!motionFailures().length) motionProblems.push('a sheet with no reduced-motion block passed');
+  parseRules(motionBlock(zeroAll));
+  motionProblems.push(...motionFailures());
+
+  if (wiredFailures.length || !pairedFailures.length || motionProblems.length) {
     console.error('check-themes selftest failed:');
     if (wiredFailures.length)
       console.error(
@@ -359,10 +401,12 @@ if (process.argv.includes('--selftest')) {
       );
     if (!pairedFailures.length)
       console.error('  the 0.8.0 pairing passed; the resolver no longer sees the bug');
+    if (motionProblems.length)
+      console.error(`  reduced motion:\n    ${motionProblems.join('\n    ')}`);
     process.exit(1);
   }
   console.log(
-    `check-themes: selftest ok (wired sheet passes ${cases.length} cases; the 0.8.0 pairing fails ${pairedFailures.length} values).`,
+    `check-themes: selftest ok (wired sheet passes ${cases.length} cases; the 0.8.0 pairing fails ${pairedFailures.length} values; the reduced-motion guard holds).`,
   );
   process.exit(0);
 }
@@ -374,21 +418,7 @@ if (!existsSync(SHEET)) {
 }
 const failures = run(parseRules(readFileSync(SHEET, 'utf8')));
 
-// The reduced-motion block has to exist and zero every motion duration that
-// is not already zero, so deleting it, mistyping a name, or adding a duration
-// token without zeroing it fails here rather than silently.
-const ZERO = new Set(['0ms', '0s', 'var(--mctl-motion-duration-instant)']);
-if (!reducedMotion) {
-  failures.push('theme.css has no @media (prefers-reduced-motion: reduce) block');
-} else {
-  for (const [k, v] of Object.entries(tokens.motion.duration)) {
-    if (parseFloat(v) === 0) continue;
-    const name = `--mctl-motion-duration-${k}`;
-    if (!ZERO.has(reducedMotion[name])) {
-      failures.push(`reduced motion: ${name} is ${reducedMotion[name] ?? 'not set'}, expected 0`);
-    }
-  }
-}
+failures.push(...motionFailures());
 if (failures.length) {
   console.log(failures.map((f) => `FAIL ${f}`).join('\n'));
   console.error(
