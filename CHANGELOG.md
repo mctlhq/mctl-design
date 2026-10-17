@@ -12,11 +12,13 @@ headings below and are all included in 0.8.0.
 ## 0.8.0 — 2026-10-17
 
 ### Added
+
 - Tailwind preset and v4 theme: `font-extrabold` from the token scale, and
   `h-site-header`, which follows `--site-header-height` so it tracks a
   shell override. (#92)
 
 ### Fixed
+
 - `MTabs`: arrow keys, Home and End keep roving when the parent applies
   `v-model` asynchronously (for example a router push), and focus stays on
   the selected tab when tab values repeat. `Tab.value` is documented as
@@ -28,6 +30,7 @@ headings below and are all included in 0.8.0.
   the same element. (#92)
 
 ### Changed
+
 - Development toolchain: tsup 9 (closes esbuild GHSA-g7r4-m6w7-qqqr),
   turbo 2.11, prettier 3.9, typescript-eslint 8.71, eslint 9.39. The
   `pnpm audit` gate is now `low`. The supported Node range for working on
@@ -37,6 +40,7 @@ headings below and are all included in 0.8.0.
 ## 0.7.0 — 2026-10-16 (CDN only)
 
 ### Added
+
 - Tailwind v4 theme at `@mctlhq/css/tailwind.css`, at parity with the v3
   preset and checked by `pnpm check:generated`. The README lists the few
   deliberate naming differences. (#90)
@@ -45,6 +49,7 @@ headings below and are all included in 0.8.0.
 - Theme-aware syntax colours (`--syntax-*`, dark and light). (#90)
 
 ### Fixed
+
 - `MTabs` works without `v-model`, uses index-based ids and keyboard roving,
   and renders no empty tablist. (#90)
 - `MTgTabBar` is a `nav` landmark with `aria-current`. (#90)
@@ -55,6 +60,7 @@ headings below and are all included in 0.8.0.
   status "deep" shades, syntax punctuation) were adjusted. (#90)
 
 ### Changed
+
 - CI runs component tests with axe, a WCAG contrast check over every
   rendered pair and the generated-export checks. Deploys to ui.mctl.ai wait
   for green CI on `main`. (#90)
@@ -66,6 +72,7 @@ headings below and are all included in 0.8.0.
 ## 0.6.0 — 2026-10-16 (CDN only)
 
 ### Added
+
 - Public site shell tokens shared by the landing and documentation sites:
   header height, container width, gutters, wordmark and navigation
   typography. (#89)
