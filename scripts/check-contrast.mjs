@@ -12,10 +12,10 @@
 // control borders, an icon that carries meaning -- is held to 3:1 (WCAG
 // 1.4.11). The --tg-* Mini App palette is covered with the same rules.
 //
-// KNOWN lists pairs that fail today, with the ratio each measures, and wait
-// on a palette decision. They are printed, not fatal. A new failure is
-// fatal, so is a KNOWN pair that drops below its recorded ratio, and so is
-// one that starts passing, so the list can only shrink or improve.
+// KNOWN lists pairs that fail today, with the exact ratio each measures, and
+// wait on a palette decision. They are printed, not fatal. A new failure is
+// fatal; so is a KNOWN pair whose ratio moves either way (update the entry)
+// and one that starts passing (remove it), so the list stays a true record.
 //
 //   node scripts/check-contrast.mjs            # gate
 //   node scripts/check-contrast.mjs --report   # print every pair
@@ -61,9 +61,11 @@ export function ratio(a, b) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-// Tag each pair: ok, FAIL, known (fails and is listed at this ratio or
-// better), WORSE (listed, but below its recorded ratio), FIXED (passes but
-// is still listed); and name the KNOWN entries that match no pair.
+// Tag each pair: ok, FAIL, known (fails at exactly its recorded ratio),
+// WORSE / BETTER (fails, but below / above it -- update the entry), FIXED
+// (passes but is still listed); and name the KNOWN entries that match no
+// pair. The baseline is exact, so a partial fix cannot leave slack behind it
+// and a mistyped entry cannot pass.
 export function classify(pairs, known) {
   const labels = new Set(pairs.map((p) => p.label));
   const rows = pairs.map((p) => {
@@ -71,8 +73,9 @@ export function classify(pairs, known) {
     const pass = r >= p.min;
     const listed = known.has(p.label);
     // Compared at the two decimals the baseline is written with.
-    const worse = listed && Number(r.toFixed(2)) < known.get(p.label);
-    const tag = pass ? (listed ? 'FIXED' : 'ok') : !listed ? 'FAIL' : worse ? 'WORSE' : 'known';
+    const drift = listed ? Number(r.toFixed(2)) - known.get(p.label) : 0;
+    let tag = pass ? 'ok' : 'FAIL';
+    if (listed) tag = pass ? 'FIXED' : drift < 0 ? 'WORSE' : drift > 0 ? 'BETTER' : 'known';
     return { ...p, r, tag };
   });
   return { rows, stale: [...known.keys()].filter((l) => !labels.has(l)) };
@@ -87,23 +90,35 @@ if (process.argv.includes('--selftest')) {
   eq('over(#c23b3b, 1, #fafaf7)', over('#c23b3b', 1, '#fafaf7'), '#c23b3b');
   eq('over(#c23b3b, 0, #fafaf7)', over('#c23b3b', 0, '#fafaf7'), '#fafaf7');
   eq('over(#ff0000, 0.25, #0000ff)', over('#ff0000', 0.25, '#0000ff'), '#4000bf');
+  // Ratio: the ends, a midtone (the 2.4 gamma) and a near-black under
+  // 0.03928 (the linear 12.92 branch), plus the two thresholds themselves.
   eq('ratio(#000000, #ffffff)', ratio('#000000', '#ffffff').toFixed(2), '21.00');
+  eq('ratio(#777777, #888888)', ratio('#777777', '#888888').toFixed(4), '1.2633');
+  eq('ratio(#050505, #000000)', ratio('#050505', '#000000').toFixed(4), '1.0304');
+  eq('TEXT', TEXT, 4.5);
+  eq('UI', UI, 3);
   // The ratchet: one pair per outcome, plus an entry that names nothing.
+  // #777777 on #888888 is 1.26:1; #949494 on white is 3.03:1, so it passes
+  // as non-text (3) and fails as text (4.5).
+  const grey = { fg: '#777777', bg: '#888888', min: TEXT };
   const fixture = [
-    { label: 'pass', fg: '#000000', bg: '#ffffff', min: 4.5 },
-    { label: 'fail', fg: '#777777', bg: '#888888', min: 4.5 },
-    { label: 'known', fg: '#777777', bg: '#888888', min: 4.5 },
-    { label: 'fixed', fg: '#000000', bg: '#ffffff', min: 4.5 },
+    { label: 'pass', fg: '#000000', bg: '#ffffff', min: TEXT },
+    { label: 'ui pass', fg: '#949494', bg: '#ffffff', min: UI },
+    { label: 'text fail', fg: '#949494', bg: '#ffffff', min: TEXT },
+    { label: 'known', ...grey },
+    { label: 'fixed', fg: '#000000', bg: '#ffffff', min: TEXT },
+    { label: 'worse', ...grey },
+    { label: 'better', ...grey },
   ];
-  fixture.push({ label: 'worse', fg: '#777777', bg: '#888888', min: 4.5 });
   const listed = new Map([
-    ['known', 1.2],
-    ['fixed', 1.2],
-    ['worse', 3],
+    ['known', 1.26],
+    ['fixed', 1.26],
+    ['worse', 1.27],
+    ['better', 1.25],
     ['gone', 1],
   ]);
   const { rows, stale } = classify(fixture, listed);
-  eq('tags', rows.map((r) => r.tag).join(' '), 'ok FAIL known FIXED WORSE');
+  eq('tags', rows.map((r) => r.tag).join(' '), 'ok ok FAIL known FIXED WORSE BETTER');
   eq('stale', stale.join(' '), 'gone');
   if (problems.length) {
     console.error(`check-contrast selftest failed:\n  ${problems.join('\n  ')}`);
@@ -163,7 +178,9 @@ for (const theme of ['dark', 'light']) {
       add(`${theme} MPill accent.${name} on its 15% tint over ${bgName}`, c, over(c, 0.15, bg));
       // MAlert info: body text on a 6% accent tint.
       add(`${theme} MAlert fg on accent.${name} 6% over ${bgName}`, s.fg, over(c, 0.06, bg));
-      // The focus ring is the accent, drawn against the surface.
+      // The focus ring is the accent drawn against the surface. --focus-ring
+      // only aliases --accent today, so this mirrors the accent text pairs at
+      // a lower threshold; it becomes independent the day the alias does.
       add(`${theme} focus ring accent.${name} vs ${bgName}`, c, bg, UI);
     }
     for (const [name, value] of Object.entries(status[theme])) {
@@ -207,7 +224,11 @@ for (const theme of ['light', 'dark']) {
       );
     }
   }
-  add(`tg ${theme} focus ring accent vs surface`, p.accent, p.surface, UI);
+  // MTgOrderCard's ring sits 2px outside the card, so it is drawn on what
+  // holds the card (the page or a sheet), never on --tg-surface itself.
+  for (const bgName of ['bg', 'surfaceSub']) {
+    add(`tg ${theme} focus ring accent vs ${bgName}`, p.accent, p[bgName], UI);
+  }
   // MTgOrderCard's arrow is aria-hidden and decorative (the card carries the
   // affordance), so WCAG 1.4.11 does not apply to --tg-faint there.
 }
@@ -286,7 +307,7 @@ const KNOWN = new Map([
 
 const { rows, stale } = classify(pairs, KNOWN);
 const count = (tag) => rows.filter((r) => r.tag === tag).length;
-const failed = count('FAIL') + count('FIXED') + count('WORSE');
+const failed = count('FAIL') + count('FIXED') + count('WORSE') + count('BETTER');
 const known = count('known');
 for (const r of rows) {
   if (report || r.tag !== 'ok') {
@@ -299,7 +320,7 @@ for (const l of stale) console.log(`STALE KNOWN entry names no pair: ${l}`);
 
 if (failed || stale.length) {
   console.error(
-    `\ncheck-contrast: ${failed} of ${pairs.length} pairs below WCAG AA, worse than their KNOWN ratio, or fixed but still listed` +
+    `\ncheck-contrast: ${failed} of ${pairs.length} pairs below WCAG AA, off their recorded KNOWN ratio, or fixed but still listed` +
       (stale.length ? `, ${stale.length} stale KNOWN entries` : '') +
       '.',
   );
