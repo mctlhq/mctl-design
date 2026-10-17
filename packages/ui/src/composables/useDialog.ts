@@ -1,7 +1,6 @@
 import { nextTick, onBeforeUnmount, watch, type Ref } from 'vue';
 
 interface Entry {
-  key: symbol;
   /** The dialog's top-level element in <body>; kept interactive. */
   top: HTMLElement | null;
   /** Where focus goes when this dialog closes. */
@@ -19,6 +18,11 @@ let savedPaddingRight = '';
 // Elements this module made inert. Anything inert for another reason is left
 // alone, and never "restored".
 const inerted = new Set<HTMLElement>();
+
+// Title ids for aria-labelledby. A module counter, not the component uid:
+// uids restart at 0 in every Vue app, so two apps on one page would collide.
+let idSeq = 0;
+export const nextDialogId = (prefix: string) => `${prefix}-${++idSeq}`;
 
 const FOCUSABLE = [
   'a[href]',
@@ -71,12 +75,17 @@ function unlockScroll() {
 
 /** Everything in <body> except the topmost dialog is inert; nothing when no dialog is open. */
 function syncInert() {
-  const top = stack[stack.length - 1]?.top ?? null;
-  if (!top) {
+  // Drop overlays that have left the document (a closed dialog's subtree).
+  for (const el of inerted) if (!el.isConnected) inerted.delete(el);
+  if (stack.length === 0) {
     for (const el of inerted) el.removeAttribute('inert');
     inerted.clear();
     return;
   }
+  // The topmost dialog has not mounted yet (it resolves after a tick); leave
+  // the page as it is rather than reading "no dialog" into a null.
+  const top = stack[stack.length - 1].top;
+  if (!top) return;
   for (const el of Array.from(document.body.children)) {
     if (!(el instanceof HTMLElement)) continue;
     if (el === top) {
@@ -110,7 +119,7 @@ export interface DialogOptions {
  * between the dialog and the backdrop, in either direction, does not close it.
  */
 export function useDialog(options: DialogOptions) {
-  const entry: Entry = { key: Symbol('m-dialog'), top: null, returnFocus: null };
+  const entry: Entry = { top: null, returnFocus: null };
   let active = false;
   let pressStart: EventTarget | null = null;
   let pressEnd: EventTarget | null = null;
@@ -175,12 +184,13 @@ export function useDialog(options: DialogOptions) {
     const i = stack.indexOf(entry);
     const wasTopmost = i === stack.length - 1;
     if (i !== -1) {
-      // Closing from under another dialog: the one above was opened from
-      // inside this one, so its focus target is about to disappear. Hand it
-      // this dialog's own target instead.
-      const above = stack[i + 1];
-      if (above && (!above.returnFocus || entry.top?.contains(above.returnFocus))) {
-        above.returnFocus = entry.returnFocus;
+      // Closing from under other dialogs: any opened from inside this one
+      // would return focus into a subtree that is about to disappear. Hand
+      // them this dialog's own target instead, however deep the stack.
+      for (const above of stack.slice(i + 1)) {
+        if (!above.returnFocus || entry.top?.contains(above.returnFocus)) {
+          above.returnFocus = entry.returnFocus;
+        }
       }
       stack.splice(i, 1);
     }

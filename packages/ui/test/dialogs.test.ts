@@ -161,6 +161,28 @@ describe('MTgSheet dialog behaviour', () => {
 });
 
 describe('stacked dialogs', () => {
+  it('hands focus targets to every dialog above when the bottom one closes', async () => {
+    const trigger = document.createElement('button');
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    const a = modalWithButtons({ title: 'A' });
+    await flushPromises();
+    dialog().querySelector('button')!.focus();
+    // B and C open in the same tick, so both remember A's button.
+    const b = mount(MTgSheet, { props: { modelValue: true, title: 'B' }, attachTo: document.body });
+    const c = mount(MModal, { props: { open: true, title: 'C' }, attachTo: document.body });
+    await flushPromises();
+
+    await a.setProps({ open: false });
+    await b.setProps({ modelValue: false });
+    await c.setProps({ open: false });
+    expect(document.activeElement).toBe(trigger);
+    c.unmount();
+    b.unmount();
+    a.unmount();
+  });
+
   it('keeps the page inert and focus in the sheet when the modal under it closes first', async () => {
     const app = document.createElement('div');
     const trigger = document.createElement('button');

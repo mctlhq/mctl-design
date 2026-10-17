@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { getCurrentInstance, ref } from 'vue';
-import { useDialog } from '../composables/useDialog';
+import { ref } from 'vue';
+import { nextDialogId, useDialog } from '../composables/useDialog';
 
 const props = withDefaults(
   defineProps<{
@@ -20,7 +20,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>();
 
 const rootRef = ref<HTMLElement | null>(null);
 const sheetRef = ref<HTMLElement | null>(null);
-const titleId = `m-tg-sheet-title-${getCurrentInstance()?.uid ?? 0}`;
+const titleId = nextDialogId('m-tg-sheet-title');
 
 function close() {
   emit('update:modelValue', false);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { getCurrentInstance, ref } from 'vue';
-import { useDialog } from '../composables/useDialog';
+import { ref } from 'vue';
+import { nextDialogId, useDialog } from '../composables/useDialog';
 
 const props = withDefaults(
   defineProps<{
@@ -19,7 +19,7 @@ const emit = defineEmits<{ 'update:open': [value: boolean] }>();
 
 const overlayRef = ref<HTMLElement | null>(null);
 const dialogRef = ref<HTMLElement | null>(null);
-const titleId = `m-modal-title-${getCurrentInstance()?.uid ?? 0}`;
+const titleId = nextDialogId('m-modal-title');
 
 function close() {
   if (props.dismissible) emit('update:open', false);
