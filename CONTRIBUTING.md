@@ -89,10 +89,26 @@ npm consumers fall behind the CDN.
 
 ## Adding a component
 
-1. Create `packages/ui/src/components/M<Name>.vue` (Vue 3 SFC).
-2. Export it from `packages/ui/src/index.ts`.
-3. Add a story under `apps/storybook/stories/`.
-4. Components are prefixed `M` to avoid collisions in Nuxt/VitePress.
+1. Create `packages/ui/src/components/M<Name>.vue` (Vue 3 SFC). Components
+   are prefixed `M` to avoid collisions in Nuxt/VitePress.
+2. Style it only through the theme. `pnpm check:component-tokens` fails a
+   literal border width, radius, shadow, outline offset, fractional opacity,
+   duration or z-index, and any `var()` without a fallback that no sheet
+   defines. A component reads `theme.css`, `global.css` and `prose.css`; an
+   `MTg*` component reads only `telegram.css`, keeps literal fallbacks inside
+   its `var()`s, and is exempt from the literal rules.
+3. Build any id with `useId()`, never the instance uid or a module counter, so
+   the server render and hydration agree, and add the component to
+   `packages/ui/test/ssr-ids.test.ts`.
+4. Export it from `packages/ui/src/index.ts`.
+5. Test it in `packages/ui/test/`. Anything with behaviour (`v-model`,
+   keyboard, events, focus) gets its own test file. A component that no other
+   test runs axe against goes into the case list in `a11y-smoke.test.ts`.
+   `pnpm test` fails a source file under the per-file coverage floor, so a
+   component that appears in no test does not merge.
+6. Add a story under `apps/storybook/stories/` (`Telegram/` for `MTg*`).
+7. List it under **Components** in `README.md`, and describe it under
+   `## Unreleased` in `CHANGELOG.md`.
 
 ## Pull requests
 
