@@ -31,8 +31,10 @@ pnpm check:versions
 pnpm check:contrast        # text pairs (4.5:1) and focus rings, borders and
                            # meaningful icons (3:1) per theme, accent and the
                            # --tg-* palette, tints composited; failures listed
-                           # in its KNOWN set wait on a palette decision and
-                           # may only shrink (run after pnpm build)
+                           # in its KNOWN set, with the exact ratio each
+                           # measures, wait on a palette decision; a ratio
+                           # that moves either way means updating the entry
+                           # (run after pnpm build)
 pnpm check:contrast:selftest # the blend, ratio and KNOWN ratchet still
                            # behave (run after pnpm build)
 pnpm check:themes          # data-theme and data-accent nest independently at
