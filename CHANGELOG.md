@@ -28,6 +28,9 @@ headings below and are all included in 0.8.0.
   longer shifts the layout; the page behind is inert; a drag between the
   dialog and the backdrop no longer closes it. Stacked modals and sheets can
   close in any order, and the one opened last paints on top. (#97)
+- `MTooltip` meets WCAG 1.4.13: Escape hides it without moving focus (and
+  does not also close a dialog around it), the pointer can move onto the
+  bubble, and long text wraps instead of overflowing. (#111)
 
 ## 0.8.0 — 2026-10-17
 
