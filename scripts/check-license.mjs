@@ -2,7 +2,8 @@
 // Guards the README-to-LICENSE reference: LICENSE must exist at the repo
 // root, README.md must link to it from a License section, and every
 // non-private workspace package.json must declare the same license id as
-// the root package.json. Run in CI so a rename/removal of LICENSE or a
+// the root package.json, and each published package must carry a copy of
+// LICENSE identical to the root one plus its own README.md. Run in CI so a rename/removal of LICENSE or a
 // drifted SPDX id is caught instead of silently shipping a broken reference.
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -56,11 +57,27 @@ for (const dir of dirs) {
     if (pkg.license !== expected) {
       mismatches.push(`  ${pkg.name}: ${pkg.license} (expected ${expected})`);
     }
+    // npm ships a package's own LICENSE and README, not the repository's, so
+    // each published package carries a copy of the LICENSE (which must not
+    // drift from the root) and a README for its registry page.
+    if (existsSync(licensePath)) {
+      const own = join(base, entry, 'LICENSE');
+      if (!existsSync(own)) {
+        mismatches.push(`  ${pkg.name}: no LICENSE file (copy the root LICENSE)`);
+      } else if (readFileSync(own, 'utf8') !== readFileSync(licensePath, 'utf8')) {
+        mismatches.push(`  ${pkg.name}: LICENSE differs from the root LICENSE`);
+      }
+    }
+    if (!existsSync(join(base, entry, 'README.md'))) {
+      mismatches.push(`  ${pkg.name}: no README.md (the registry page renders it)`);
+    }
   }
 }
 
 if (mismatches.length > 0) {
-  errors.push(`  License mismatch — expected ${expected}:\n${mismatches.join('\n')}`);
+  errors.push(
+    `  Published packages (license ${expected}, LICENSE copy, README):\n${mismatches.join('\n')}`,
+  );
 }
 
 if (errors.length > 0) {
@@ -68,4 +85,6 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`README links to LICENSE and all packages declare ${expected}.`);
+console.log(
+  `README links to LICENSE; every published package declares ${expected} and ships LICENSE and README.`,
+);
