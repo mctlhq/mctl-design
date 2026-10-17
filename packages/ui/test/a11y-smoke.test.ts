@@ -18,6 +18,7 @@ import MTable from '../src/components/MTable.vue';
 import MTgDeltaTag from '../src/components/MTgDeltaTag.vue';
 import MTgEmptyState from '../src/components/MTgEmptyState.vue';
 import MTgOrderCard from '../src/components/MTgOrderCard.vue';
+import MTgSheet from '../src/components/MTgSheet.vue';
 import MTgStatusBadge from '../src/components/MTgStatusBadge.vue';
 import MTooltip from '../src/components/MTooltip.vue';
 import MYamlBlock from '../src/components/MYamlBlock.vue';
@@ -139,6 +140,18 @@ describe('axe over the remaining components', () => {
       attachTo: document.body,
     });
     await expectNoAxeViolations(wrapper.element);
+    wrapper.unmount();
+  });
+
+  it('MTgSheet, open and teleported, has no violations', async () => {
+    const wrapper = mount(MTgSheet, {
+      props: { modelValue: true, title: 'Filters' },
+      slots: { default: () => h('p', 'Sheet body') },
+      attachTo: document.body,
+    });
+    const sheet = document.querySelector<HTMLElement>('[role="dialog"]')!;
+    expect(sheet.getAttribute('aria-modal')).toBe('true');
+    await expectNoAxeViolations(document.querySelector<HTMLElement>('.m-tg-sheet-root')!);
     wrapper.unmount();
   });
 
