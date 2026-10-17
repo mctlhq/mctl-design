@@ -36,6 +36,9 @@
   --tg-radius-chip: 10px;
   --tg-radius-sheet: 22px;
   --tg-pad-screen: 20px;
+  /* The display face, from theme.css when it is loaded; a Mini App that
+     loads telegram.css alone gets the same stack directly. */
+  --tg-font: var(--font-display, 'Onest', system-ui, -apple-system, sans-serif);
 
   /* Safe area insets — resolve from the device; fall back to 0. */
   --tg-safe-top: env(safe-area-inset-top, 0px);
@@ -75,7 +78,7 @@
   min-height: 100dvh;
   background: var(--tg-bg);
   color: var(--tg-ink);
-  font-family: var(--font-display);
+  font-family: var(--tg-font);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }

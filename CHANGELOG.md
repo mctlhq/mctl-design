@@ -9,7 +9,7 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
-## Unreleased
+## 0.12.1 — 2026-10-17
 
 ### Fixed
 
@@ -17,6 +17,15 @@ headings below and are all included in 0.8.0.
   which nothing defines, so the declaration was invalid. They now use the
   theme-scoped `--shadow-overlay`. `check:component-tokens` now fails on any
   `var()` with no fallback whose name nothing defines.
+- `telegram.css` and the `MTg*` components set their font through
+  `var(--font-display)`, which only `theme.css` defines, so a Mini App
+  loading `telegram.css` alone fell back to the browser default face.
+  `telegram.css` now defines `--tg-font` (`--font-display` when present,
+  otherwise the same Onest stack) and the components use it with that
+  stack as a fallback. `check:component-tokens` now checks `MTg*` against
+  `telegram.css` alone and the rest against `theme`/`global`/`prose`,
+  ignores comments and `--x: var(--x)` re-exports, and scopes
+  component-defined names to their own file.
 
 ## 0.12.0 — 2026-10-17
 

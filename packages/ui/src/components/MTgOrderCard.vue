@@ -118,7 +118,7 @@ function onSpaceUp() {
 }
 
 .m-tg-order-card__direction {
-  font-family: var(--font-display);
+  font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 12px;
   font-weight: 700;
   padding: 2px 10px;
@@ -137,7 +137,7 @@ function onSpaceUp() {
 }
 
 .m-tg-order-card__pair {
-  font-family: var(--font-display);
+  font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 14px;
   font-weight: 600;
   color: var(--tg-ink, #15171b);
@@ -150,7 +150,7 @@ function onSpaceUp() {
 }
 
 .m-tg-order-card__rate {
-  font-family: var(--font-display);
+  font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 22px;
   font-weight: 700;
   color: var(--tg-ink, #15171b);
@@ -165,13 +165,13 @@ function onSpaceUp() {
 }
 
 .m-tg-order-card__meta-item {
-  font-family: var(--font-display);
+  font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 13px;
   color: var(--tg-muted, #6a6e76);
 }
 
 .m-tg-order-card__method {
-  font-family: var(--font-display);
+  font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 12px;
   color: var(--tg-muted, #6a6e76);
   background: var(--tg-surface-sub, #f3f2ec);
@@ -188,7 +188,7 @@ function onSpaceUp() {
 }
 
 .m-tg-order-card__author {
-  font-family: var(--font-display);
+  font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 13px;
   color: var(--tg-muted, #6a6e76);
 }

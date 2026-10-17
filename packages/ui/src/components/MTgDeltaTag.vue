@@ -39,7 +39,7 @@ const label = computed(() =>
 .m-tg-delta-tag {
   display: inline-flex;
   align-items: center;
-  font-family: var(--font-display);
+  font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 12px;
   font-weight: 600;
   padding: 2px 8px;

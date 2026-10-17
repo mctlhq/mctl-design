@@ -96,7 +96,7 @@ const model = defineModel<string>({ default: '' });
 }
 
 .m-tg-tabbar__label {
-  font-family: var(--font-display);
+  font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.01em;
