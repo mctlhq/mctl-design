@@ -14,7 +14,9 @@
     },
     "./style.css": "./dist/mctl-ui.css"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": [
     "*.css"
   ],

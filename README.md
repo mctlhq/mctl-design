@@ -6,11 +6,11 @@ preset, and Vue 3 UI components, plus a Storybook showcase deployed at
 
 ## Packages
 
-| Package | Description | Framework |
-|---|---|---|
-| `@mctlhq/tokens` | Design tokens — colors, surfaces, accents, typography, spacing (TS, CSS, JSON, DTCG) | agnostic |
-| `@mctlhq/css` | CSS variables, global styles, prose styles, Tailwind v3 preset and v4 theme | agnostic |
-| `@mctlhq/ui` | Vue 3 component library | Vue 3 |
+| Package          | Description                                                                          | Framework |
+| ---------------- | ------------------------------------------------------------------------------------ | --------- |
+| `@mctlhq/tokens` | Design tokens — colors, surfaces, accents, typography, spacing (TS, CSS, JSON, DTCG) | agnostic  |
+| `@mctlhq/css`    | CSS variables, global styles, prose styles, Tailwind v3 preset and v4 theme          | agnostic  |
+| `@mctlhq/ui`     | Vue 3 component library                                                              | Vue 3     |
 
 `@mctlhq/tokens` and `@mctlhq/css` are framework-agnostic and can be consumed
 by any frontend. `@mctlhq/ui` ships Vue 3 SFCs — consumable from Nuxt/Vue and
@@ -64,11 +64,11 @@ lands without one.
 There are three supported ways to consume the CSS, and they differ only in what
 moves under you.
 
-| Path | Moves when | Use for |
-|---|---|---|
-| `https://ui.mctl.ai/0.8.0/{mctl,global,prose}.css` | never | anything shipped to users |
-| `https://ui.mctl.ai/{mctl,global,prose}.css` | every merge to `main` | previews, internal tools, seeing a token change land |
-| `@mctlhq/css` on GitHub Packages | on a semver tag | builds that already have a Packages token |
+| Path                                               | Moves when            | Use for                                              |
+| -------------------------------------------------- | --------------------- | ---------------------------------------------------- |
+| `https://ui.mctl.ai/0.8.0/{mctl,global,prose}.css` | never                 | anything shipped to users                            |
+| `https://ui.mctl.ai/{mctl,global,prose}.css`       | every merge to `main` | previews, internal tools, seeing a token change land |
+| `@mctlhq/css` on GitHub Packages                   | on a semver tag       | builds that already have a Packages token            |
 
 All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
@@ -80,11 +80,14 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://ui.mctl.ai/0.8.0/mctl.css">
-<link rel="stylesheet" href="https://ui.mctl.ai/0.8.0/global.css">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+/>
+<link rel="stylesheet" href="https://ui.mctl.ai/0.8.0/mctl.css" />
+<link rel="stylesheet" href="https://ui.mctl.ai/0.8.0/global.css" />
 <!-- docs / markdown only: https://ui.mctl.ai/0.8.0/prose.css -->
 ```
 
@@ -105,17 +108,17 @@ and `https://fonts.gstatic.com` in `font-src` if the app ships a CSP.
 **Brand marks — CDN.** Same pipeline as `mctl.css`. Do not vendor copies;
 one change here updates every product after the SHA deploy.
 
-| URL | Use |
-|---|---|
-| `https://ui.mctl.ai/brand/hex.svg` | Hex mark, `currentColor`. Inline or CSS mask. |
-| `https://ui.mctl.ai/brand/favicon.svg` | Baked terracotta hex (default). |
-| `https://ui.mctl.ai/brand/sidebar-dark.svg` | Manager wordmark (dark chrome). |
-| `https://ui.mctl.ai/brand/sidebar-light.svg` | Manager wordmark (light chrome). |
-| `https://ui.mctl.ai/brand/favicon-docs.svg` | Docs tab (D) |
-| `https://ui.mctl.ai/brand/favicon-web.svg` | Landing tab (W) |
-| `https://ui.mctl.ai/brand/favicon-academy.svg` | Academy tab (A) |
-| `https://ui.mctl.ai/brand/favicon-telegram.svg` | Telegram tab (T) |
-| `https://ui.mctl.ai/brand/favicon-portal.svg` | Portal tab (P) |
+| URL                                             | Use                                           |
+| ----------------------------------------------- | --------------------------------------------- |
+| `https://ui.mctl.ai/brand/hex.svg`              | Hex mark, `currentColor`. Inline or CSS mask. |
+| `https://ui.mctl.ai/brand/favicon.svg`          | Baked terracotta hex (default).               |
+| `https://ui.mctl.ai/brand/sidebar-dark.svg`     | Manager wordmark (dark chrome).               |
+| `https://ui.mctl.ai/brand/sidebar-light.svg`    | Manager wordmark (light chrome).              |
+| `https://ui.mctl.ai/brand/favicon-docs.svg`     | Docs tab (D)                                  |
+| `https://ui.mctl.ai/brand/favicon-web.svg`      | Landing tab (W)                               |
+| `https://ui.mctl.ai/brand/favicon-academy.svg`  | Academy tab (A)                               |
+| `https://ui.mctl.ai/brand/favicon-telegram.svg` | Telegram tab (T)                              |
+| `https://ui.mctl.ai/brand/favicon-portal.svg`   | Portal tab (P)                                |
 
 Favicons cannot use CSS `currentColor`; the `/brand/favicon*.svg` files bake
 terracotta (`#e25a3c` dark / `#b83d28` light). Use a **letter variant** in
@@ -123,7 +126,7 @@ terracotta (`#e25a3c` dark / `#b83d28` light). Use a **letter variant** in
 or `MLogo` in-app.
 
 ```html
-<link rel="icon" type="image/svg+xml" href="https://ui.mctl.ai/brand/favicon-docs.svg">
+<link rel="icon" type="image/svg+xml" href="https://ui.mctl.ai/brand/favicon-docs.svg" />
 ```
 
 **Vue components — npm.** `@mctlhq/ui` is still a GitHub Packages package
@@ -144,22 +147,22 @@ import { MButton } from '@mctlhq/ui';
 a theme sheet instead, imported after `theme.css`:
 
 ```css
-@import "tailwindcss";
-@import "@mctlhq/css/theme.css";
-@import "@mctlhq/css/tailwind.css";
+@import 'tailwindcss';
+@import '@mctlhq/css/theme.css';
+@import '@mctlhq/css/tailwind.css';
 ```
 
 Utility names match the v3 preset (`bg-surface-card`, `text-accent`,
 `font-mono`, `shadow-md`, `text-hero`), and opacity modifiers on the
 theme-aware colours (`bg-accent/50`) work. The differences, all deliberate:
 
-| v3 preset | Tailwind v4 | Why |
-| --- | --- | --- |
-| `p-5`, `p-10` … (MCTL scale) | `p-mctl-5`, `p-mctl-10` … | keeps Tailwind's own numeric spacing intact |
-| `max-w-page` | `max-w-pagew` | in v4 `max-w-page` resolves to the page padding |
-| `max-w-prose` | `max-w-(--container-prose)` | `max-w-prose` is Tailwind's built-in 65ch |
-| `divide-y-hairline` … (divide width) | `divide-y-(length:--mctl-border-width-hairline)`; `divide-y-none` is `divide-y-0` | v4 divide widths take a number or a variable, not a named key |
-| `bg-ink/disabled` … (opacity key as modifier) | `bg-ink/45` (the token × 100) | v4 modifiers take a number, not a named key; the `--mctl-opacity-*` tokens are unitless, so `bg-ink/(--mctl-opacity-disabled)` would produce an invalid `color-mix()` |
+| v3 preset                                     | Tailwind v4                                                                       | Why                                                                                                                                                                   |
+| --------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `p-5`, `p-10` … (MCTL scale)                  | `p-mctl-5`, `p-mctl-10` …                                                         | keeps Tailwind's own numeric spacing intact                                                                                                                           |
+| `max-w-page`                                  | `max-w-pagew`                                                                     | in v4 `max-w-page` resolves to the page padding                                                                                                                       |
+| `max-w-prose`                                 | `max-w-(--container-prose)`                                                       | `max-w-prose` is Tailwind's built-in 65ch                                                                                                                             |
+| `divide-y-hairline` … (divide width)          | `divide-y-(length:--mctl-border-width-hairline)`; `divide-y-none` is `divide-y-0` | v4 divide widths take a number or a variable, not a named key                                                                                                         |
+| `bg-ink/disabled` … (opacity key as modifier) | `bg-ink/45` (the token × 100)                                                     | v4 modifiers take a number, not a named key; the `--mctl-opacity-*` tokens are unitless, so `bg-ink/(--mctl-opacity-disabled)` would produce an invalid `color-mix()` |
 
 `duration-*`, `opacity-*`, `border-hairline` / `border-thick` (with the
 per-side `border-b-hairline` … forms) and `outline-focus` /

@@ -32,6 +32,20 @@ if (gitTag && gitTag !== expected) {
   mismatches.push(`  git tag: ${gitTag} (expected ${expected})`);
 }
 
+// Every version needs its CHANGELOG.md entry before it merges: ui.mctl.ai
+// serves a version as soon as it reaches main, and 0.6.0 and 0.7.0 went out
+// with nothing written down. A prerelease may use its final version's
+// heading (0.9.0-rc.1 is covered by "## 0.9.0").
+const escapeRegExp = (v) => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const changelogPath = join(root, 'CHANGELOG.md');
+const changelog = existsSync(changelogPath) ? readFileSync(changelogPath, 'utf8') : '';
+const hasHeading = (v) => new RegExp(`^## ${escapeRegExp(v)}(\\s|$)`, 'm').test(changelog);
+const release = expected.split('-')[0];
+if (!hasHeading(expected) && !hasHeading(release)) {
+  const which = release === expected ? `"## ${expected}"` : `"## ${expected}" or "## ${release}"`;
+  mismatches.push(`  CHANGELOG.md: no ${which} entry`);
+}
+
 if (mismatches.length > 0) {
   console.error(`Version mismatch — expected ${expected}:\n${mismatches.join('\n')}`);
   process.exit(1);

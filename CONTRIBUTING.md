@@ -8,7 +8,7 @@ Thank you for your interest in contributing to the MCTL design system.
   (`^22.18.0 || ^24.11.0 || >=26.0.0`), which is narrower than `vite` 7's
   (`^20.19.0 || >=22.12.0`). An older 22.x satisfies a bare `22` and then fails
   inside the build. That range is `engines.node` in the root `package.json`. `.nvmrc` is a different
-  question — the version this project is *developed* on — and holds a current
+  question — the version this project is _developed_ on — and holds a current
   22.x, so a contributor's machine matches CI (`node-version: 22`) and the
   published image (`node:22-alpine`) rather than sitting on the oldest release
   the floor permits.
@@ -24,6 +24,7 @@ pnpm dev              # Storybook in watch mode
 pnpm build            # build all packages
 pnpm build:storybook  # static showcase
 pnpm lint
+pnpm format           # prettier --write; CI runs pnpm format:check
 pnpm typecheck
 pnpm test             # component contracts + axe (packages/ui, vitest + jsdom)
 pnpm check:versions
@@ -47,14 +48,20 @@ pnpm check:token-version   # a token or generator change needs a version bump,
 ## Commit conventions
 
 Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`,
-`ci:`. Subject line under 72 characters. The body explains *why*, not *what*.
+`ci:`. Subject line under 72 characters. The body explains _why_, not _what_.
 
 ## Versioning
 
 All published packages are versioned lockstep with the repository. To cut a
 release, bump the version in **every** `package.json` (root + each package) to
-the same `X.Y.Z`, then tag `X.Y.Z` (no `v` prefix). `pnpm check:versions` is
-enforced in CI and before publish.
+the same `X.Y.Z`, add a `## X.Y.Z` entry to `CHANGELOG.md` (`check:versions`
+fails in CI without one), then tag `X.Y.Z` (no `v` prefix) on `main`. The tag publishes the packages to GitHub Packages; a
+prerelease tag such as `0.9.0-rc.1` publishes under the `next` dist-tag.
+`pnpm check:versions` is enforced in CI and before publish.
+
+`ui.mctl.ai` serves a version's CSS as soon as it reaches `main`, before any
+tag, so tag every version that changes `packages/{tokens,css}` — otherwise
+npm consumers fall behind the CDN.
 
 ## Adding a component
 
@@ -77,30 +84,30 @@ vulnerable one. Each key exists to close a specific advisory and should be
 with `pnpm why <package>` and drop the key if `pnpm install` still resolves at
 or above the floor.
 
-| Override | Closes |
-| --- | --- |
-| `@vitest/mocker@3` | path traversal / arbitrary file read, GHSA-82fw-gwwq-j7x9 |
-| `brace-expansion@1` `@2` `@5` | ReDoS, GHSA lines on all three majors |
-| `fast-uri@3` | ReDoS in URI parsing |
-| `js-yaml@4` | prototype pollution / DoS |
-| `nanoid@3` | predictable IDs on non-integer input |
-| `postcss@8` | parsing DoS |
-| `ws@8` | DoS on excessive headers |
+| Override                      | Closes                                                    |
+| ----------------------------- | --------------------------------------------------------- |
+| `@vitest/mocker@3`            | path traversal / arbitrary file read, GHSA-82fw-gwwq-j7x9 |
+| `brace-expansion@1` `@2` `@5` | ReDoS, GHSA lines on all three majors                     |
+| `fast-uri@3`                  | ReDoS in URI parsing                                      |
+| `js-yaml@4`                   | prototype pollution / DoS                                 |
+| `nanoid@3`                    | predictable IDs on non-integer input                      |
+| `postcss@8`                   | parsing DoS                                               |
+| `ws@8`                        | DoS on excessive headers                                  |
 
 Every selector is scoped to a major (`pkg@N`). Do not add an unscoped or
-open-ended key: an override applies to *every* version line that matches, so
+open-ended key: an override applies to _every_ version line that matches, so
 `"ws": "^8.21.0"` would silently clamp a future `ws@9` down to 8.x in a parent
 that was never tested against it.
 
-`@vitest/mocker@3` is the one key that resolves *across* a major, and that is
+`@vitest/mocker@3` is the one key that resolves _across_ a major, and that is
 deliberate rather than an oversight. GHSA-82fw-gwwq-j7x9 covers `>=2.1.0
 <4.1.11` and was never backported — 3.2.7, the newest 3.x, is still inside the
 range — so there is no in-major fix to point at. The parent is the `storybook` core
-package (the lockfile lists `@vitest/mocker` in *its* dependencies, not
+package (the lockfile lists `@vitest/mocker` in _its_ dependencies, not
 `@storybook/builder-vite`'s), which is a devDependency: it does not reach the
 published packages, and the nginx image ships static output with no Node
 runtime at all. Drop the key once Storybook widens on its own — the scoping
-rule is about not clamping a future line *down*, which this does not do.
+rule is about not clamping a future line _down_, which this does not do.
 
 The override does leave a version skew inside Storybook's test stack:
 `storybook@9.1.21` keeps `@vitest/expect@3.2.4` and `@vitest/spy@3.2.4`, while

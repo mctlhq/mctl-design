@@ -17,7 +17,15 @@ withDefaults(
     /** Volume, e.g. "500–5000 EUR" */
     volume?: string;
     /** Order status. */
-    status?: 'active' | 'reserved' | 'accepted' | 'pending' | 'completed' | 'cancelled' | 'rejected' | 'expired';
+    status?:
+      | 'active'
+      | 'reserved'
+      | 'accepted'
+      | 'pending'
+      | 'completed'
+      | 'cancelled'
+      | 'rejected'
+      | 'expired';
     /** Display name of the order creator. */
     author?: string;
   }>(),
@@ -28,9 +36,19 @@ defineEmits<{ click: [] }>();
 </script>
 
 <template>
-  <div class="m-tg-order-card" role="button" tabindex="0" @click="$emit('click')" @keydown.enter.prevent="$emit('click')" @keydown.space.prevent="$emit('click')">
+  <div
+    class="m-tg-order-card"
+    role="button"
+    tabindex="0"
+    @click="$emit('click')"
+    @keydown.enter.prevent="$emit('click')"
+    @keydown.space.prevent="$emit('click')"
+  >
     <div class="m-tg-order-card__header">
-      <span class="m-tg-order-card__direction" :class="`m-tg-order-card__direction--${direction.toLowerCase()}`">
+      <span
+        class="m-tg-order-card__direction"
+        :class="`m-tg-order-card__direction--${direction.toLowerCase()}`"
+      >
         {{ direction }}
       </span>
       <span class="m-tg-order-card__pair">{{ pair }}</span>
@@ -44,11 +62,7 @@ defineEmits<{ click: [] }>();
 
     <div v-if="volume || methods.length" class="m-tg-order-card__meta">
       <span v-if="volume" class="m-tg-order-card__meta-item">{{ volume }}</span>
-      <span
-        v-for="m in methods"
-        :key="m"
-        class="m-tg-order-card__method"
-      >{{ m }}</span>
+      <span v-for="m in methods" :key="m" class="m-tg-order-card__method">{{ m }}</span>
     </div>
 
     <div v-if="author" class="m-tg-order-card__footer">

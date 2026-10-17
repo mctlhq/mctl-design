@@ -13,9 +13,21 @@ const meta: Meta<typeof MAccordion> = {
     components: { MAccordion },
     setup() {
       const items = [
-        { id: 'rbac', title: 'How is team isolation enforced?', body: 'Each team gets its own namespace, RBAC, network policies and resource quotas.' },
-        { id: 'deploy', title: 'How do deployments work?', body: 'Push to your repo and GitOps reconciles the change — no manual kubectl.' },
-        { id: 'secrets', title: 'Where are secrets stored?', body: 'In Vault, with automatic TLS via cert-manager and GitHub SSO.' },
+        {
+          id: 'rbac',
+          title: 'How is team isolation enforced?',
+          body: 'Each team gets its own namespace, RBAC, network policies and resource quotas.',
+        },
+        {
+          id: 'deploy',
+          title: 'How do deployments work?',
+          body: 'Push to your repo and GitOps reconciles the change — no manual kubectl.',
+        },
+        {
+          id: 'secrets',
+          title: 'Where are secrets stored?',
+          body: 'In Vault, with automatic TLS via cert-manager and GitHub SSO.',
+        },
       ];
       return { args, items };
     },

@@ -24,7 +24,8 @@ withDefaults(
         class="m-stat__trend"
         :class="`m-stat__trend--${trend}`"
         aria-hidden="true"
-      >{{ trend === 'up' ? '▲' : trend === 'down' ? '▼' : '—' }}</span>
+        >{{ trend === 'up' ? '▲' : trend === 'down' ? '▼' : '—' }}</span
+      >
       <span v-if="trend" class="m-stat__sr">trending {{ trend }}</span>
     </span>
     <span v-if="caption" class="m-stat__caption">{{ caption }}</span>
@@ -61,9 +62,15 @@ withDefaults(
   font-size: 0.4em;
 }
 
-.m-stat__trend--up { color: var(--status-ok); }
-.m-stat__trend--down { color: var(--status-bad); }
-.m-stat__trend--flat { color: var(--surface-fg-subtle); }
+.m-stat__trend--up {
+  color: var(--status-ok);
+}
+.m-stat__trend--down {
+  color: var(--status-bad);
+}
+.m-stat__trend--flat {
+  color: var(--surface-fg-subtle);
+}
 
 /* Visually hidden, still announced — gives the trend glyph a text equivalent. */
 .m-stat__sr {

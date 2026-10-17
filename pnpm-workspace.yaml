@@ -1,10 +1,10 @@
 packages:
-  - "packages/*"
-  - "apps/*"
+  - 'packages/*'
+  - 'apps/*'
 
 # Single source of truth for the build toolchain shared by packages/ui and
 # apps/storybook. Both consumed the same vite range and had to be edited in
 # lockstep by hand; a catalog makes the next major a one-line change.
 catalog:
   vite: ^7.3.6
-  "@vitejs/plugin-vue": ^6.0.10
+  '@vitejs/plugin-vue': ^6.0.10

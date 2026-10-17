@@ -124,12 +124,17 @@ describe('MTabs', () => {
       { label: 'A', value: 'x' },
       { label: 'B', value: 'x' },
     ];
-    const wrapper = mount(MTabs, { props: { tabs: dup, modelValue: 'x' }, attachTo: document.body });
+    const wrapper = mount(MTabs, {
+      props: { tabs: dup, modelValue: 'x' },
+      attachTo: document.body,
+    });
     expect(wrapper.findAll('[role="tab"][aria-selected="true"]')).toHaveLength(1);
     expect(wrapper.findAll('[role="tab"][tabindex="0"]')).toHaveLength(1);
     // Values are documented as unique; a repeat degrades to focus staying on
     // the selected tab rather than moving to an unreachable one.
-    await wrapper.find('[role="tab"][aria-selected="true"]').trigger('keydown', { key: 'ArrowRight' });
+    await wrapper
+      .find('[role="tab"][aria-selected="true"]')
+      .trigger('keydown', { key: 'ArrowRight' });
     await nextTick();
     expect(document.activeElement?.textContent?.trim()).toBe('A');
     expect(document.activeElement?.getAttribute('aria-selected')).toBe('true');

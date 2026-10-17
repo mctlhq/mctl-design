@@ -15,7 +15,9 @@
       "import": "./dist/tailwind-preset.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

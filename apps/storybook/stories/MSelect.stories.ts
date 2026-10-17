@@ -23,7 +23,8 @@ const meta: Meta<typeof MSelect> = {
       ];
       return { args, value, options };
     },
-    template: '<MSelect v-bind="args" v-model="value" :options="options" style="max-width:320px" />',
+    template:
+      '<MSelect v-bind="args" v-model="value" :options="options" style="max-width:320px" />',
   }),
 };
 

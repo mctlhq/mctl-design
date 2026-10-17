@@ -28,7 +28,10 @@ describe('MTgTabBar', () => {
   });
 
   it('has no axe violations', async () => {
-    const wrapper = mount(MTgTabBar, { props: { tabs, modelValue: 'home' }, attachTo: document.body });
+    const wrapper = mount(MTgTabBar, {
+      props: { tabs, modelValue: 'home' },
+      attachTo: document.body,
+    });
     await expectNoAxeViolations(wrapper.element);
     wrapper.unmount();
   });

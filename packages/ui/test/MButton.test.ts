@@ -7,8 +7,8 @@ import { expectNoAxeViolations } from './axe';
 describe('MButton', () => {
   it('defaults to type="button" so it does not submit a surrounding form', async () => {
     const onSubmit = vi.fn((e: Event) => e.preventDefault());
-    const Form = defineComponent(() => () =>
-      h('form', { onSubmit }, [h(MButton, null, () => 'Go')]),
+    const Form = defineComponent(
+      () => () => h('form', { onSubmit }, [h(MButton, null, () => 'Go')]),
     );
     const wrapper = mount(Form, { attachTo: document.body });
     expect(wrapper.find('button').attributes('type')).toBe('button');
@@ -50,7 +50,10 @@ describe('MButton', () => {
   it('renders a component passed as `as`, and a plain <a> for it when disabled', () => {
     const Link = defineComponent({
       props: { to: { type: String, required: true } },
-      setup: (props, { slots }) => () => h('a', { href: props.to, 'data-link': '' }, slots.default?.()),
+      setup:
+        (props, { slots }) =>
+        () =>
+          h('a', { href: props.to, 'data-link': '' }, slots.default?.()),
     });
     const enabled = mount(MButton, { props: { as: Link }, attrs: { to: '/x' } });
     expect(enabled.find('[data-link]').attributes('href')).toBe('/x');

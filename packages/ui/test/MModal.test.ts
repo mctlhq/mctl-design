@@ -15,7 +15,10 @@ describe('MModal', () => {
     document.body.appendChild(trigger);
     trigger.focus();
 
-    const wrapper = mount(MModal, { props: { open: false, title: 'Hello' }, attachTo: document.body });
+    const wrapper = mount(MModal, {
+      props: { open: false, title: 'Hello' },
+      attachTo: document.body,
+    });
     await wrapper.setProps({ open: true });
     await nextTick();
     expect(document.body.style.overflow).toBe('hidden');
@@ -31,7 +34,10 @@ describe('MModal', () => {
   });
 
   it('ignores Escape when not dismissible', async () => {
-    const wrapper = mount(MModal, { props: { open: true, dismissible: false }, attachTo: document.body });
+    const wrapper = mount(MModal, {
+      props: { open: true, dismissible: false },
+      attachTo: document.body,
+    });
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(wrapper.emitted('update:open')).toBeUndefined();
     wrapper.unmount();

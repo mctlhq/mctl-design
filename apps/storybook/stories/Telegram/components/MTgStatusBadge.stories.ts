@@ -8,7 +8,16 @@ const meta: Meta<typeof MTgStatusBadge> = {
   argTypes: {
     status: {
       control: 'select',
-      options: ['active', 'reserved', 'accepted', 'pending', 'completed', 'cancelled', 'rejected', 'expired'],
+      options: [
+        'active',
+        'reserved',
+        'accepted',
+        'pending',
+        'completed',
+        'cancelled',
+        'rejected',
+        'expired',
+      ],
     },
   },
   args: { status: 'active' },
