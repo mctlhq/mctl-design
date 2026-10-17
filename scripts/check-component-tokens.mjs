@@ -109,7 +109,7 @@ export function findLiterals(source) {
 export function stripComments(source) {
   const blank = (c) => c.replace(/[^\n]/g, ' ');
   return source
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, blank)
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script[^>]*>/gi, blank)
     .replace(/\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g, blank);
 }
 
@@ -185,6 +185,7 @@ if (process.argv.includes('--selftest')) {
   // A var() inside <script> is not a style use; a stray /* in a script
   // string must not hide the var() after it.
   const scripted = `<script>const s = '/*'; // var(--in-script)</script>
+<SCRIPT setup>const t = 'var(--upper-script)';</SCRIPT >
 <style>.a { color: var(--after-script); }</style>`;
   const scriptUndef = findUndefined(scripted, new Set()).map((f) => f.name);
   if (scriptUndef.join(' ') !== '--after-script')
