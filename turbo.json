@@ -13,14 +13,17 @@
     // nothing. See packages/css/scripts/build-css.mjs before editing this.
     //
     // A pkg#task entry REPLACES the generic `build` above rather than merging
-    // with it, so `dependsOn` is repeated on purpose — anything added to
-    // `build` later has to be added here too.
+    // with it, so `dependsOn` is repeated on purpose — a dependency added to
+    // `build` later has to be added here too. `inputs` and `outputs` are left
+    // out on purpose rather than forgotten: they only decide cache hits, and
+    // this task never caches.
     "@mctlhq/css#build": {
       "dependsOn": ["^build"],
       "cache": false
     },
     "build:storybook": {
       "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/tsconfig.base.json"],
       "outputs": ["storybook-static/**"]
     },
     "dev": {
@@ -38,8 +41,11 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/tsconfig.base.json"]
     },
+    // packages/ui's tests compile through tsconfig.json, which extends the
+    // root base config.
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/tsconfig.base.json"]
     },
     "clean": {
       "cache": false

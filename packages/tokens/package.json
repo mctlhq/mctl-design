@@ -30,7 +30,7 @@
   "scripts": {
     "build": "tsup && node scripts/gen-assets.mjs",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src scripts",
+    "lint": "eslint src scripts --max-warnings 0",
     "clean": "rm -rf dist .turbo"
   },
   "devDependencies": {
