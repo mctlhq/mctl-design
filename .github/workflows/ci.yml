@@ -73,6 +73,8 @@ jobs:
         # Every text/background pair the components render, per theme and
         # accent, against WCAG AA. Reads the built tokens, so it follows the
         # build. A token comment claiming "AA on paper" is not a check.
+        # The selftest pins the tint composite, the ratio maths and the
+        # KNOWN ratchet, so the gate does not depend on the data it checks.
         run: |
           pnpm check:contrast:selftest
           pnpm check:contrast
