@@ -45,7 +45,9 @@ pnpm check:generated       # tailwind.css and tokens.dtcg.json are internally
                            # consistent (run after pnpm build)
 pnpm check:component-tokens # component styles take borders, focus rings,
                            # opacities, durations and z-index from tokens,
-                           # and every var() resolves (run after pnpm build)
+                           # every var() resolves, and the MTg font
+                           # fallbacks match the display token (run after
+                           # pnpm build)
 pnpm check:component-tokens:selftest # the check still catches each literal kind
 pnpm check:license         # README's License section still links to LICENSE,
                            # and every package.json license field matches

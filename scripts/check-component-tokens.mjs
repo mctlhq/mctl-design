@@ -20,6 +20,10 @@
 // - the literal rules read only <style> blocks; a literal in a template
 //   `style` or `:style` binding is not seen;
 // - a double-quoted or computed :style key is not seen as a definition;
+// - definitions are matched by name, not selector: a name declared only
+//   under a scoped rule (.tg-shell, .mctl-prose) would count as defined for
+//   a component rendered outside it (none are today: every --tg-* is on
+//   :root, and global.css and prose.css declare none);
 // - the MTg exemption covers the whole file, not just its var() fallbacks;
 // - easings are not checked: MTgSheet keeps a curve no token matches;
 // - only box-shadow is checked for shadows: text-shadow and
@@ -99,9 +103,27 @@ export function findLiterals(source) {
   return found;
 }
 
-// CSS and HTML comments blanked out, keeping offsets (and so line numbers).
+// <script> blocks, then CSS and HTML comments, blanked out, keeping offsets
+// (and so line numbers). Scripts go first: a `/*` in a script string would
+// otherwise blank everything to the next `*/` and hide real var()s.
 export function stripComments(source) {
-  return source.replace(/\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g, (c) => c.replace(/[^\n]/g, ' '));
+  const blank = (c) => c.replace(/[^\n]/g, ' ');
+  return source
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script[^>]*>/gi, blank)
+    .replace(/\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g, blank);
+}
+
+// The Onest stack is written out wherever --tg-font is read or set, because
+// telegram.css is copied verbatim rather than built from tokens. Every copy
+// must equal the token, or a Mini App on telegram.css alone keeps an old face.
+export function fontDrift(source, display) {
+  const found = [];
+  for (const m of source.matchAll(/var\(\s*--(?:tg-font|font-display)\s*,\s*([^;]*?)\)\s*;/g)) {
+    if (m[1].trim() !== display) {
+      found.push({ line: source.slice(0, m.index).split('\n').length, stack: m[1].trim() });
+    }
+  }
+  return found;
 }
 
 // Custom properties a source defines: `--name:` declarations that are not
@@ -160,6 +182,23 @@ if (process.argv.includes('--selftest')) {
   const goodFound = findLiterals(good);
   const expected = RULES.map((r) => r.why);
   const problems = [];
+  // A var() inside <script> is not a style use; a stray /* in a script
+  // string must not hide the var() after it.
+  const scripted = `<script>const s = '/*'; // var(--in-script)</script>
+<SCRIPT setup>const t = 'var(--upper-script)';</SCRIPT >
+<style>.a { color: var(--after-script); }</style>`;
+  const scriptUndef = findUndefined(scripted, new Set()).map((f) => f.name);
+  if (scriptUndef.join(' ') !== '--after-script')
+    problems.push(
+      `script handling reported: ${scriptUndef.join(' ') || 'none'}, expected --after-script`,
+    );
+  const stack = "'Onest', system-ui, sans-serif";
+  const drift = fontDrift(
+    `.a { font-family: var(--tg-font, ${stack}); }\n.b { font-family: var(--tg-font, 'Old', serif); }`,
+    stack,
+  ).map((f) => f.line);
+  if (drift.join(' ') !== '2')
+    problems.push(`font drift reported lines ${drift.join(' ') || 'none'}, expected 2`);
   if (badFound.join('\n') !== expected.join('\n'))
     problems.push(
       `bad fixture reported\n    ${badFound.join('\n    ')}\n  expected\n    ${expected.join('\n    ')}`,
@@ -201,7 +240,25 @@ const isTelegram = (f) => basename(f).startsWith('MTg');
 const definedFor = (f) =>
   new Set([...(isTelegram(f) ? telegramDefined : themeDefined), ...definedIn(sources[f])]);
 const files = all.filter((f) => !isTelegram(f));
+const tokensDist = join(root, 'packages/tokens/dist/index.js');
+if (!existsSync(tokensDist)) {
+  console.error(`check-component-tokens: ${tokensDist} is missing -- run \`pnpm build\` first.`);
+  process.exit(1);
+}
+const { tokens } = await import(tokensDist);
+const display = tokens.typography.fontFamily.display;
+const telegramSrc = 'packages/css/src/telegram.css';
+const fontSources = {
+  [telegramSrc]: readFileSync(join(root, telegramSrc), 'utf8'),
+  ...Object.fromEntries(all.filter(isTelegram).map((f) => [f, sources[f]])),
+};
 const failures = [
+  ...Object.entries(fontSources).flatMap(([f, src]) =>
+    fontDrift(src, display).map(
+      (x) =>
+        `${f}:${x.line}  font stack ${x.stack}  -- must equal tokens.typography.fontFamily.display (${display})`,
+    ),
+  ),
   ...files.flatMap((f) =>
     findLiterals(sources[f]).map((x) => `${f}:${x.line}  ${x.text}  -- ${x.why}`),
   ),
@@ -215,7 +272,7 @@ const failures = [
 if (failures.length) {
   console.error(failures.join('\n'));
   console.error(
-    `\ncheck-component-tokens: ${failures.length} literal or undefined value(s) in component styles.`,
+    `\ncheck-component-tokens: ${failures.length} literal, undefined or drifted value(s) in component styles.`,
   );
   process.exit(1);
 }
