@@ -8,7 +8,7 @@ const meta: Meta<typeof MTable> = {
   render: () => ({
     components: { MTable, MPill },
     template: `
-      <MTable>
+      <MTable label="MCP tools">
         <thead>
           <tr>
             <th>Tool</th>

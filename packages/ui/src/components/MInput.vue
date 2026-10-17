@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useField } from '../composables/useField';
+
 withDefaults(
   defineProps<{
     /** v-model value. */
@@ -14,18 +16,23 @@ withDefaults(
 );
 
 defineEmits<{ 'update:modelValue': [value: string] }>();
+
+// Inside MField: its id and message wiring, unless set explicitly.
+const field = useField();
 </script>
 
 <template>
   <input
-    :id="id"
+    :id="id ?? field?.id.value"
     class="m-input"
-    :class="{ 'm-input--invalid': invalid }"
+    :class="{ 'm-input--invalid': invalid || field?.invalid.value }"
     :type="type"
     :value="modelValue"
     :placeholder="placeholder"
     :disabled="disabled"
-    :aria-invalid="invalid || undefined"
+    :aria-invalid="invalid || field?.invalid.value || undefined"
+    :aria-describedby="field?.describedBy.value"
+    :aria-required="field?.required.value || undefined"
     @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
   />
 </template>

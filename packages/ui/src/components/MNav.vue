@@ -1,11 +1,16 @@
 <script setup lang="ts">
-defineProps<{
-  items: Array<{ label: string; href: string; active?: boolean }>;
-}>();
+withDefaults(
+  defineProps<{
+    items: Array<{ label: string; href: string; active?: boolean }>;
+    /** Names the landmark, so it stays distinct from other navs on the page. */
+    ariaLabel?: string;
+  }>(),
+  { ariaLabel: 'Main' },
+);
 </script>
 
 <template>
-  <nav class="m-nav">
+  <nav class="m-nav" :aria-label="ariaLabel">
     <ul class="m-nav__list" role="list">
       <li v-for="item in items" :key="item.href" class="m-nav__item">
         <a

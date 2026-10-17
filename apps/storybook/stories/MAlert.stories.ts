@@ -7,6 +7,7 @@ const meta: Meta<typeof MAlert> = {
   tags: ['autodocs'],
   argTypes: {
     tone: { control: 'select', options: ['info', 'warn', 'bad'] },
+    live: { control: 'select', options: [undefined, 'alert', 'status', 'none'] },
   },
   args: { tone: 'info' },
   render: (args) => ({

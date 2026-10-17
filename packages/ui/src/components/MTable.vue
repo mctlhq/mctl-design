@@ -2,10 +2,20 @@
 // Semantic wrapper that applies MCTL table styles via a scoped class on a
 // container div. The consumer writes plain <table>, <thead>, <tbody> etc.
 // inside the default slot — they inherit styles through the deep selector.
+defineProps<{
+  /** Names the scrollable region; use the table's caption text. */
+  label?: string;
+}>();
 </script>
 
 <template>
-  <div class="m-table-wrap">
+  <!-- A wide table scrolls sideways; tabindex lets the keyboard reach it. -->
+  <div
+    class="m-table-wrap"
+    tabindex="0"
+    :role="label ? 'region' : undefined"
+    :aria-label="label || undefined"
+  >
     <table class="m-table">
       <slot />
     </table>
@@ -16,6 +26,11 @@
 .m-table-wrap {
   width: 100%;
   overflow-x: auto;
+}
+
+.m-table-wrap:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .m-table {

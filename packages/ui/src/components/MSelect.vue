@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
+import { useField } from '../composables/useField';
 
 interface Option {
   label: string;
@@ -20,11 +21,17 @@ const props = withDefaults(
     disabled?: boolean;
     invalid?: boolean;
     id?: string;
+    /** Shown while no value is chosen; not selectable again. */
+    placeholder?: string;
   }>(),
-  { modelValue: '', disabled: false, invalid: false, id: undefined },
+  { modelValue: '', disabled: false, invalid: false, id: undefined, placeholder: '' },
 );
 
 defineEmits<{ 'update:modelValue': [value: string] }>();
+
+// Inside MField: its id and message wiring, unless set explicitly.
+const field = useField();
+const isInvalid = computed(() => props.invalid || Boolean(field?.invalid.value));
 
 const attrs = useAttrs();
 const wrapperClass = computed(() => attrs.class);
@@ -45,18 +52,21 @@ function normalize(opt: string | Option): Option {
 <template>
   <div
     class="m-select"
-    :class="[wrapperClass, { 'm-select--invalid': invalid, 'm-select--disabled': disabled }]"
+    :class="[wrapperClass, { 'm-select--invalid': isInvalid, 'm-select--disabled': disabled }]"
     :style="wrapperStyle"
   >
     <select
-      :id="props.id"
+      :id="props.id ?? field?.id.value"
       class="m-select__control"
       :value="modelValue"
       :disabled="disabled"
-      :aria-invalid="invalid || undefined"
+      :aria-invalid="isInvalid || undefined"
+      :aria-describedby="field?.describedBy.value"
+      :aria-required="field?.required.value || undefined"
       v-bind="controlAttrs"
       @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
     >
+      <option v-if="placeholder" value="" disabled>{{ placeholder }}</option>
       <option v-for="opt in options.map(normalize)" :key="opt.value" :value="opt.value">
         {{ opt.label }}
       </option>

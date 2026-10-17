@@ -56,8 +56,10 @@ const lines = computed<Segment[][]>(() => props.code.replace(/\n$/, '').split('\
 <template>
   <figure class="m-yaml">
     <figcaption v-if="filename" class="m-yaml__caption">{{ filename }}</figcaption>
+    <!-- tabindex: long lines scroll sideways, and the keyboard has to reach them. -->
     <pre
       class="m-yaml__pre"
+      tabindex="0"
     ><code><span v-for="(line, i) in lines" :key="i" class="m-yaml__line"><span v-for="(seg, j) in line" :key="j" :class="`m-yaml__t-${seg.kind}`">{{ seg.text }}</span></span></code></pre>
   </figure>
 </template>
@@ -86,6 +88,11 @@ const lines = computed<Segment[][]>(() => props.code.replace(/\n$/, '').split('\
   font-family: var(--font-mono);
   font-size: var(--mctl-typography-font-size-marker);
   line-height: 1.7;
+}
+
+.m-yaml__pre:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .m-yaml__line {

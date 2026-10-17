@@ -9,8 +9,9 @@ const meta: Meta<typeof MSelect> = {
   argTypes: {
     disabled: { control: 'boolean' },
     invalid: { control: 'boolean' },
+    placeholder: { control: 'text' },
   },
-  args: { disabled: false, invalid: false },
+  args: { disabled: false, invalid: false, placeholder: '' },
   render: (args) => ({
     components: { MSelect },
     setup() {
@@ -34,3 +35,16 @@ type Story = StoryObj<typeof MSelect>;
 export const Default: Story = {};
 export const Invalid: Story = { args: { invalid: true } };
 export const Disabled: Story = { args: { disabled: true } };
+export const Placeholder: Story = {
+  args: { placeholder: 'Choose a database' },
+  render: (args) => ({
+    components: { MSelect },
+    setup() {
+      const value = ref('');
+      const options = ['PostgreSQL', 'MySQL', 'Redis'];
+      return { args, value, options };
+    },
+    template:
+      '<MSelect v-bind="args" v-model="value" :options="options" style="max-width:320px" />',
+  }),
+};

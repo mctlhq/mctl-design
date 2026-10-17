@@ -216,4 +216,39 @@ describe('behaviour', () => {
     expect(text).toMatch(/12/);
     expect(text.replace('12', '').trim().length).toBeGreaterThan(0);
   });
+
+  it('MAlert is assertive only for bad news, and can be static', () => {
+    const role = (props: Record<string, unknown>) =>
+      mount(MAlert, { props, slots: { default: () => 'x' } }).attributes('role');
+    expect(role({ tone: 'bad' })).toBe('alert');
+    expect(role({ tone: 'warn' })).toBe('status');
+    expect(role({ tone: 'info' })).toBe('status');
+    expect(role({ tone: 'bad', live: 'none' })).toBeUndefined();
+  });
+
+  it('MNav names its landmark', () => {
+    const nav = (props: Record<string, unknown>) =>
+      mount(MNav, { props: { items: [], ...props } })
+        .find('nav')
+        .attributes('aria-label');
+    expect(nav({})).toBe('Main');
+    expect(nav({ ariaLabel: 'Docs' })).toBe('Docs');
+  });
+
+  it('scrollable code and tables are reachable by keyboard', () => {
+    expect(
+      mount(MCodeBlock, { props: { code: 'x' } })
+        .find('pre')
+        .attributes('tabindex'),
+    ).toBe('0');
+    expect(
+      mount(MYamlBlock, { props: { code: 'a: 1' } })
+        .find('pre')
+        .attributes('tabindex'),
+    ).toBe('0');
+    const table = mount(MTable, { props: { label: 'Services' } }).find('.m-table-wrap');
+    expect(table.attributes('tabindex')).toBe('0');
+    expect(table.attributes('role')).toBe('region');
+    expect(table.attributes('aria-label')).toBe('Services');
+  });
 });

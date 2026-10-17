@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance } from 'vue';
+import { computed, getCurrentInstance, provide } from 'vue';
+import { fieldKey } from '../composables/useField';
 
 const props = withDefaults(
   defineProps<{
@@ -15,25 +16,31 @@ const props = withDefaults(
   { label: '', for: '', hint: '', error: '', required: false },
 );
 
-// `for` is a reserved word, so it can't be referenced bare in the template;
-// alias it through a computed for the label's `for` attribute.
-const labelFor = computed(() => props.for || undefined);
-
-// Id for the hint/error message, exposed via slot scope so the control can
-// reference it with aria-describedby (the control lives in the slot, so the
-// consumer wires it). Only emitted when a message is actually shown.
+// Without `for`, the field names its control itself: MInput, MTextarea and
+// MSelect in the slot pick up this id, aria-describedby, aria-invalid and
+// aria-required from the field, so the consumer does not have to wire them.
 const uid = getCurrentInstance()?.uid ?? 0;
+const controlId = computed(() => props.for || `m-field-control-${uid}`);
+// Only emitted when a message is actually shown.
 const messageId = computed(() => (props.error || props.hint ? `m-field-msg-${uid}` : undefined));
+
+provide(fieldKey, {
+  id: controlId,
+  describedBy: messageId,
+  invalid: computed(() => Boolean(props.error)),
+  required: computed(() => props.required),
+});
 </script>
 
 <template>
   <div class="m-field">
-    <label v-if="label" class="m-field__label" :for="labelFor">
+    <label v-if="label" class="m-field__label" :for="controlId">
       {{ label }}
       <span v-if="required" class="m-field__required" aria-hidden="true">*</span>
     </label>
     <div class="m-field__control">
-      <slot :described-by="messageId" :required="required || undefined" />
+      <!-- Slot props stay for controls other than MInput, MTextarea, MSelect. -->
+      <slot :id="controlId" :described-by="messageId" :required="required || undefined" />
     </div>
     <p v-if="error" :id="messageId" class="m-field__error" role="alert">{{ error }}</p>
     <p v-else-if="hint" :id="messageId" class="m-field__hint">{{ hint }}</p>
