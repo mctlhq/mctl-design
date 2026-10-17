@@ -12,8 +12,9 @@
 import { readFileSync } from 'node:fs';
 
 let tokens;
+let defaultAccent;
 try {
-  ({ tokens } = await import('../packages/tokens/dist/index.js'));
+  ({ tokens, defaultAccent } = await import('../packages/tokens/dist/index.js'));
 } catch (error) {
   if (error?.code !== 'ERR_MODULE_NOT_FOUND') throw error;
   console.error('check-themes: packages/tokens/dist is missing -- run `pnpm build` first.');
@@ -147,7 +148,7 @@ const html = (attrs = {}) => ({ root: true, attrs });
 
 // [description, chain below <html>, expected theme, expected accent]
 const cases = [
-  ['the root default', [], 'dark', 'terracotta'],
+  ['the root default', [], 'dark', defaultAccent],
   [
     'a plain element inherits the nearest scopes',
     [scope({ 'data-theme': 'light' }), scope({ 'data-accent': 'lilac' }), scope()],
@@ -172,6 +173,31 @@ const cases = [
     'terracotta',
   ],
 ];
+// A theme scope with no accent keeps the default one.
+for (const theme of THEMES) {
+  cases.push([
+    `${theme} alone keeps the default accent`,
+    [scope({ 'data-theme': theme })],
+    theme,
+    defaultAccent,
+  ]);
+}
+// An unknown or empty data-accent on <html> falls back to the default rather
+// than leaving no accent at all; inside a scope it keeps the one around it.
+for (const value of ['', 'brand']) {
+  cases.push([
+    `<html data-accent="${value}"> falls back`,
+    [html({ 'data-accent': value })],
+    'dark',
+    defaultAccent,
+  ]);
+  cases.push([
+    `data-accent="${value}" inside lime keeps lime`,
+    [scope({ 'data-accent': 'lime' }), scope({ 'data-accent': value })],
+    'dark',
+    'lime',
+  ]);
+}
 // The attributes on <html> itself, where the README puts them first.
 for (const name of ACCENTS) {
   cases.push([`<html data-accent="${name}">`, [html({ 'data-accent': name })], 'dark', name]);
@@ -271,7 +297,7 @@ if (process.argv.includes('--selftest')) {
     themeBlock('light', `[data-theme='light']`, palettes),
     ...ACCENTS.map(
       (picked) =>
-        `${picked === 'terracotta' ? ':root:not([data-accent]), ' : ''}${aliases(picked)} { ${ACCENTS.map(
+        `${picked === defaultAccent ? ':root, ' : ''}${aliases(picked)} { ${ACCENTS.map(
           (n) => `--_pick-${n}: ${n === picked ? 'initial' : '/*!*/ /*!*/'};`,
         ).join(' ')} }`,
     ),

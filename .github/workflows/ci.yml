@@ -80,7 +80,7 @@ jobs:
         # resolves the cascade over the built theme.css (no browser in CI).
         # The selftest proves the resolver still fails the 0.8.0 pairing.
         run: |
-          node scripts/check-themes.mjs --selftest
+          pnpm check:themes:selftest
           pnpm check:themes
 
       - name: Check generated token exports

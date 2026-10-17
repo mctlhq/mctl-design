@@ -547,12 +547,14 @@
  * accent are then combined wherever either is set (below), so a nested
  * data-accent inside data-theme="light" gets the light palette, and a nested
  * data-theme keeps the accent chosen above it. The empty value is written as
- * two preserved comments so minifiers keep it. The root default is
- * :root:not([data-accent]), so it never competes with an accent on <html>.
- * --accent therefore computes to the colour padded with whitespace; every
+ * two preserved comments so minifiers keep it. The root default is bare
+ * :root, so an unknown data-accent on <html> still falls back to it; an
+ * accent block wins on <html> only by coming after this one (same
+ * specificity), which check:themes pins with root-element cases. --accent
+ * therefore computes to the colour padded with whitespace; every
  * use is a single-value position, where that is the same colour.
  */
-:root:not([data-accent]),
+:root,
 [data-accent='terracotta'],
 [data-accent='vermilion'] {
   --_pick-terracotta: initial;

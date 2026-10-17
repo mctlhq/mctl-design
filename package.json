@@ -28,6 +28,7 @@
     "check:token-version": "node scripts/check-token-version-bump.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:themes": "node scripts/check-themes.mjs",
+    "check:themes:selftest": "node scripts/check-themes.mjs --selftest",
     "check:generated": "node scripts/check-generated.mjs",
     "clean": "turbo run clean && rm -rf node_modules"
   },
