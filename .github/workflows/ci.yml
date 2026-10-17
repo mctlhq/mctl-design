@@ -88,6 +88,15 @@ jobs:
         # string assembly; nothing else reads them before a consumer does.
         run: pnpm check:generated
 
+      - name: Check components use tokens
+        # Borders, focus rings, opacities, durations and z-index in component
+        # styles come from tokens, so a token change and reduced motion reach
+        # them. Reads the .vue sources only; MTg* keep literal var() fallbacks
+        # on purpose and are exempt.
+        run: |
+          pnpm check:component-tokens:selftest
+          pnpm check:component-tokens
+
       - name: Check lockstep versions
         run: pnpm check:versions
 

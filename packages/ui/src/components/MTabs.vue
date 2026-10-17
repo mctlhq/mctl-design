@@ -108,7 +108,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
   background: transparent;
   border: none;
   border-bottom: var(--mctl-border-width-thick) solid transparent;
-  margin-bottom: -1px;
+  margin-bottom: calc(-1 * var(--mctl-border-width-hairline));
   padding: var(--mctl-space-3) var(--mctl-space-4);
   cursor: pointer;
   transition:

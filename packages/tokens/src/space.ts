@@ -23,7 +23,9 @@ export const layout = {
   stack: '24px',
   proseWidth: '720px',
   pageWidth: '1400px',
-  // MPageLayout's maxWidth steps; MFooter centres on containerMd.
+  // MPageLayout's maxWidth steps; MFooter centres on containerMd. Not
+  // exposed as Tailwind container-* utilities: v4 already owns that scale
+  // (--container-sm is 384px), and redefining it would move every max-w-sm.
   containerSm: '640px',
   containerMd: '960px',
   containerLg: '1280px',

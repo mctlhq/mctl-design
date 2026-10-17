@@ -277,6 +277,7 @@
   --control-disabled-bg: var(--surface-elevated);
   --control-border: var(--surface-line-strong);
   --control-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  --control-focus-shadow-invalid: 0 0 0 3px color-mix(in srgb, var(--status-bad) 20%, transparent);
   --status-ok-soft: color-mix(in srgb, var(--status-ok) 10%, transparent);
   --status-warn-soft: color-mix(in srgb, var(--status-warn) 10%, transparent);
   --status-bad-soft: color-mix(in srgb, var(--status-bad) 10%, transparent);

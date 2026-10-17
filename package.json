@@ -1,6 +1,6 @@
 {
   "name": "@mctlhq/design",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "private": true,
   "type": "module",
   "description": "MCTL shared design system \u2014 tokens, CSS, Vue 3 components and Storybook showcase",
@@ -30,6 +30,8 @@
     "check:themes": "node scripts/check-themes.mjs",
     "check:themes:selftest": "node scripts/check-themes.mjs --selftest",
     "check:generated": "node scripts/check-generated.mjs",
+    "check:component-tokens": "node scripts/check-component-tokens.mjs",
+    "check:component-tokens:selftest": "node scripts/check-component-tokens.mjs --selftest",
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
