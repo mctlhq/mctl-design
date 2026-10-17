@@ -115,7 +115,7 @@ const current = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).ver
 
 // The comparator understands more shapes than the pipeline does, and the extra
 // ones fail silently rather than loudly. build-css.mjs writes
-// `public/<version>/` verbatim, while nginx.conf:39 and the frozen regex both
+// `public/<version>/` verbatim, while the nginx.conf location regex and the frozen regex both
 // match `\d+\.\d+\.\d+(-…)?` with no `+` and no two- or four-segment form —
 // so a root version like 0.6.0+build-1, which check-versions.mjs is happy to
 // enforce lockstep on, produces a directory served for 7 days with no CORS

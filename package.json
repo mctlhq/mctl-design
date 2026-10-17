@@ -3,7 +3,7 @@
   "version": "0.12.1",
   "private": true,
   "type": "module",
-  "description": "MCTL shared design system \u2014 tokens, CSS, Vue 3 components and Storybook showcase",
+  "description": "MCTL shared design system — tokens, CSS, Vue 3 components and Storybook showcase",
   "license": "Apache-2.0",
   "homepage": "https://ui.mctl.ai",
   "repository": {
@@ -26,6 +26,7 @@
     "check:versions": "node scripts/check-versions.mjs",
     "check:versions:selftest": "node scripts/check-versions.mjs --selftest",
     "check:license": "node scripts/check-license.mjs",
+    "check:packages": "node scripts/check-packages.mjs",
     "check:token-version": "node scripts/check-token-version-bump.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:contrast:selftest": "node scripts/check-contrast.mjs --selftest",
@@ -37,11 +38,13 @@
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^9.39.5",
     "eslint": "^9.39.5",
     "eslint-plugin-vue": "^10.11.1",
     "globals": "^16.5.0",
     "prettier": "^3.9.10",
+    "publint": "^0.3.25",
     "turbo": "^2.11.9",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.2",
