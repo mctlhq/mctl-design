@@ -98,9 +98,9 @@ unversioned `https://ui.mctl.ai/mctl.css` still works and still floats with
 
 Flip surface and accent with `data-theme` (`dark` | `light`) and optional
 `data-accent` (`terracotta` default | `cyan` | `lime` | `lilac`). Omit
-`data-accent` to follow the CDN default. On a nested scope, set both on the
-same element: `data-theme` alone resets the accent, and `data-accent` alone
-picks the dark palette (see [Public typography and state colors](#public-typography-and-state-colors)).
+`data-accent` to follow the CDN default. Both nest independently at any
+depth: a scope with only `data-accent` keeps the theme around it, and one
+with only `data-theme` keeps the accent around it (from 0.9.0).
 
 Allow `https://ui.mctl.ai` in `style-src`, `img-src` (favicons and marks),
 and `https://fonts.gstatic.com` in `font-src` if the app ships a CSP.
@@ -233,9 +233,7 @@ Forms use `--control-bg`, `--control-disabled-bg`, `--control-border`, and
 `--control-focus-shadow`. Feedback uses `--status-{ok,warn,bad}-soft` with the
 matching foreground. Overlays use `--overlay-scrim` and `--shadow-overlay`;
 public background grids use `--site-grid-line`. Derived colors recompute at
-scoped theme/accent boundaries, but a scoping element must carry both
-attributes it needs: `data-theme` resets the accent to the default, and
-`data-accent` alone picks the dark palette. For any scope that is not the
-document default, set both on the same element
-(`data-theme="light" data-accent="cyan"`). See **Foundations/Public Sites** and
+every scoped theme or accent boundary, and the two attributes nest
+independently, so `data-accent="cyan"` inside `data-theme="light"` gets the
+light cyan. Up to 0.8.0, a scope had to set both on the same element. See **Foundations/Public Sites** and
 **Foundations/Typography** in Storybook for both themes and the complete scale.

@@ -9,7 +9,7 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
-## Unreleased
+## 0.9.0 — 2026-10-17
 
 ### Added
 
@@ -26,6 +26,11 @@ headings below and are all included in 0.8.0.
 
 ### Fixed
 
+- Nested theme scopes: `data-theme` and `data-accent` now nest
+  independently at any depth. `data-accent` inside `data-theme="light"` used
+  to pick the dark palette, and a nested `data-theme` reset the accent to
+  terracotta. `pnpm check:themes` resolves the cascade over the built sheet
+  in CI. (#114)
 - `MTgSheet` now behaves as the modal dialog it declared: Escape closes it,
   focus moves in and is trapped, returns to the opener on close, page scroll
   is locked and the rest of the page is inert. Its z-index moves from a
