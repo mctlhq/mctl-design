@@ -9,18 +9,22 @@ export default defineConfig({
     coverage: {
       enabled: true,
       provider: 'v8',
-      // Every source file counts, imported by a test or not, so a new
-      // untested component drags the totals down instead of being invisible.
+      // Every source file counts, imported by a test or not, so a file no test
+      // touches shows up at 0% instead of being left out of the report.
       include: ['src/**/*.{ts,vue}'],
       exclude: ['src/**/*.d.ts', 'src/index.ts'],
       reporter: ['text-summary'],
-      // A floor a little under the current totals: it catches a component
-      // landing without tests, not a single missed branch.
+      // A per-file floor, so a source file that appears in no test fails on
+      // its own whatever the size of the package (a pooled total lets a small
+      // one slip through). It is a presence check, not proof of behaviour: a
+      // bare mount() in the a11y smoke test clears it. The bars sit a little
+      // under the weakest file today (MYamlBlock: 82 / 50 / 100 / 83).
       thresholds: {
-        statements: 95,
-        branches: 82,
-        functions: 95,
-        lines: 96,
+        perFile: true,
+        statements: 80,
+        branches: 50,
+        functions: 80,
+        lines: 80,
       },
     },
   },
