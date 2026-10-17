@@ -51,18 +51,53 @@ if (!hasHeading(expected) && !hasHeading(release)) {
 // Changes that are not released yet collect under "## Unreleased". The PR
 // that bumps the version renames that heading to the new version; a bump
 // that leaves it behind ships those changes under a heading that says they
-// are not out. Only a PR knows it bumped, so this runs when BASE_REF names
-// the branch it targets (CI sets it); locally and at publish it is skipped.
-const baseRef = process.env.BASE_REF;
-if (baseRef && hasHeading('Unreleased')) {
-  const baseVersion = JSON.parse(
-    execFileSync('git', ['show', `${baseRef}:package.json`], { cwd: root, encoding: 'utf8' }),
-  ).version;
-  if (baseVersion !== expected) {
-    changelogProblems.push(
-      `  "## Unreleased" is still there, but this change bumps ${baseVersion} to ${expected}: rename it to "## ${release}"`,
+// are not out. Any version change counts: a backwards move is
+// check:token-version's to reject, not this check's to excuse.
+function unreleasedProblem(text, baseVersion, version) {
+  if (baseVersion === version) return null;
+  if (!/^## Unreleased(\s|$)/m.test(text)) return null;
+  return `  "## Unreleased" is still there, but this change bumps ${baseVersion} to ${version}: rename it to "## ${version.split('-')[0]}"`;
+}
+
+if (process.argv.includes('--selftest')) {
+  // [changelog, base version, version, expect a problem]
+  const cases = [
+    ['## Unreleased\n\n## 0.12.1\n', '0.12.1', '0.12.1', false],
+    ['## Unreleased\n\n## 0.13.0\n', '0.12.1', '0.13.0', true],
+    ['## Unreleased\n', '0.12.1', '0.13.0-rc.1', true],
+    ['## 0.13.0\n\n## 0.12.1\n', '0.12.1', '0.13.0', false],
+    ['## Unreleased changes\n', '0.12.1', '0.13.0', true],
+    ['## Unreleasedx\n', '0.12.1', '0.13.0', false],
+    ['Notes on ## Unreleased\n', '0.12.1', '0.13.0', false],
+    ['## Unreleased\n', '0.13.0', '0.12.1', true],
+  ];
+  const failures = cases.filter(
+    ([t, b, v, want]) => (unreleasedProblem(t, b, v) !== null) !== want,
+  );
+  if (failures.length > 0) {
+    console.error(
+      'unreleasedProblem selftest failed:\n' +
+        failures
+          .map(([t, b, v, want]) => `  ${b} -> ${v} ${JSON.stringify(t)}: expected ${want}`)
+          .join('\n'),
     );
+    process.exit(1);
   }
+  console.log(`check-versions: selftest ok (${cases.length} cases).`);
+  process.exit(0);
+}
+
+// Only a PR knows it bumped, so this runs when BASE_REF names the branch it
+// targets (CI sets it); locally and at publish it is skipped. The base is
+// the merge base, not the branch tip: main moving on after this branch was
+// cut is not this change's bump. A git failure throws rather than skipping.
+const baseRef = process.env.BASE_REF;
+if (baseRef) {
+  const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+  const mergeBase = git('merge-base', baseRef, 'HEAD');
+  const baseVersion = JSON.parse(git('show', `${mergeBase}:package.json`)).version;
+  const problem = unreleasedProblem(changelog, baseVersion, expected);
+  if (problem) changelogProblems.push(problem);
 }
 
 if (mismatches.length > 0) {

@@ -74,13 +74,31 @@ jobs:
           TAG: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Move the next dist-tag to a stable release
-        # Otherwise `next` stays on the last prerelease, and an install of
-        # @next resolves to something older than @latest once it ships.
-        if: ${{ !contains(github.ref_name, '-') }}
+  move-next:
+    # A stable release moves `next` too; otherwise it stays on the last
+    # prerelease and @next resolves older than @latest. Its own job, so a
+    # failure here can be re-run alone: re-running the publish job would try
+    # to publish the same version again and be refused.
+    needs: publish
+    if: ${{ !contains(github.ref_name, '-') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Point next at this release
         run: |
           for pkg in packages/*/package.json; do
-            name=$(node -p "require('./$pkg').name")
+            name=$(jq -r 'select(.private != true) | .name' "$pkg")
+            [ -n "$name" ] || continue
             npm dist-tag add "$name@$TAG" next
           done
         env:

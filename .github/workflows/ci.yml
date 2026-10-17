@@ -115,8 +115,11 @@ jobs:
 
       - name: Check lockstep versions
         # BASE_REF lets it see a version bump, which must also retire the
-        # "## Unreleased" CHANGELOG heading.
-        run: BASE_REF=origin/main pnpm check:versions
+        # "## Unreleased" CHANGELOG heading. The selftest pins that rule, since
+        # a PR that does not bump never reaches it.
+        run: |
+          pnpm check:versions:selftest
+          BASE_REF=origin/main pnpm check:versions
 
       - name: Check license reference
         run: pnpm check:license
