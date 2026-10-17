@@ -1,0 +1,114 @@
+import { describe, expect, it } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { h } from 'vue';
+import MField from '../src/components/MField.vue';
+import MInput from '../src/components/MInput.vue';
+import MTextarea from '../src/components/MTextarea.vue';
+import MSelect from '../src/components/MSelect.vue';
+import { expectNoAxeViolations } from './axe';
+
+// MField renders the label and message; the control lives in its slot and is
+// wired by the consumer, the way the docs show it.
+function field(control: typeof MInput | typeof MTextarea | typeof MSelect, props = {}) {
+  return mount(MField, {
+    props: { label: 'Namespace', for: 'ns', hint: 'Lowercase letters only', ...props },
+    slots: {
+      default: ({ describedBy }: { describedBy?: string }) =>
+        h(control as never, {
+          id: 'ns',
+          'aria-describedby': describedBy,
+          ...(control === MSelect ? { options: ['dev', 'prod'] } : {}),
+        }),
+    },
+    attachTo: document.body,
+  });
+}
+
+describe('MInput and MTextarea', () => {
+  it.each([
+    ['MInput', MInput, 'input'],
+    ['MTextarea', MTextarea, 'textarea'],
+  ] as const)('%s emits update:modelValue on input', async (_name, component, tag) => {
+    const wrapper = mount(component as typeof MInput, { props: { modelValue: 'a' } });
+    const el = wrapper.find(tag);
+    expect((el.element as HTMLInputElement).value).toBe('a');
+    await el.setValue('ab');
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['ab']);
+  });
+
+  it('marks an invalid control with aria-invalid and leaves a valid one without it', () => {
+    expect(
+      mount(MInput, { props: { invalid: true } })
+        .find('input')
+        .attributes('aria-invalid'),
+    ).toBe('true');
+    expect(mount(MInput).find('input').attributes('aria-invalid')).toBeUndefined();
+  });
+});
+
+describe('MSelect', () => {
+  it('normalises string options and emits the chosen value', async () => {
+    const wrapper = mount(MSelect, {
+      props: { modelValue: 'dev', options: ['dev', { label: 'Production', value: 'prod' }] },
+    });
+    const options = wrapper.findAll('option');
+    expect(options.map((o) => [o.text(), o.attributes('value')])).toEqual([
+      ['dev', 'dev'],
+      ['Production', 'prod'],
+    ]);
+    await wrapper.find('select').setValue('prod');
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['prod']);
+  });
+
+  it('forwards attributes to the native select and keeps class on the wrapper', () => {
+    const wrapper = mount(MSelect, {
+      props: { options: ['a'] },
+      attrs: { class: 'wide', 'aria-describedby': 'msg', name: 'env' },
+    });
+    expect(wrapper.classes()).toContain('wide');
+    const select = wrapper.find('select');
+    expect(select.attributes('aria-describedby')).toBe('msg');
+    expect(select.attributes('name')).toBe('env');
+    expect(select.classes()).not.toContain('wide');
+  });
+});
+
+describe('MField', () => {
+  it('labels the control and describes it with the hint', () => {
+    const wrapper = field(MInput);
+    const input = wrapper.find('input');
+    expect(wrapper.find('label').attributes('for')).toBe('ns');
+    const describedBy = input.attributes('aria-describedby');
+    expect(describedBy && document.getElementById(describedBy)?.textContent).toBe(
+      'Lowercase letters only',
+    );
+    wrapper.unmount();
+  });
+
+  it('replaces the hint with an announced error', () => {
+    const wrapper = field(MInput, { error: 'Already taken' });
+    const message = wrapper.find('[role="alert"]');
+    expect(message.text()).toBe('Already taken');
+    expect(wrapper.find('input').attributes('aria-describedby')).toBe(message.attributes('id'));
+    expect(wrapper.text()).not.toContain('Lowercase letters only');
+    wrapper.unmount();
+  });
+
+  it('describes nothing when there is no message', () => {
+    const wrapper = field(MInput, { hint: '' });
+    expect(wrapper.find('input').attributes('aria-describedby')).toBeUndefined();
+    wrapper.unmount();
+  });
+
+  it.each([
+    ['MInput', MInput],
+    ['MTextarea', MTextarea],
+    ['MSelect', MSelect],
+  ] as const)('passes axe wrapping %s, with hint and with error', async (_name, control) => {
+    for (const props of [{}, { error: 'Already taken', required: true }]) {
+      const wrapper = field(control, props);
+      await expectNoAxeViolations(wrapper.element);
+      wrapper.unmount();
+    }
+  });
+});
