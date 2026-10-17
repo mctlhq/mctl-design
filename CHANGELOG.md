@@ -28,6 +28,10 @@ headings below and are all included in 0.8.0.
   longer shifts the layout; the page behind is inert; a drag between the
   dialog and the backdrop no longer closes it. Stacked modals and sheets can
   close in any order, and the one opened last paints on top. (#97)
+- `MModal` and `MTgSheet`: the focus trap skips controls with a negative
+  `tabindex` or `visibility: hidden`, Escape that cancels IME composition no
+  longer closes the dialog, and the z-index fallback without `mctl.css` is
+  900, matching the token. (#112)
 
 ## 0.8.0 — 2026-10-17
 

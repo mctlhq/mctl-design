@@ -40,6 +40,38 @@ describe('MModal dialog behaviour', () => {
     wrapper.unmount();
   });
 
+  it('leaves out controls removed from the tab order', async () => {
+    const wrapper = mount(MModal, {
+      props: { open: true, title: 'Settings', dismissible: false },
+      slots: {
+        default: () => [
+          h('button', 'First'),
+          h('button', 'Last'),
+          h('button', { tabindex: '-1' }, 'Skipped'),
+        ],
+      },
+      attachTo: document.body,
+    });
+    await flushPromises();
+    const [first, last] = Array.from(dialog().querySelectorAll('button'));
+    last.focus();
+    key('Tab');
+    expect(document.activeElement).toBe(first);
+    wrapper.unmount();
+  });
+
+  it('does not close on an Escape that cancels IME composition', async () => {
+    const wrapper = modalWithButtons();
+    await flushPromises();
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', isComposing: true, bubbles: true }),
+    );
+    expect(wrapper.emitted('update:open')).toBeUndefined();
+    key('Escape');
+    expect(wrapper.emitted('update:open')?.[0]).toEqual([false]);
+    wrapper.unmount();
+  });
+
   it('makes the rest of the page inert while open and restores it on close', async () => {
     const app = document.createElement('div');
     app.id = 'app';
