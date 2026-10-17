@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, nextTick } from 'vue';
+import { computed, nextTick, useId } from 'vue';
 
 interface Tab {
   label: string;
@@ -20,7 +20,8 @@ const model = defineModel<string>({ default: '' });
 // Per-instance prefix so tab/panel ids stay unique when several MTabs render
 // on one page (avoids ambiguous aria-labelledby across instances). Ids use the
 // tab index, not its value: a value is free text and may hold spaces.
-const uid = getCurrentInstance()?.uid ?? 0;
+// useId is stable between server and client render, unlike the instance uid.
+const uid = useId();
 const tabId = (index: number) => `m-tab-${uid}-${index}`;
 const panelId = `m-tabpanel-${uid}`;
 

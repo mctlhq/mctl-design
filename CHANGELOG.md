@@ -9,6 +9,20 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## Unreleased
+
+### Changed
+
+- `@mctlhq/ui` needs Vue 3.5 (peer `^3.5.0`, was `^3.4.0 || ^3.5.0`).
+
+### Fixed
+
+- `MTabs`, `MField`, `MTooltip` and `MAccordion` built their ids from the
+  component instance uid, a process-wide counter, so a server render and the
+  client numbered them differently and every `aria-*` / `for` reference broke
+  on hydration. They now use `useId()`, which is stable across the two (the
+  reason for the Vue 3.5 floor).
+
 ## 0.12.1 — 2026-10-17
 
 ### Fixed
