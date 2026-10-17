@@ -96,7 +96,7 @@ const { backdropHandlers } = useDialog({
   background: var(--surface-elevated);
   border: var(--mctl-border-width-hairline) solid var(--surface-line-strong);
   border-radius: var(--mctl-radius-lg);
-  box-shadow: var(--mctl-shadow-overlay);
+  box-shadow: var(--shadow-overlay);
   outline: none;
 }
 
