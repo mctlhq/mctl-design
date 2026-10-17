@@ -36,13 +36,17 @@ defineEmits<{ click: [] }>();
 </script>
 
 <template>
+  <!-- Activates like a native button: Enter on keydown, Space on keyup
+       (keydown only stops the page from scrolling), so holding Space and
+       tabbing away does not fire it. -->
   <div
     class="m-tg-order-card"
     role="button"
     tabindex="0"
     @click="$emit('click')"
     @keydown.enter.prevent="$emit('click')"
-    @keydown.space.prevent="$emit('click')"
+    @keydown.space.prevent
+    @keyup.space.prevent="$emit('click')"
   >
     <div class="m-tg-order-card__header">
       <span

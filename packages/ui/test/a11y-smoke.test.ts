@@ -199,7 +199,7 @@ describe('behaviour', () => {
     expect(wrapper.find('.m-accordion__body strong').text()).toBe('Rich body');
   });
 
-  it('MTgOrderCard activates on click, Enter and Space', async () => {
+  it('MTgOrderCard activates on click, Enter keydown and Space keyup', async () => {
     const wrapper = mount(MTgOrderCard, {
       props: { direction: 'SELL', pair: 'USDT/RUB', rate: '92.10' },
     });
@@ -207,8 +207,25 @@ describe('behaviour', () => {
     expect(card.attributes('tabindex')).toBe('0');
     await card.trigger('click');
     await card.trigger('keydown', { key: 'Enter' });
-    await card.trigger('keydown', { key: ' ' });
+    expect(wrapper.emitted('click')).toHaveLength(2);
+    // Space keydown only prevents scrolling, like a native button.
+    const down = new KeyboardEvent('keydown', { key: ' ', cancelable: true });
+    card.element.dispatchEvent(down);
+    expect(down.defaultPrevented).toBe(true);
+    expect(wrapper.emitted('click')).toHaveLength(2);
+    await card.trigger('keyup', { key: ' ' });
     expect(wrapper.emitted('click')).toHaveLength(3);
+  });
+
+  it('MTgEmptyState announces loading politely and errors assertively', () => {
+    const role = (variant: 'empty' | 'loading' | 'error') =>
+      mount(MTgEmptyState, { props: { variant } }).attributes('role');
+    expect(role('empty')).toBeUndefined();
+    expect(role('loading')).toBe('status');
+    expect(role('error')).toBe('alert');
+    const loading = mount(MTgEmptyState, { props: { variant: 'loading' } });
+    expect(loading.attributes('aria-busy')).toBe('true');
+    expect(loading.find('svg').attributes('aria-hidden')).toBe('true');
   });
 
   it('MStat keeps the trend readable without colour', () => {
