@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import MTgStatusBadge from './MTgStatusBadge.vue';
 import MTgDeltaTag from './MTgDeltaTag.vue';
 
@@ -32,17 +33,30 @@ withDefaults(
   { delta: 0, methods: () => [], volume: '', status: 'active', author: '' },
 );
 
-defineEmits<{ click: [] }>();
+const emit = defineEmits<{ click: [] }>();
+
+// A Space press counts only if it started here and was not cancelled by
+// Escape or by focus leaving before release, as with a native button.
+const spacePressed = ref(false);
+function onSpaceUp() {
+  if (spacePressed.value) emit('click');
+  spacePressed.value = false;
+}
 </script>
 
 <template>
+  <!-- Activates like a native button: Enter on keydown, Space on keyup
+       after a keydown here (which also stops the page from scrolling). -->
   <div
     class="m-tg-order-card"
     role="button"
     tabindex="0"
     @click="$emit('click')"
     @keydown.enter.prevent="$emit('click')"
-    @keydown.space.prevent="$emit('click')"
+    @keydown.space.prevent="spacePressed = true"
+    @keydown.esc="spacePressed = false"
+    @keyup.space.prevent="onSpaceUp"
+    @blur="spacePressed = false"
   >
     <div class="m-tg-order-card__header">
       <span

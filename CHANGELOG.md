@@ -9,6 +9,18 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## Unreleased
+
+### Fixed
+
+- `MTgOrderCard` activates on Space keyup after a keydown on the card,
+  like a native button, rather than on keydown; Escape or leaving the card
+  cancels the press. (#116)
+- `MTgEmptyState`: the loading state is `role="status"` and the error state
+  `role="alert"`, so both are announced; the emoji icons are replaced with
+  stroke SVGs, and the loading pulse respects `prefers-reduced-motion`.
+  (#116)
+
 ## 0.9.0 — 2026-10-17
 
 ### Added
