@@ -33,6 +33,7 @@ pnpm check:contrast        # text/background pairs per theme and accent meet
 pnpm check:themes          # data-theme and data-accent nest independently at
                            # any depth (run after pnpm build)
 pnpm check:themes:selftest # the check still fails a sheet with the 0.8.0 bug
+                           # (run after pnpm build; reads the tokens dist)
 pnpm check:generated       # tailwind.css and tokens.dtcg.json are internally
                            # consistent (run after pnpm build)
 pnpm check:license         # README's License section still links to LICENSE,

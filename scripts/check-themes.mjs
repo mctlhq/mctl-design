@@ -9,7 +9,7 @@
 // theme.css uses (:root and attribute compounds), specificity, source order,
 // inheritance, and var() with fallbacks and the guaranteed-invalid value.
 // Run after `pnpm build` (it reads packages/css/dist and packages/tokens/dist).
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 let tokens;
 let defaultAccent;
@@ -46,14 +46,12 @@ function parseRules(text) {
 }
 
 function parseSelector(text) {
-  const parts = text.match(/:root|:not\(\[[a-z-]+\]\)|\[[a-z-]+(?:='[^']*')?\]/g) ?? [];
+  const parts = text.match(/:root|\[[a-z-]+(?:='[^']*')?\]/g) ?? [];
   if (parts.join('') !== text) {
     throw new Error(`check-themes: unsupported selector "${text}"; extend parseSelector`);
   }
   return parts.map((p) => {
     if (p === ':root') return { root: true };
-    const not = p.match(/^:not\(\[([a-z-]+)\]\)$/);
-    if (not) return { absent: not[1] };
     const [, attr, value] = p.match(/^\[([a-z-]+)(?:='([^']*)')?\]$/);
     return { attr, value };
   });
@@ -62,7 +60,6 @@ function parseSelector(text) {
 const matches = (selector, el) =>
   selector.every((p) => {
     if (p.root) return el.root;
-    if (p.absent) return !(p.absent in el.attrs);
     return p.value === undefined ? p.attr in el.attrs : el.attrs[p.attr] === p.value;
   });
 
@@ -173,8 +170,14 @@ const cases = [
     'terracotta',
   ],
 ];
-// A theme scope with no accent keeps the default one.
+// A theme scope with no accent keeps the default one, on <html> and below it.
 for (const theme of THEMES) {
+  cases.push([
+    `<html data-theme="${theme}">`,
+    [html({ 'data-theme': theme })],
+    theme,
+    defaultAccent,
+  ]);
   cases.push([
     `${theme} alone keeps the default accent`,
     [scope({ 'data-theme': theme })],
@@ -341,7 +344,12 @@ if (process.argv.includes('--selftest')) {
   process.exit(0);
 }
 
-const failures = run(parseRules(readFileSync('packages/css/dist/theme.css', 'utf8')));
+const SHEET = 'packages/css/dist/theme.css';
+if (!existsSync(SHEET)) {
+  console.error(`check-themes: ${SHEET} is missing -- run \`pnpm build\` first.`);
+  process.exit(1);
+}
+const failures = run(parseRules(readFileSync(SHEET, 'utf8')));
 if (failures.length) {
   console.log(failures.map((f) => `FAIL ${f}`).join('\n'));
   console.error(
