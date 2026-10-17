@@ -29,7 +29,7 @@
   "scripts": {
     "build": "tsup && node scripts/build-css.mjs",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src scripts",
+    "lint": "eslint src scripts --max-warnings 0",
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {

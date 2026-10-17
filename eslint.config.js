@@ -41,7 +41,8 @@ export default tseslint.config(
       'vue/html-closing-bracket-newline': 'off',
       'vue/html-indent': 'off',
       // Only void elements fight Prettier, which writes <input />; keep the
-      // rule for normal elements and components.
+      // rule for normal elements and components. Still a warning, but every
+      // lint script runs with --max-warnings 0, so warnings fail CI too.
       'vue/html-self-closing': ['warn', { html: { void: 'any' } }],
     },
   },

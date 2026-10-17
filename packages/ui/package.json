@@ -33,7 +33,7 @@
     "dev": "vite build --watch",
     "test": "vitest run",
     "typecheck": "vue-tsc --noEmit -p tsconfig.test.json",
-    "lint": "eslint src test",
+    "lint": "eslint src test --max-warnings 0",
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {
