@@ -60,7 +60,8 @@ jobs:
       - name: Test
         # Component contracts (v-model, keyboard, form behaviour) and an axe
         # pass over the rendered DOM. jsdom has no layout, so colour contrast
-        # is not part of this step.
+        # is not part of this step. @mctlhq/ui also enforces a v8 coverage
+        # floor over every file in src/ (see packages/ui/vitest.config.ts).
         run: pnpm test
 
       - name: Build packages
