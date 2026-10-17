@@ -89,6 +89,7 @@ const preset = {
         medium: String(fontWeight.medium),
         semibold: String(fontWeight.semibold),
         bold: String(fontWeight.bold),
+        extrabold: String(fontWeight.extrabold),
       },
       fontSize: {
         marker: [fontSize.marker, { lineHeight: lineHeight.tight, letterSpacing: letterSpacing.marker }],
@@ -147,6 +148,9 @@ const preset = {
         'control-sm': control.height.sm,
         'control-md': control.height.md,
         'control-lg': control.height.lg,
+        // The runtime var, not the token: --site-header-height is the shell's
+        // documented override point, so h-site-header has to follow it.
+        'site-header': 'var(--site-header-height)',
       },
       opacity: { ...opacity },
       outlineWidth: { focus: 'var(--focus-ring-width)' },

@@ -70,14 +70,70 @@ describe('MTabs', () => {
     );
   });
 
-  it('selects a single tab when values repeat', () => {
+  it('moves focus before an asynchronously controlled model catches up', async () => {
+    // A listener that does not write back: the parent has not applied the
+    // emitted value yet, as with a router push still resolving. (Without any
+    // listener defineModel would update its local copy itself.)
+    const updates: string[] = [];
+    const wrapper = mount(MTabs, {
+      props: { tabs, modelValue: 'one', 'onUpdate:modelValue': (v: string) => updates.push(v) },
+      attachTo: document.body,
+    });
+    await wrapper.find('[role="tab"][tabindex="0"]').trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+    expect(updates).toEqual(['two words']);
+    expect(selected(wrapper)).toBe('One');
+    expect(document.activeElement?.textContent?.trim()).toBe('Two');
+    // Still unapplied: the next press steps from the focused tab, not the
+    // selected one, so roving advances instead of re-emitting the same value.
+    await wrapper.findAll('[role="tab"]')[1].trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+    expect(updates).toEqual(['two words', 'three']);
+    expect(document.activeElement?.textContent?.trim()).toBe('Three');
+    // The parent catches up with the latest emit; focus is already there.
+    await wrapper.setProps({ modelValue: 'three' });
+    expect(selected(wrapper)).toBe('Three');
+    expect(document.activeElement?.getAttribute('tabindex')).toBe('0');
+    wrapper.unmount();
+  });
+
+  it('keeps focus on Home/End at the edges while the model is pending', async () => {
+    const updates: string[] = [];
+    const wrapper = mount(MTabs, {
+      props: { tabs, modelValue: 'one', 'onUpdate:modelValue': (v: string) => updates.push(v) },
+      attachTo: document.body,
+    });
+    const tab = (i: number) => wrapper.findAll('[role="tab"]')[i];
+    await tab(0).trigger('keydown', { key: 'End' });
+    await nextTick();
+    expect(document.activeElement?.textContent?.trim()).toBe('Three');
+    // End on the last tab: `next` is the focused tab itself, which must not
+    // send focus back to the still-selected first tab.
+    await tab(2).trigger('keydown', { key: 'End' });
+    await nextTick();
+    expect(document.activeElement?.textContent?.trim()).toBe('Three');
+    await tab(2).trigger('keydown', { key: 'Home' });
+    await nextTick();
+    expect(document.activeElement?.textContent?.trim()).toBe('One');
+    expect(updates).toEqual(['three', 'three', 'one']);
+    wrapper.unmount();
+  });
+
+  it('selects a single tab when values repeat', async () => {
     const dup = [
       { label: 'A', value: 'x' },
       { label: 'B', value: 'x' },
     ];
-    const wrapper = mount(MTabs, { props: { tabs: dup, modelValue: 'x' } });
+    const wrapper = mount(MTabs, { props: { tabs: dup, modelValue: 'x' }, attachTo: document.body });
     expect(wrapper.findAll('[role="tab"][aria-selected="true"]')).toHaveLength(1);
     expect(wrapper.findAll('[role="tab"][tabindex="0"]')).toHaveLength(1);
+    // Values are documented as unique; a repeat degrades to focus staying on
+    // the selected tab rather than moving to an unreachable one.
+    await wrapper.find('[role="tab"][aria-selected="true"]').trigger('keydown', { key: 'ArrowRight' });
+    await nextTick();
+    expect(document.activeElement?.textContent?.trim()).toBe('A');
+    expect(document.activeElement?.getAttribute('aria-selected')).toBe('true');
+    wrapper.unmount();
   });
 
   it('does not point the panel at a missing tab when the list is empty', () => {

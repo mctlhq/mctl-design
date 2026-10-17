@@ -66,7 +66,7 @@ moves under you.
 
 | Path | Moves when | Use for |
 |---|---|---|
-| `https://ui.mctl.ai/0.7.0/{mctl,global,prose}.css` | never | anything shipped to users |
+| `https://ui.mctl.ai/0.8.0/{mctl,global,prose}.css` | never | anything shipped to users |
 | `https://ui.mctl.ai/{mctl,global,prose}.css` | every merge to `main` | previews, internal tools, seeing a token change land |
 | `@mctlhq/css` on GitHub Packages | on a semver tag | builds that already have a Packages token |
 
@@ -74,7 +74,7 @@ All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.
 
-Each sheet names its own version on line 1 (`/* @mctlhq/css 0.7.0 … */`), so a
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.8.0 … */`), so a
 vendored copy records what it was taken from and a mismatch shows up in a diff.
 
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
@@ -83,9 +83,9 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://ui.mctl.ai/0.7.0/mctl.css">
-<link rel="stylesheet" href="https://ui.mctl.ai/0.7.0/global.css">
-<!-- docs / markdown only: https://ui.mctl.ai/0.7.0/prose.css -->
+<link rel="stylesheet" href="https://ui.mctl.ai/0.8.0/mctl.css">
+<link rel="stylesheet" href="https://ui.mctl.ai/0.8.0/global.css">
+<!-- docs / markdown only: https://ui.mctl.ai/0.8.0/prose.css -->
 ```
 
 Bumping to a new version is then a one-line edit made on purpose, not something
@@ -95,7 +95,9 @@ unversioned `https://ui.mctl.ai/mctl.css` still works and still floats with
 
 Flip surface and accent with `data-theme` (`dark` | `light`) and optional
 `data-accent` (`terracotta` default | `cyan` | `lime` | `lilac`). Omit
-`data-accent` to follow the CDN default.
+`data-accent` to follow the CDN default. On a nested scope, set both on the
+same element: `data-theme` alone resets the accent, and `data-accent` alone
+picks the dark palette (see [Public typography and state colors](#public-typography-and-state-colors)).
 
 Allow `https://ui.mctl.ai` in `style-src`, `img-src` (favicons and marks),
 and `https://fonts.gstatic.com` in `font-src` if the app ships a CSP.
@@ -228,5 +230,9 @@ Forms use `--control-bg`, `--control-disabled-bg`, `--control-border`, and
 `--control-focus-shadow`. Feedback uses `--status-{ok,warn,bad}-soft` with the
 matching foreground. Overlays use `--overlay-scrim` and `--shadow-overlay`;
 public background grids use `--site-grid-line`. Derived colors recompute at
-scoped theme/accent boundaries. See **Foundations/Public Sites** and
+scoped theme/accent boundaries, but a scoping element must carry both
+attributes it needs: `data-theme` resets the accent to the default, and
+`data-accent` alone picks the dark palette. For any scope that is not the
+document default, set both on the same element
+(`data-theme="light" data-accent="cyan"`). See **Foundations/Public Sites** and
 **Foundations/Typography** in Storybook for both themes and the complete scale.

@@ -2,7 +2,7 @@
 // Structural checks over the two generated exports nothing else inspects.
 // Run after `pnpm build`.
 //
-//   packages/css/dist/tailwind.css     every var() in the runtime block names
+//   packages/css/dist/tailwind.css     every var() in the sheet names
 //                                      a variable theme.css defines, and no
 //                                      theme variable references itself (that
 //                                      would void theme.css's value at runtime);
@@ -35,32 +35,33 @@ const themeVars = new Set([...readFileSync(THEME, 'utf8').matchAll(/(--[\w-]+)\s
 // A `reference` block is never emitted, so `--shadow-sm: var(--shadow-sm)`
 // there only tells utilities which runtime var to use. In an emitted block the
 // same line would be a self-reference that voids theme.css's value.
-let refs = 0;
+let emittedDecls = 0;
 for (const [, options, body] of tw.matchAll(/@theme([^{]*)\{([^}]*)\}/g)) {
-  const emitted = !/\breference\b/.test(options);
+  if (/\breference\b/.test(options)) continue;
   for (const [, name, value] of body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+    emittedDecls++;
     for (const [, ref] of value.matchAll(/var\((--[\w-]+)\s*[,)]/g)) {
-      refs++;
-      if (ref === name && emitted) problems.push(`${TW}: ${name} references itself in an emitted @theme block`);
-      else if (ref !== name && !themeVars.has(ref)) problems.push(`${TW}: ${name} uses ${ref}, which theme.css does not define`);
-      else if (ref === name && !themeVars.has(ref)) problems.push(`${TW}: ${name} points at ${ref}, which theme.css does not define`);
+      if (ref === name) problems.push(`${TW}: ${name} references itself in an emitted @theme block`);
     }
   }
 }
 
-// @utility blocks sit outside @theme; their var() references must resolve too.
-for (const [, body] of tw.matchAll(/@utility [\w-]+\s*\{([^}]*)\}/g)) {
-  for (const [, ref] of body.matchAll(/var\((--[\w-]+)\s*[,)]/g)) {
-    // --tw-* are Tailwind's own registered properties, not ours to define.
-    if (ref.startsWith('--tw-')) continue;
-    refs++;
-    if (!themeVars.has(ref)) problems.push(`${TW}: an @utility uses ${ref}, which theme.css does not define`);
-  }
+// Existence is a property of the whole sheet, not of the block types the
+// generator emits today: @theme, @utility, @property, or whatever comes next.
+let refs = 0;
+for (const [, ref] of tw.matchAll(/var\((--[\w-]+)\s*[,)]/g)) {
+  // --tw-* are Tailwind's own registered properties, not ours to define.
+  if (ref.startsWith('--tw-')) continue;
+  refs++;
+  if (!themeVars.has(ref)) problems.push(`${TW}: ${ref} is referenced, but theme.css does not define it`);
 }
 
 // Zero references checked would read exactly like all references passing:
 // a parser that stopped matching the generator's output must fail, not pass.
-if (refs === 0) problems.push(`${TW}: no var() references found -- the @theme parser no longer matches this file`);
+if (refs === 0) problems.push(`${TW}: no var() references found -- the var() scan no longer matches this file`);
+// The self-reference guard above is the only structural parse left; if the
+// @theme block regex stops matching, it would go quiet while refs stays high.
+if (emittedDecls === 0) problems.push(`${TW}: no declarations found in an emitted @theme block -- the @theme parser no longer matches this file`);
 
 // Compile it with the real Tailwind v4 (the devDependency of @mctlhq/css) and
 // check what the utilities resolve to: a theme sheet can be internally
@@ -87,6 +88,8 @@ const expected = {
   'text-hero': 'font-size: var(--text-hero)',
   'p-mctl-5': 'padding: var(--spacing-mctl-5)',
   'max-w-pagew': 'max-width: var(--spacing-pagew)',
+  // Follows the shell's runtime override, not a frozen 80px.
+  'h-site-header': 'height: var(--site-header-height)',
   // The MCTL scale must not clobber Tailwind's own numeric keys.
   'p-5': 'padding: calc(var(--spacing) * 5)',
   // The @utility families sit in namespaces Tailwind owns; its numeric
@@ -101,7 +104,7 @@ const expected = {
   'border-t-2': 'border-top-width: 2px',
   'border-x-2': 'border-inline-width: 2px',
   // --tw-duration is what .transition reads, so this is the order-independent part.
-  'duration-base': `--tw-duration: ${ext.transitionDuration.base}`,
+  'duration-base': [`--tw-duration: ${ext.transitionDuration.base}`, `transition-duration: ${ext.transitionDuration.base}`],
   // Tailwind's static max-w-prose (65ch) outranks --spacing-prose and
   // --container-prose, which is why the README routes to the latter.
   'max-w-prose': 'max-width: 65ch',

@@ -3,6 +3,7 @@ import { computed, getCurrentInstance, nextTick } from 'vue';
 
 interface Tab {
   label: string;
+  /** Unique within `tabs`: it is the v-model value. */
   value: string;
 }
 
@@ -38,7 +39,12 @@ function select(value: string) {
 
 // Roving arrow-key navigation across the tab list. Move DOM focus to the newly
 // selected tab so subsequent arrow presses keep working (the prior tab becomes
-// tabindex="-1").
+// tabindex="-1"). Focus goes to `next` even before the model catches up, so a
+// parent that applies v-model asynchronously (a router push) still roves.
+// Only when `next` carries the model's current value is select() a no-op; focus
+// then goes to the selected tab, which with a repeated value is not `next`.
+// Compared against the model, not the focused tab: Home on the first tab or
+// End on the last makes `next` the focused tab itself.
 function onKeydown(event: KeyboardEvent, index: number) {
   const last = props.tabs.length - 1;
   let next = -1;
@@ -48,8 +54,9 @@ function onKeydown(event: KeyboardEvent, index: number) {
   else if (event.key === 'End') next = last;
   if (next !== -1) {
     event.preventDefault();
+    const target = props.tabs[next].value === model.value ? activeIndex.value : next;
     select(props.tabs[next].value);
-    nextTick(() => document.getElementById(tabId(next))?.focus());
+    nextTick(() => document.getElementById(tabId(target))?.focus());
   }
 }
 </script>

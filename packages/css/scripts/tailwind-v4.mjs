@@ -74,6 +74,8 @@ export function tailwindV4Css(t, version) {
   }
   for (const k of ['display', 'mono', 'editorial']) r(`font-${k}`, `var(--font-${k})`);
   for (const k of ['sm', 'md', 'overlay']) r(`shadow-${k}`, `var(--shadow-${k})`);
+  // The shell's documented override point, so h-site-header follows it.
+  r('spacing-site-header', 'var(--site-header-height)');
 
   // Type.
   s('font-weight-light', fontWeight.light);
@@ -81,6 +83,7 @@ export function tailwindV4Css(t, version) {
   s('font-weight-medium', fontWeight.medium);
   s('font-weight-semibold', fontWeight.semibold);
   s('font-weight-bold', fontWeight.bold);
+  s('font-weight-extrabold', fontWeight.extrabold);
   const text = (name, size, lh, ls) => {
     s(`text-${name}`, size);
     s(`text-${name}--line-height`, lh);
