@@ -35,6 +35,9 @@ headings below and are all included in 0.8.0.
   longer shifts the layout; the page behind is inert; a drag between the
   dialog and the backdrop no longer closes it. Stacked modals and sheets can
   close in any order, and the one opened last paints on top. (#97)
+- `MTooltip` meets WCAG 1.4.13: Escape hides it without moving focus (and
+  does not also close a dialog around it), the pointer can move onto the
+  bubble, and long text wraps instead of overflowing. (#111)
 - `MAlert` is `role="alert"` only for `tone="bad"`; `info` and `warn` are
   `role="status"`, and `live="none"` renders a static notice. Before, every
   alert interrupted screen readers. (#113)
