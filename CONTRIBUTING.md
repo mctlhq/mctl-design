@@ -33,6 +33,8 @@ pnpm check:contrast        # text pairs (4.5:1) and focus rings, borders and
                            # --tg-* palette, tints composited; failures listed
                            # in its KNOWN set wait on a palette decision and
                            # may only shrink (run after pnpm build)
+pnpm check:contrast:selftest # the blend, ratio and KNOWN ratchet still
+                           # behave (run after pnpm build)
 pnpm check:themes          # data-theme and data-accent nest independently at
                            # any depth (run after pnpm build)
 pnpm check:themes:selftest # the check still fails a sheet with the 0.8.0 bug

@@ -73,7 +73,9 @@ jobs:
         # Every text/background pair the components render, per theme and
         # accent, against WCAG AA. Reads the built tokens, so it follows the
         # build. A token comment claiming "AA on paper" is not a check.
-        run: pnpm check:contrast
+        run: |
+          pnpm check:contrast:selftest
+          pnpm check:contrast
 
       - name: Check nested theme scopes
         # data-theme and data-accent nest at any depth in any combination;
