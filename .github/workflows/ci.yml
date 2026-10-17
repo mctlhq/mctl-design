@@ -8,6 +8,13 @@ on:
 permissions:
   contents: read
 
+# A new push to a PR supersedes the run on its previous head, so cancel that
+# one. Runs on main are never cancelled: deploy.yml fires on each completed
+# CI run there, and a cancelled one would skip that commit's deploy.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   validate:
     runs-on: ubuntu-latest
