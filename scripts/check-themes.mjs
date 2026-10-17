@@ -21,12 +21,11 @@ try {
   process.exit(1);
 }
 
-// What the sheet's reduced-motion block sets, name -> value; null if absent.
-let reducedMotion = null;
-
-// Custom-property rules of a sheet, in source order.
+// Custom-property rules of a sheet, in source order. The array also carries
+// `reducedMotion`: what the sheet's reduced-motion block sets, name -> value,
+// or null if it has none.
 function parseRules(text) {
-  reducedMotion = null;
+  let reducedMotion = null;
   let css = text.replace(/\/\*[\s\S]*?\*\//g, ' ');
   // The reduced-motion block only zeroes motion durations, which no case
   // reads; drop it, but refuse it if it ever sets anything else.
@@ -65,6 +64,7 @@ function parseRules(text) {
       rules.push({ selector: parseSelector(selector), decls, order: rules.length });
     }
   }
+  rules.reducedMotion = reducedMotion;
   return rules;
 }
 
@@ -296,16 +296,15 @@ function run(rules) {
 // with the 0.8.0 same-element pairing, both built from the tokens here.
 // The reduced-motion block has to exist and zero every motion duration that
 // is not already zero, so deleting it, mistyping a name, or adding a duration
-// token without zeroing it fails here rather than silently. Reads what the
-// last parseRules call recorded.
-function motionFailures() {
-  const ZERO = new Set(['0ms', '0s', 'var(--mctl-motion-duration-instant)']);
+// token without zeroing it fails here rather than silently.
+const ZERO = ['0ms', '0s', 'var(--mctl-motion-duration-instant)'];
+function motionFailures({ reducedMotion }) {
   if (!reducedMotion) return ['theme.css has no @media (prefers-reduced-motion: reduce) block'];
   const out = [];
   for (const [k, v] of Object.entries(tokens.motion.duration)) {
     if (parseFloat(v) === 0) continue;
     const name = `--mctl-motion-duration-${k}`;
-    if (!ZERO.has(reducedMotion[name])) {
+    if (!ZERO.includes(reducedMotion[name])) {
       out.push(`reduced motion: ${name} is ${reducedMotion[name] ?? 'not set'}, expected 0`);
     }
   }
@@ -376,9 +375,10 @@ if (process.argv.includes('--selftest')) {
   // zeroes them all passes.
   const motionBlock = (decls) =>
     `${wired}\n@media (prefers-reduced-motion: reduce) { :root { ${decls} } }`;
-  const zeroAll = Object.keys(tokens.motion.duration)
-    .map((k) => `--mctl-motion-duration-${k}: 0ms;`)
-    .join(' ');
+  const zeroAll = (zero) =>
+    Object.keys(tokens.motion.duration)
+      .map((k) => `--mctl-motion-duration-${k}: ${zero};`)
+      .join(' ');
   const motionProblems = [];
   try {
     parseRules(motionBlock('--mctl-color-ink2: #fff;'));
@@ -386,12 +386,12 @@ if (process.argv.includes('--selftest')) {
   } catch (error) {
     if (!error.message.includes('reduced-motion block sets --mctl-color-ink2')) throw error;
   }
-  parseRules(motionBlock(`${zeroAll} --mctl-motion-duration-slow: 200ms;`));
-  if (!motionFailures().length) motionProblems.push('a non-zero slow duration passed');
-  parseRules(wired);
-  if (!motionFailures().length) motionProblems.push('a sheet with no reduced-motion block passed');
-  parseRules(motionBlock(zeroAll));
-  motionProblems.push(...motionFailures());
+  const nonZero = parseRules(motionBlock(`${zeroAll('0ms')} --mctl-motion-duration-slow: 200ms;`));
+  if (!motionFailures(nonZero).length) motionProblems.push('a non-zero slow duration passed');
+  if (!motionFailures(parseRules(wired)).length)
+    motionProblems.push('a sheet with no reduced-motion block passed');
+  for (const zero of ZERO)
+    motionProblems.push(...motionFailures(parseRules(motionBlock(zeroAll(zero)))));
 
   if (wiredFailures.length || !pairedFailures.length || motionProblems.length) {
     console.error('check-themes selftest failed:');
@@ -416,9 +416,10 @@ if (!existsSync(SHEET)) {
   console.error(`check-themes: ${SHEET} is missing -- run \`pnpm build\` first.`);
   process.exit(1);
 }
-const failures = run(parseRules(readFileSync(SHEET, 'utf8')));
+const sheet = parseRules(readFileSync(SHEET, 'utf8'));
+const failures = run(sheet);
 
-failures.push(...motionFailures());
+failures.push(...motionFailures(sheet));
 if (failures.length) {
   console.log(failures.map((f) => `FAIL ${f}`).join('\n'));
   console.error(

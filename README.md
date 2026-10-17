@@ -217,10 +217,16 @@ with a literal duration (several `MTg*` components, for now) is not covered.
 The Telegram components read the `--tg-*` palette, which follows `data-theme`
 on `<html>`. Set it from `Telegram.WebApp.colorScheme` before the app mounts
 (the snippet is in the header of `telegram.css`), or the first paint uses the
-light palette and then flips. `MTgEmptyState` announces its `loading` and
-`error` variants through a live region, and a live region only announces
-changes made after it is in the page: mount it in the default `empty` variant
-and switch `variant`, rather than mounting it already in `loading` or `error`.
+light palette and then flips.
+
+`MTgEmptyState` gives its `loading` variant `role="status"` and its `error`
+variant `role="alert"`; the `empty` variant has no role. A live region only
+announces changes made after it is in the page, and switching `variant` adds
+the role and the new text in the same update, so a switch to `error` is
+usually spoken but a switch to `loading` is not reliably, and a component
+mounted already in either variant is not announced at all. If the loading
+announcement matters, keep your own persistent `role="status"` element around
+the component.
 
 ## Public site shell
 
