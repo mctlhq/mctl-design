@@ -114,7 +114,12 @@ jobs:
           pnpm check:component-tokens
 
       - name: Check lockstep versions
-        run: pnpm check:versions
+        # BASE_REF lets it see a version bump, which must also retire the
+        # "## Unreleased" CHANGELOG heading. The selftest pins that rule, since
+        # a PR that does not bump never reaches it.
+        run: |
+          pnpm check:versions:selftest
+          BASE_REF=origin/main pnpm check:versions
 
       - name: Check license reference
         run: pnpm check:license

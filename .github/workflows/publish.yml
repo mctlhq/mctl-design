@@ -73,3 +73,34 @@ jobs:
         env:
           TAG: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  move-next:
+    # A stable release moves `next` too; otherwise it stays on the last
+    # prerelease and @next resolves older than @latest. Its own job, so a
+    # failure here can be re-run alone: re-running the publish job would try
+    # to publish the same version again and be refused.
+    needs: publish
+    if: ${{ !contains(github.ref_name, '-') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Point next at this release
+        run: |
+          for pkg in packages/*/package.json; do
+            name=$(jq -r 'select(.private != true) | .name' "$pkg")
+            [ -n "$name" ] || continue
+            npm dist-tag add "$name@$TAG" next
+          done
+        env:
+          TAG: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
