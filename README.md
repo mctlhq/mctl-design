@@ -105,7 +105,8 @@ unversioned `https://ui.mctl.ai/mctl.css` still works and still floats with
 `main` — use it where you want the change, not where you want the pin.
 
 Flip surface and accent with `data-theme` (`dark` | `light`) and optional
-`data-accent` (`terracotta` default | `cyan` | `lime` | `lilac`). Omit
+`data-accent` (`terracotta` default | `cyan` | `lime` | `lilac`; `vermilion`
+is kept as an alias of `terracotta`). Omit
 `data-accent` to follow the CDN default. Both nest independently at any
 depth: a scope with only `data-accent` keeps the theme around it, and one
 with only `data-theme` keeps the accent around it (from 0.9.0).
@@ -149,6 +150,13 @@ or `MLogo` in-app.
 import '@mctlhq/ui/style.css';
 import { MButton } from '@mctlhq/ui';
 ```
+
+`style.css` holds the components' own rules and defines no variables: colours,
+fonts, spacing and motion come from the theme. Load `mctl.css` from the CDN
+(above) or `@mctlhq/css/theme.css` first, or the components render unstyled.
+The `MTg*` components are the exception: they read the `--tg-*` palette from
+`@mctlhq/css/telegram.css` and work with that sheet alone (with `theme.css`
+too, they pick up its motion tokens and reduced-motion handling).
 
 **Tailwind — npm**, same registry. Tailwind v3 takes the JS preset
 (`@mctlhq/css/tailwind-preset`). Tailwind v4 is configured in CSS, so it takes
@@ -249,10 +257,6 @@ The CSS interface is `--site-header-{height,bg,blur,border}`,
 `--site-wordmark-{size,weight,tracking,accent-gap}` and
 `--site-nav-{size,weight}`.
 
-## License
-
-Apache-2.0 — see [LICENSE](./LICENSE).
-
 ## Public typography and state colors
 
 The public sites pin the same version of `mctl.css`. Families are `--font-display`
@@ -278,3 +282,7 @@ on the same element. Read from script, `--accent` and its `-highlight`, `-fg`
 and `-soft` variants are the colour padded with whitespace, so trim before
 comparing. See **Foundations/Public Sites** and **Foundations/Typography** in
 Storybook for both themes and the complete scale.
+
+## License
+
+Apache-2.0 — see [LICENSE](./LICENSE).
