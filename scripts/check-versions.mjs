@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Enforces lockstep versioning: every workspace package.json version must
 // equal the root version. Run in CI and before publish.
+import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,15 +41,36 @@ const escapeRegExp = (v) => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const changelogPath = join(root, 'CHANGELOG.md');
 const changelog = existsSync(changelogPath) ? readFileSync(changelogPath, 'utf8') : '';
 const hasHeading = (v) => new RegExp(`^## ${escapeRegExp(v)}(\\s|$)`, 'm').test(changelog);
+const changelogProblems = [];
 const release = expected.split('-')[0];
 if (!hasHeading(expected) && !hasHeading(release)) {
   const which = release === expected ? `"## ${expected}"` : `"## ${expected}" or "## ${release}"`;
-  mismatches.push(`  CHANGELOG.md: no ${which} entry`);
+  changelogProblems.push(`  no ${which} entry`);
+}
+
+// Changes that are not released yet collect under "## Unreleased". The PR
+// that bumps the version renames that heading to the new version; a bump
+// that leaves it behind ships those changes under a heading that says they
+// are not out. Only a PR knows it bumped, so this runs when BASE_REF names
+// the branch it targets (CI sets it); locally and at publish it is skipped.
+const baseRef = process.env.BASE_REF;
+if (baseRef && hasHeading('Unreleased')) {
+  const baseVersion = JSON.parse(
+    execFileSync('git', ['show', `${baseRef}:package.json`], { cwd: root, encoding: 'utf8' }),
+  ).version;
+  if (baseVersion !== expected) {
+    changelogProblems.push(
+      `  "## Unreleased" is still there, but this change bumps ${baseVersion} to ${expected}: rename it to "## ${release}"`,
+    );
+  }
 }
 
 if (mismatches.length > 0) {
   console.error(`Version mismatch — expected ${expected}:\n${mismatches.join('\n')}`);
-  process.exit(1);
 }
+if (changelogProblems.length > 0) {
+  console.error(`CHANGELOG.md is not ready for ${expected}:\n${changelogProblems.join('\n')}`);
+}
+if (mismatches.length > 0 || changelogProblems.length > 0) process.exit(1);
 
 console.log(`All published packages are at ${expected}.`);

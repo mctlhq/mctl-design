@@ -73,3 +73,16 @@ jobs:
         env:
           TAG: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Move the next dist-tag to a stable release
+        # Otherwise `next` stays on the last prerelease, and an install of
+        # @next resolves to something older than @latest once it ships.
+        if: ${{ !contains(github.ref_name, '-') }}
+        run: |
+          for pkg in packages/*/package.json; do
+            name=$(node -p "require('./$pkg').name")
+            npm dist-tag add "$name@$TAG" next
+          done
+        env:
+          TAG: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

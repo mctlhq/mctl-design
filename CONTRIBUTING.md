@@ -72,9 +72,16 @@ Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`,
 All published packages are versioned lockstep with the repository. To cut a
 release, bump the version in **every** `package.json` (root + each package) to
 the same `X.Y.Z`, add a `## X.Y.Z` entry to `CHANGELOG.md` (`check:versions`
-fails in CI without one), then tag `X.Y.Z` (no `v` prefix) on `main`. The tag publishes the packages to GitHub Packages; a
-prerelease tag such as `0.9.0-rc.1` publishes under the `next` dist-tag.
-`pnpm check:versions` is enforced in CI and before publish.
+fails in CI without one), then tag `X.Y.Z` (no `v` prefix) on `main`. The tag
+publishes the packages to GitHub Packages. A prerelease tag such as
+`0.9.0-rc.1` publishes under the `next` dist-tag; a stable tag publishes as
+`latest` and moves `next` along with it. `pnpm check:versions` is enforced in
+CI and before publish.
+
+A change that does not bump the version (a `@mctlhq/ui` fix, say) goes under
+`## Unreleased` at the top of `CHANGELOG.md`. The PR that bumps the version
+renames that heading to `## X.Y.Z`; CI fails a bump that leaves
+`## Unreleased` in place.
 
 `ui.mctl.ai` serves a version's CSS as soon as it reaches `main`, before any
 tag, so tag every version that changes `packages/{tokens,css}` — otherwise
