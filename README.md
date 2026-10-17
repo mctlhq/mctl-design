@@ -235,5 +235,7 @@ matching foreground. Overlays use `--overlay-scrim` and `--shadow-overlay`;
 public background grids use `--site-grid-line`. Derived colors recompute at
 every scoped theme or accent boundary, and the two attributes nest
 independently, so `data-accent="cyan"` inside `data-theme="light"` gets the
-light cyan. Up to 0.8.0, a scope had to set both on the same element. See **Foundations/Public Sites** and
+light cyan. Up to 0.8.0, a scope had to set both on the same element. Read
+from script, `--accent` and its `-highlight`, `-fg` and `-soft` variants
+are the colour padded with whitespace, so trim before comparing. See **Foundations/Public Sites** and
 **Foundations/Typography** in Storybook for both themes and the complete scale.

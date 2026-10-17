@@ -45,21 +45,25 @@ function parseRules(text) {
 }
 
 function parseSelector(text) {
-  const parts = text.match(/:root|\[[a-z-]+(?:='[^']*')?\]/g) ?? [];
+  const parts = text.match(/:root|:not\(\[[a-z-]+\]\)|\[[a-z-]+(?:='[^']*')?\]/g) ?? [];
   if (parts.join('') !== text) {
     throw new Error(`check-themes: unsupported selector "${text}"; extend parseSelector`);
   }
   return parts.map((p) => {
     if (p === ':root') return { root: true };
+    const not = p.match(/^:not\(\[([a-z-]+)\]\)$/);
+    if (not) return { absent: not[1] };
     const [, attr, value] = p.match(/^\[([a-z-]+)(?:='([^']*)')?\]$/);
     return { attr, value };
   });
 }
 
 const matches = (selector, el) =>
-  selector.every((p) =>
-    p.root ? el.root : p.value === undefined ? p.attr in el.attrs : el.attrs[p.attr] === p.value,
-  );
+  selector.every((p) => {
+    if (p.root) return el.root;
+    if (p.absent) return !(p.absent in el.attrs);
+    return p.value === undefined ? p.attr in el.attrs : el.attrs[p.attr] === p.value;
+  });
 
 // Winning declared value per custom property: specificity, then source order.
 function declared(rules, el) {
@@ -139,7 +143,7 @@ const { accent, surface } = tokens;
 const ACCENTS = Object.keys(accent).filter((name) => name !== 'vermilion');
 const THEMES = ['dark', 'light'];
 const scope = (attrs = {}) => ({ root: false, attrs });
-const html = { root: true, attrs: {} };
+const html = (attrs = {}) => ({ root: true, attrs });
 
 // [description, chain below <html>, expected theme, expected accent]
 const cases = [
@@ -168,6 +172,16 @@ const cases = [
     'terracotta',
   ],
 ];
+// The attributes on <html> itself, where the README puts them first.
+for (const name of ACCENTS) {
+  cases.push([`<html data-accent="${name}">`, [html({ 'data-accent': name })], 'dark', name]);
+  cases.push([
+    `<html data-theme="light" data-accent="${name}">`,
+    [html({ 'data-theme': 'light', 'data-accent': name })],
+    'light',
+    name,
+  ]);
+}
 // Every theme and accent pair, three ways: on one element, accent inside
 // theme, theme inside accent. Derived from the tokens, so an accent added
 // there but not wired into theme.css fails here.
@@ -207,7 +221,7 @@ const ROLES = {
 function run(rules) {
   const failures = [];
   for (const [label, chain, theme, name] of cases) {
-    const got = computeChain(rules, [html, ...chain]);
+    const got = computeChain(rules, chain[0]?.root ? chain : [html(), ...chain]);
     const expect = {
       '--surface-bg': surface[theme].bg,
       '--focus-ring': accent[name][theme].primary,
@@ -257,7 +271,7 @@ if (process.argv.includes('--selftest')) {
     themeBlock('light', `[data-theme='light']`, palettes),
     ...ACCENTS.map(
       (picked) =>
-        `${picked === 'terracotta' ? ':root, ' : ''}${aliases(picked)} { ${ACCENTS.map(
+        `${picked === 'terracotta' ? ':root:not([data-accent]), ' : ''}${aliases(picked)} { ${ACCENTS.map(
           (n) => `--_pick-${n}: ${n === picked ? 'initial' : '/*!*/ /*!*/'};`,
         ).join(' ')} }`,
     ),
