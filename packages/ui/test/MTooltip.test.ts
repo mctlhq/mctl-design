@@ -81,4 +81,42 @@ describe('MTooltip (WCAG 1.4.13)', () => {
     expect(modal.emitted('update:open')?.[0]).toEqual([false]);
     modal.unmount();
   });
+
+  it('hides on an Escape meant for something else, without swallowing it', async () => {
+    const modal = mount(MModal, {
+      props: { open: true, title: 'Run' },
+      slots: { default: () => h('button', { id: 'inside' }, 'OK') },
+      attachTo: document.body,
+    });
+    await flushPromises();
+    const tip = tooltip();
+    await tip.trigger('pointerenter');
+
+    escape(document.getElementById('inside')!);
+    await flushPromises();
+    expect(modal.emitted('update:open')?.[0]).toEqual([false]);
+    expect(tip.classes()).toContain('m-tooltip--dismissed');
+    tip.unmount();
+    modal.unmount();
+  });
+
+  it('lets the slotted control see Escape before the tooltip takes it', async () => {
+    let seen = 0;
+    const wrapper = mount(MTooltip, {
+      props: { text: 'Clears the field' },
+      slots: {
+        default: () =>
+          h('input', { onKeydown: (e: KeyboardEvent) => e.key === 'Escape' && seen++ }),
+      },
+      attachTo: document.body,
+    });
+    const input = wrapper.find('input');
+    input.element.focus();
+    await input.trigger('focusin');
+    escape(input.element);
+    await flushPromises();
+    expect(seen).toBe(1);
+    expect(wrapper.classes()).toContain('m-tooltip--dismissed');
+    wrapper.unmount();
+  });
 });

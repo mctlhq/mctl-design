@@ -21,12 +21,23 @@ const hovered = ref(false);
 const focused = ref(false);
 const dismissed = ref(false);
 
-function onKeydown(event: KeyboardEvent) {
+const rootRef = ref<HTMLElement | null>(null);
+
+// Escape from inside the trigger: the control handles it first, then the
+// tooltip takes it in the bubble phase, so a dialog around it does not close
+// on the same key press.
+function onRootKeydown(event: KeyboardEvent) {
   if (event.key !== 'Escape' || dismissed.value) return;
   dismissed.value = true;
-  // Capture phase on document: an open tooltip takes this Escape, so a
-  // dialog around it does not close at the same time.
   event.stopPropagation();
+}
+
+// Escape from anywhere else while the bubble shows (it is hovered, focus is
+// elsewhere): hide it, but leave the key to whatever it was meant for.
+function onDocumentKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Escape') return;
+  if (rootRef.value?.contains(event.target as Node | null)) return;
+  dismissed.value = true;
 }
 
 function onFocusout(event: FocusEvent) {
@@ -39,26 +50,29 @@ watch(
   (shown) => {
     if (typeof document === 'undefined') return;
     if (shown) {
-      document.addEventListener('keydown', onKeydown, true);
+      document.addEventListener('keydown', onDocumentKeydown, true);
     } else {
-      document.removeEventListener('keydown', onKeydown, true);
+      document.removeEventListener('keydown', onDocumentKeydown, true);
       dismissed.value = false;
     }
   },
 );
 onBeforeUnmount(() => {
-  if (typeof document !== 'undefined') document.removeEventListener('keydown', onKeydown, true);
+  if (typeof document !== 'undefined')
+    document.removeEventListener('keydown', onDocumentKeydown, true);
 });
 </script>
 
 <template>
   <span
+    ref="rootRef"
     class="m-tooltip"
     :class="[`m-tooltip--${placement}`, { 'm-tooltip--dismissed': dismissed }]"
     @pointerenter="hovered = true"
     @pointerleave="hovered = false"
     @focusin="focused = true"
     @focusout="onFocusout"
+    @keydown="onRootKeydown"
   >
     <span class="m-tooltip__trigger">
       <!-- Expose tipId so the slotted control itself can carry
@@ -129,6 +143,24 @@ onBeforeUnmount(() => {
 
 .m-tooltip--bottom .m-tooltip__bubble::before {
   bottom: 100%;
+}
+
+/* The same bridge at the trigger's width, for a trigger wider than the
+   bubble; only while hovered, so it never widens the hover target. */
+.m-tooltip:hover:not(.m-tooltip--dismissed)::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--mctl-space-2);
+}
+
+.m-tooltip--top::after {
+  bottom: 100%;
+}
+
+.m-tooltip--bottom::after {
+  top: 100%;
 }
 
 /* Reveal on hover or when the slotted control inside gains focus — no extra
