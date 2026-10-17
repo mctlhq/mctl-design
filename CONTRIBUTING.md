@@ -24,7 +24,7 @@ pnpm dev              # Storybook in watch mode
 pnpm build            # build all packages
 pnpm build:storybook  # static showcase
 pnpm lint
-pnpm format             # prettier --write; CI runs pnpm format:check
+pnpm format           # prettier --write; CI runs pnpm format:check
 pnpm typecheck
 pnpm test             # component contracts + axe (packages/ui, vitest + jsdom)
 pnpm check:versions

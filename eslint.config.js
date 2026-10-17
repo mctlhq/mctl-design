@@ -40,7 +40,9 @@ export default tseslint.config(
       'vue/singleline-html-element-content-newline': 'off',
       'vue/html-closing-bracket-newline': 'off',
       'vue/html-indent': 'off',
-      'vue/html-self-closing': 'off',
+      // Only void elements fight Prettier, which writes <input />; keep the
+      // rule for normal elements and components.
+      'vue/html-self-closing': ['warn', { html: { void: 'any' } }],
     },
   },
 );
