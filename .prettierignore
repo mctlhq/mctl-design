@@ -9,3 +9,7 @@ packages/tokens/src/
 packages/tokens/scripts/
 packages/css/src/
 packages/css/scripts/
+
+# The reviewer only runs when this file matches main byte for byte, so a
+# formatting-only edit would stop it reviewing the PR that makes it.
+.github/workflows/claude-review.yml
