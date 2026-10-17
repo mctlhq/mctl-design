@@ -14,12 +14,22 @@
 // at computed-value time and silently drops out (MModal and MTooltip had no
 // shadow until 0.12.1 for exactly this). Comments are ignored on both sides,
 // and `--x: var(--x)` defines nothing (tailwind.css re-exports that way).
-// Reads packages/css/dist, so run after `pnpm build`.
+//
+// Third, the Onest stack written out as the fallback of every
+// var(--tg-font, ...) and var(--font-display, ...) in telegram.css and the
+// MTg components must equal tokens.typography.fontFamily.display, and at
+// least FONT_SITES of them must be found, so renaming or dropping them fails
+// rather than leaving nothing to check.
+//
+// Reads packages/css/dist and packages/tokens/dist, so run after
+// `pnpm build`, and packages/css/src/telegram.css.
 //
 // Known limits, so nobody reads more into a pass than it says:
 // - the literal rules read only <style> blocks; a literal in a template
 //   `style` or `:style` binding is not seen;
-// - a double-quoted or computed :style key is not seen as a definition;
+// - a double-quoted or computed :style key is not seen as a definition, nor
+//   is a `--name` key of a style object built in <script> (scripts are not
+//   read at all);
 // - definitions are matched by name, not selector: a name declared only
 //   under a scoped rule (.tg-shell, .mctl-prose) would count as defined for
 //   a component rendered outside it (none are today: every --tg-* is on
@@ -30,7 +40,7 @@
 //   filter: drop-shadow() are not (MLogo's glow has no matching token).
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { basename, join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dir = join(root, 'packages/ui/src/components');
@@ -114,16 +124,38 @@ export function stripComments(source) {
 }
 
 // The Onest stack is written out wherever --tg-font is read or set, because
-// telegram.css is copied verbatim rather than built from tokens. Every copy
-// must equal the token, or a Mini App on telegram.css alone keeps an old face.
-export function fontDrift(source, display) {
-  const found = [];
-  for (const m of source.matchAll(/var\(\s*--(?:tg-font|font-display)\s*,\s*([^;]*?)\)\s*;/g)) {
-    if (m[1].trim() !== display) {
-      found.push({ line: source.slice(0, m.index).split('\n').length, stack: m[1].trim() });
+// telegram.css is copied verbatim rather than built from tokens.
+export const FONT_SITES = 13;
+const normalizeStack = (stack) =>
+  stack
+    .replace(/\s+/g, ' ')
+    .replace(/\s*,\s*/g, ', ')
+    .trim();
+
+// Every var(--tg-font, <stack>) / var(--font-display, <stack>) fallback, wherever
+// it sits in a declaration, as { line, stack }; comments and scripts ignored.
+export function fontFallbacks(source) {
+  const text = stripComments(source);
+  const out = [];
+  for (const m of text.matchAll(/var\(\s*--(?:tg-font|font-display)\s*,/g)) {
+    // Walk to the paren that closes this var(), so `var(..., x), serif`,
+    // `!important` and a missing trailing semicolon all still match.
+    let depth = 1;
+    let k = m.index + m[0].length;
+    for (; k < text.length && depth; k++) {
+      if (text[k] === '(') depth++;
+      else if (text[k] === ')') depth--;
     }
+    out.push({
+      line: text.slice(0, m.index).split('\n').length,
+      stack: normalizeStack(text.slice(m.index + m[0].length, k - 1)),
+    });
   }
-  return found;
+  return out;
+}
+
+export function fontDrift(source, display) {
+  return fontFallbacks(source).filter((f) => f.stack !== normalizeStack(display));
 }
 
 // Custom properties a source defines: `--name:` declarations that are not
@@ -184,21 +216,33 @@ if (process.argv.includes('--selftest')) {
   const problems = [];
   // A var() inside <script> is not a style use; a stray /* in a script
   // string must not hide the var() after it.
+  // The closing */ after <style> is what would let an unstripped script
+  // '/*' swallow the style block.
   const scripted = `<script>const s = '/*'; // var(--in-script)</script>
 <SCRIPT setup>const t = 'var(--upper-script)';</SCRIPT >
-<style>.a { color: var(--after-script); }</style>`;
+<style>.a { color: var(--after-script); }</style>
+<!-- */ -->`;
   const scriptUndef = findUndefined(scripted, new Set()).map((f) => f.name);
   if (scriptUndef.join(' ') !== '--after-script')
     problems.push(
       `script handling reported: ${scriptUndef.join(' ') || 'none'}, expected --after-script`,
     );
   const stack = "'Onest', system-ui, sans-serif";
-  const drift = fontDrift(
-    `.a { font-family: var(--tg-font, ${stack}); }\n.b { font-family: var(--tg-font, 'Old', serif); }`,
-    stack,
-  ).map((f) => f.line);
-  if (drift.join(' ') !== '2')
-    problems.push(`font drift reported lines ${drift.join(' ') || 'none'}, expected 2`);
+  // Lines 6-8 drift in shapes a `);`-anchored match would miss; lines 2-5
+  // are the right stack wrapped; line 9 is a commented-out old stack.
+  const fonts = [
+    `.a { font-family: var(--tg-font, ${stack}); }`,
+    `.b { font-family: var(--tg-font,\n  'Onest',\n  system-ui,\n  sans-serif); }`,
+    `.c { font-family: var(--tg-font, 'Old'), serif; }`,
+    `.d { font-family: var(--tg-font, 'Old', serif) !important; }`,
+    `.e { font-family: var(--font-display, 'Old', serif) }`,
+    `/* was: font-family: var(--tg-font, 'Inter', sans-serif); */`,
+  ].join('\n');
+  const drift = fontDrift(fonts, stack).map((f) => f.line);
+  if (drift.join(' ') !== '6 7 8')
+    problems.push(`font drift reported lines ${drift.join(' ') || 'none'}, expected 6 7 8`);
+  if (fontFallbacks(fonts).length !== 5)
+    problems.push(`font fallbacks found ${fontFallbacks(fonts).length}, expected 5`);
   if (badFound.join('\n') !== expected.join('\n'))
     problems.push(
       `bad fixture reported\n    ${badFound.join('\n    ')}\n  expected\n    ${expected.join('\n    ')}`,
@@ -245,14 +289,28 @@ if (!existsSync(tokensDist)) {
   console.error(`check-component-tokens: ${tokensDist} is missing -- run \`pnpm build\` first.`);
   process.exit(1);
 }
-const { tokens } = await import(tokensDist);
+const { tokens } = await import(pathToFileURL(tokensDist).href);
 const display = tokens.typography.fontFamily.display;
 const telegramSrc = 'packages/css/src/telegram.css';
+if (!existsSync(join(root, telegramSrc))) {
+  console.error(`check-component-tokens: ${telegramSrc} is missing -- was it moved or renamed?`);
+  process.exit(1);
+}
 const fontSources = {
   [telegramSrc]: readFileSync(join(root, telegramSrc), 'utf8'),
   ...Object.fromEntries(all.filter(isTelegram).map((f) => [f, sources[f]])),
 };
+const fontSites = Object.fromEntries(
+  Object.entries(fontSources).map(([f, src]) => [f, fontFallbacks(src).length]),
+);
+const fontTotal = Object.values(fontSites).reduce((a, b) => a + b, 0);
 const failures = [
+  ...(fontSites[telegramSrc] ? [] : [`${telegramSrc}  no var(--tg-font, ...) fallback found`]),
+  ...(fontTotal >= FONT_SITES
+    ? []
+    : [
+        `font fallbacks: found ${fontTotal}, expected at least ${FONT_SITES} (renamed or dropped?)`,
+      ]),
   ...Object.entries(fontSources).flatMap(([f, src]) =>
     fontDrift(src, display).map(
       (x) =>
