@@ -9,6 +9,25 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.12.0 — 2026-10-17
+
+### Added
+
+- `--control-focus-shadow-invalid`, the focus halo of an invalid field.
+  `MInput`, `MSelect` and `MTextarea` used a literal at 22% while the valid
+  halo is 20%; both are now 20% and both are overridable.
+- `pnpm check:component-tokens`, run in CI: component styles may not carry
+  a literal border or outline width, focus offset, fractional opacity,
+  duration or z-index. `MTg*` components are exempt; their literals are
+  `var()` fallbacks for Mini Apps that load only `telegram.css`.
+
+### Changed
+
+- `MAlert`'s accent stripe is `--mctl-border-width-thick` (2px, as on
+  prose blockquotes) instead of a literal 3px.
+- `MTabs` pulls the active tab over the list rule by the hairline token
+  rather than a literal `-1px`, so the two stay aligned if it is overridden.
+
 ## 0.11.0 — 2026-10-17
 
 ### Added
@@ -33,7 +52,9 @@ headings below and are all included in 0.8.0.
 - `MTgOrderCard`, `MTgSheet` and `MTgTabBar` use the motion tokens, so
   their transitions honour `prefers-reduced-motion` when `theme.css` is
   loaded, and `MTgTabBar` uses `--mctl-z-index-sticky`. Each keeps a
-  literal fallback for Mini Apps that load only `telegram.css`.
+  literal fallback for Mini Apps that load only `telegram.css`. The token
+  timings are slightly shorter: the `MTgSheet` slide is 200ms (was 250ms)
+  and the `MTgTabBar` colour change 120ms (was 150ms), fallbacks included.
 
 ## 0.10.0 — 2026-10-17
 

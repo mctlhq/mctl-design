@@ -72,7 +72,7 @@ const field = useField(() => props.id);
 
 .m-input--invalid:focus-visible {
   border-color: var(--status-bad);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-bad) 22%, transparent);
+  box-shadow: var(--control-focus-shadow-invalid);
 }
 
 .m-input:disabled {

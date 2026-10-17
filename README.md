@@ -66,7 +66,7 @@ moves under you.
 
 | Path                                                | Moves when            | Use for                                              |
 | --------------------------------------------------- | --------------------- | ---------------------------------------------------- |
-| `https://ui.mctl.ai/0.11.0/{mctl,global,prose}.css` | never                 | anything shipped to users                            |
+| `https://ui.mctl.ai/0.12.0/{mctl,global,prose}.css` | never                 | anything shipped to users                            |
 | `https://ui.mctl.ai/{mctl,global,prose}.css`        | every merge to `main` | previews, internal tools, seeing a token change land |
 | `@mctlhq/css` on GitHub Packages                    | on a semver tag       | builds that already have a Packages token            |
 
@@ -78,7 +78,7 @@ All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.
 
-Each sheet names its own version on line 1 (`/* @mctlhq/css 0.11.0 … */`), so a
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.12.0 … */`), so a
 vendored copy records what it was taken from and a mismatch shows up in a diff.
 
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
@@ -90,9 +90,9 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
 />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.11.0/mctl.css" />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.11.0/global.css" />
-<!-- docs / markdown only: https://ui.mctl.ai/0.11.0/prose.css -->
+<link rel="stylesheet" href="https://ui.mctl.ai/0.12.0/mctl.css" />
+<link rel="stylesheet" href="https://ui.mctl.ai/0.12.0/global.css" />
+<!-- docs / markdown only: https://ui.mctl.ai/0.12.0/prose.css -->
 ```
 
 Bumping to a new version is then a one-line edit made on purpose, not something
@@ -262,8 +262,8 @@ Use the prose roles for articles (16px/1.75); do not apply the marketing hero
 scale to documentation headings. Adapters retain engine-specific article
 width, sidebar, table overflow and mobile navigation.
 
-Forms use `--control-bg`, `--control-disabled-bg`, `--control-border`, and
-`--control-focus-shadow`. Feedback uses `--status-{ok,warn,bad}-soft` with the
+Forms use `--control-bg`, `--control-disabled-bg`, `--control-border`,
+`--control-focus-shadow` and, on an invalid field, `--control-focus-shadow-invalid`. Feedback uses `--status-{ok,warn,bad}-soft` with the
 matching foreground. Overlays use `--overlay-scrim` and `--shadow-overlay`;
 public background grids use `--site-grid-line`. Derived colors recompute at
 every scoped theme or accent boundary, and the two attributes nest
