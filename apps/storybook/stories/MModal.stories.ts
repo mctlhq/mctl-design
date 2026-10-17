@@ -8,6 +8,7 @@ const meta: Meta<typeof MModal> = {
   tags: ['autodocs'],
   argTypes: {
     title: { control: 'text' },
+    ariaLabel: { control: 'text' },
     dismissible: { control: 'boolean' },
   },
   args: { title: 'Team created', dismissible: true },
@@ -36,3 +37,8 @@ export default meta;
 type Story = StoryObj<typeof MModal>;
 
 export const Default: Story = {};
+
+/** No visible title: the dialog takes its accessible name from `ariaLabel`. */
+export const WithoutTitle: Story = {
+  args: { title: '', ariaLabel: 'Namespace provisioning' },
+};

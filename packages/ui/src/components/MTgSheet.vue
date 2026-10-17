@@ -1,38 +1,52 @@
 <script setup lang="ts">
-withDefaults(
+import { ref } from 'vue';
+import { nextDialogId, useDialog } from '../composables/useDialog';
+
+const props = withDefaults(
   defineProps<{
     /** Controls visibility — use with v-model. */
     modelValue?: boolean;
     /** Sheet title shown in the drag-indicator row. */
     title?: string;
+    /** Accessible name when there is no visible title. */
+    ariaLabel?: string;
     /** Apply safe-area-inset-bottom padding at the bottom. */
     safeArea?: boolean;
   }>(),
-  { modelValue: false, title: '', safeArea: true },
+  { modelValue: false, title: '', ariaLabel: 'Sheet', safeArea: true },
 );
 
-defineEmits<{ 'update:modelValue': [value: boolean] }>();
+const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>();
+
+const rootRef = ref<HTMLElement | null>(null);
+const sheetRef = ref<HTMLElement | null>(null);
+const titleId = nextDialogId('m-tg-sheet-title');
+
+function close() {
+  emit('update:modelValue', false);
+}
+
+useDialog({ dialog: sheetRef, overlay: rootRef, open: () => props.modelValue, onDismiss: close });
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="m-tg-sheet">
-      <div v-if="modelValue" class="m-tg-sheet-root">
+      <div v-if="modelValue" ref="rootRef" class="m-tg-sheet-root">
+        <div class="m-tg-sheet-scrim" aria-hidden="true" @click="close" />
         <div
-          class="m-tg-sheet-scrim"
-          aria-hidden="true"
-          @click="$emit('update:modelValue', false)"
-        />
-        <div class="m-tg-sheet" role="dialog" aria-modal="true" :aria-label="title || 'Sheet'">
+          ref="sheetRef"
+          class="m-tg-sheet"
+          role="dialog"
+          aria-modal="true"
+          :aria-labelledby="title ? titleId : undefined"
+          :aria-label="title ? undefined : ariaLabel"
+          tabindex="-1"
+        >
           <div class="m-tg-sheet__handle-row">
             <span class="m-tg-sheet__handle" aria-hidden="true" />
-            <span v-if="title" class="m-tg-sheet__title">{{ title }}</span>
-            <button
-              type="button"
-              class="m-tg-sheet__close"
-              aria-label="Close"
-              @click="$emit('update:modelValue', false)"
-            >
+            <span v-if="title" :id="titleId" class="m-tg-sheet__title">{{ title }}</span>
+            <button type="button" class="m-tg-sheet__close" aria-label="Close" @click="close">
               ✕
             </button>
           </div>
@@ -49,7 +63,7 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
 .m-tg-sheet-root {
   position: fixed;
   inset: 0;
-  z-index: 400;
+  z-index: var(--mctl-z-index-modal, 1100);
   display: flex;
   align-items: flex-end;
 }
@@ -62,6 +76,7 @@ defineEmits<{ 'update:modelValue': [value: boolean] }>();
 
 .m-tg-sheet {
   position: relative;
+  outline: none;
   width: 100%;
   background: var(--tg-surface, #ffffff);
   border-radius: var(--tg-radius-sheet, 22px) var(--tg-radius-sheet, 22px) 0 0;
