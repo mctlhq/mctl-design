@@ -215,6 +215,16 @@ describe('behaviour', () => {
     expect(wrapper.emitted('click')).toHaveLength(2);
     await card.trigger('keyup', { key: ' ' });
     expect(wrapper.emitted('click')).toHaveLength(3);
+
+    // A release with no press here, or after Escape or blur, does nothing.
+    await card.trigger('keyup', { key: ' ' });
+    await card.trigger('keydown', { key: ' ' });
+    await card.trigger('keydown', { key: 'Escape' });
+    await card.trigger('keyup', { key: ' ' });
+    await card.trigger('keydown', { key: ' ' });
+    await card.trigger('blur');
+    await card.trigger('keyup', { key: ' ' });
+    expect(wrapper.emitted('click')).toHaveLength(3);
   });
 
   it('MTgEmptyState announces loading politely and errors assertively', () => {
@@ -223,8 +233,9 @@ describe('behaviour', () => {
     expect(role('empty')).toBeUndefined();
     expect(role('loading')).toBe('status');
     expect(role('error')).toBe('alert');
+    // aria-busy on a live region would hold its announcement.
     const loading = mount(MTgEmptyState, { props: { variant: 'loading' } });
-    expect(loading.attributes('aria-busy')).toBe('true');
+    expect(loading.attributes('aria-busy')).toBeUndefined();
     expect(loading.find('svg').attributes('aria-hidden')).toBe('true');
   });
 

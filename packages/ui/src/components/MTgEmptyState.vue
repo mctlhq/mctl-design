@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = withDefaults(
+withDefaults(
   defineProps<{
     /** Visual variant. */
     variant?: 'empty' | 'loading' | 'error';
@@ -20,17 +20,14 @@ const iconPaths = {
 };
 
 // Loading and error states are announced when they appear: politely for
-// loading, assertively for an error. An empty state is static content.
+// loading, assertively for an error. An empty state is static content. No
+// aria-busy: on a live region it tells screen readers to hold the
+// announcement, and this element is the announcement.
 const roles = { empty: undefined, loading: 'status', error: 'alert' } as const;
 </script>
 
 <template>
-  <div
-    class="m-tg-empty"
-    :class="`m-tg-empty--${variant}`"
-    :role="roles[props.variant]"
-    :aria-busy="variant === 'loading' || undefined"
-  >
+  <div class="m-tg-empty" :class="`m-tg-empty--${variant}`" :role="roles[variant]">
     <svg
       class="m-tg-empty__icon"
       viewBox="0 0 24 24"
@@ -41,7 +38,7 @@ const roles = { empty: undefined, loading: 'status', error: 'alert' } as const;
       stroke-linejoin="round"
       aria-hidden="true"
     >
-      <path v-for="d in iconPaths[variant]" :key="d" :d="d" />
+      <path v-for="(d, i) in iconPaths[variant]" :key="i" :d="d" />
     </svg>
     <p class="m-tg-empty__title">{{ title }}</p>
     <p v-if="description" class="m-tg-empty__description">{{ description }}</p>
