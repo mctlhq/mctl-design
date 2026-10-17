@@ -1,4 +1,4 @@
-/* @mctlhq/css 0.10.0 — raw tokens + semantic theme layer. */
+/* @mctlhq/css 0.11.0 — raw tokens + semantic theme layer. */
 :root {
   --mctl-color-ink: #0a0b0d;
   --mctl-color-ink2: #0f1114;
@@ -341,6 +341,9 @@
   --mctl-layout-stack: 24px;
   --mctl-layout-prose-width: 720px;
   --mctl-layout-page-width: 1400px;
+  --mctl-layout-container-sm: 640px;
+  --mctl-layout-container-md: 960px;
+  --mctl-layout-container-lg: 1280px;
   --mctl-layout-site-header-height: 80px;
   --mctl-layout-site-header-blur: 12px;
   --mctl-layout-site-wordmark-size: 24px;

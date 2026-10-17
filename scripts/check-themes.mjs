@@ -391,7 +391,9 @@ if (process.argv.includes('--selftest')) {
   if (!motionFailures(parseRules(wired)).length)
     motionProblems.push('a sheet with no reduced-motion block passed');
   for (const zero of ZERO)
-    motionProblems.push(...motionFailures(parseRules(motionBlock(zeroAll(zero)))));
+    motionProblems.push(
+      ...motionFailures(parseRules(motionBlock(zeroAll(zero)))).map((f) => `${zero}: ${f}`),
+    );
 
   if (wiredFailures.length || !pairedFailures.length || motionProblems.length) {
     console.error('check-themes selftest failed:');

@@ -142,12 +142,13 @@ useDialog({ dialog: sheetRef, overlay: rootRef, open: () => props.modelValue, on
 /* Slide-up / fade animation. */
 .m-tg-sheet-enter-active,
 .m-tg-sheet-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity var(--mctl-motion-duration-base, 200ms)
+    var(--mctl-motion-easing-standard, ease);
 }
 
 .m-tg-sheet-enter-active .m-tg-sheet,
 .m-tg-sheet-leave-active .m-tg-sheet {
-  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform var(--mctl-motion-duration-base, 200ms) cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .m-tg-sheet-enter-from,

@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
   font-size: var(--mctl-typography-font-size-marker);
   color: var(--surface-fg);
   background: var(--surface-elevated);
-  border: 1px solid var(--surface-line-strong);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line-strong);
   border-radius: var(--mctl-radius-md);
   padding: var(--mctl-space-1) var(--mctl-space-3);
   box-shadow: var(--mctl-shadow-overlay);

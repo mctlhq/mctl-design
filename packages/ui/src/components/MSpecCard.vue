@@ -37,7 +37,7 @@ withDefaults(
   gap: var(--mctl-space-3);
   padding: var(--mctl-space-5);
   background: var(--surface-card);
-  border: 1px solid var(--surface-line);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line);
 }
 
 .m-spec-card__head {

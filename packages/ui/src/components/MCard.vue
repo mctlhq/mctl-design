@@ -25,7 +25,7 @@ withDefaults(
 <style scoped>
 .m-card {
   background: var(--surface-card);
-  border: 1px solid var(--surface-line);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line);
   border-radius: var(--mctl-radius-lg);
   font-family: var(--font-mono);
   color: var(--surface-fg);
@@ -38,7 +38,7 @@ withDefaults(
 
 .m-card__header {
   padding: var(--mctl-space-4) var(--mctl-space-5);
-  border-bottom: 1px solid var(--surface-line);
+  border-bottom: var(--mctl-border-width-hairline) solid var(--surface-line);
   font-size: var(--mctl-typography-font-size-body);
   font-weight: var(--mctl-typography-font-weight-medium);
   color: var(--surface-fg-muted);
@@ -50,7 +50,7 @@ withDefaults(
 
 .m-card__footer {
   padding: var(--mctl-space-3) var(--mctl-space-5);
-  border-top: 1px solid var(--surface-line);
+  border-top: var(--mctl-border-width-hairline) solid var(--surface-line);
   font-size: var(--mctl-typography-font-size-marker);
   color: var(--surface-fg-subtle);
 }

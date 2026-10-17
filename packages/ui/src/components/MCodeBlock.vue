@@ -29,7 +29,7 @@ withDefaults(
 .m-code-block {
   margin: 0;
   background: var(--surface-card);
-  border: 1px solid var(--surface-line);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line);
   border-radius: var(--mctl-radius-md);
   overflow: hidden;
 }
@@ -40,7 +40,7 @@ withDefaults(
   justify-content: space-between;
   gap: var(--mctl-space-3);
   padding: var(--mctl-space-2) var(--mctl-space-4);
-  border-bottom: 1px solid var(--surface-line);
+  border-bottom: var(--mctl-border-width-hairline) solid var(--surface-line);
   font-family: var(--font-mono);
   font-size: var(--mctl-typography-font-size-marker);
 }
@@ -66,8 +66,8 @@ withDefaults(
 }
 
 .m-code-block__pre:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(-1 * var(--focus-ring-offset));
 }
 
 .m-code-block__code {

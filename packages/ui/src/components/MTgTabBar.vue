@@ -58,8 +58,8 @@ const model = defineModel<string>({ default: '' });
   left: 0;
   right: 0;
   background: var(--tg-surface, #ffffff);
-  border-top: 1px solid var(--tg-line, #e7e6e1);
-  z-index: 100;
+  border-top: var(--mctl-border-width-hairline, 1px) solid var(--tg-line, #e7e6e1);
+  z-index: var(--mctl-z-index-sticky, 100);
 }
 
 .m-tg-tabbar--safe {
@@ -78,7 +78,7 @@ const model = defineModel<string>({ default: '' });
   background: transparent;
   cursor: pointer;
   color: var(--tg-muted, #6a6e76);
-  transition: color 0.15s ease;
+  transition: color var(--mctl-motion-duration-fast, 120ms) var(--mctl-motion-easing-standard, ease);
   -webkit-tap-highlight-color: transparent;
 }
 

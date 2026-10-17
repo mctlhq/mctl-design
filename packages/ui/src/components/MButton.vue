@@ -65,7 +65,7 @@ const bindings = computed(() => {
   font-family: var(--font-mono);
   font-weight: var(--mctl-typography-font-weight-medium);
   letter-spacing: 0.02em;
-  border: 1px solid var(--surface-line-strong);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line-strong);
   border-radius: var(--mctl-radius-sm);
   cursor: pointer;
   text-decoration: none;
@@ -86,8 +86,8 @@ const bindings = computed(() => {
 }
 
 .m-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .m-button--primary {
@@ -113,7 +113,7 @@ const bindings = computed(() => {
 
 .m-button[disabled],
 .m-button[aria-disabled='true'] {
-  opacity: 0.45;
+  opacity: var(--mctl-opacity-disabled);
   cursor: not-allowed;
   pointer-events: none;
 }

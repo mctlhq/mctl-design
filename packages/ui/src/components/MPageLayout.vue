@@ -7,9 +7,9 @@ withDefaults(
 );
 
 const widthMap = {
-  sm: '640px',
-  md: '960px',
-  lg: '1280px',
+  sm: 'var(--mctl-layout-container-sm)',
+  md: 'var(--mctl-layout-container-md)',
+  lg: 'var(--mctl-layout-container-lg)',
   full: '100%',
 } as const;
 </script>

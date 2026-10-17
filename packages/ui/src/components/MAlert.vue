@@ -32,7 +32,7 @@ const role = computed(() => {
   font-size: var(--mctl-typography-font-size-body);
   line-height: var(--mctl-typography-line-height-body);
   border-radius: var(--mctl-radius-md);
-  border: 1px solid var(--surface-line);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line);
   border-left-width: 3px;
   padding: var(--mctl-space-4) var(--mctl-space-5);
   background: color-mix(in srgb, var(--surface-line) 30%, transparent);
