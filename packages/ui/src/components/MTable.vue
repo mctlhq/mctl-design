@@ -30,8 +30,8 @@ withDefaults(
 }
 
 .m-table-wrap:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(-1 * var(--focus-ring-offset));
 }
 
 .m-table {
@@ -46,7 +46,7 @@ withDefaults(
 .m-table :deep(td) {
   text-align: left;
   padding: var(--mctl-space-3) var(--mctl-space-4);
-  border-bottom: 1px solid var(--surface-line);
+  border-bottom: var(--mctl-border-width-hairline) solid var(--surface-line);
   vertical-align: top;
 }
 

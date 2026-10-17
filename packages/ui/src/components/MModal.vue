@@ -87,14 +87,14 @@ const { backdropHandlers } = useDialog({
   align-items: center;
   justify-content: center;
   padding: var(--mctl-space-5);
-  background: color-mix(in srgb, var(--mctl-color-ink) 70%, transparent);
+  background: var(--overlay-scrim);
 }
 
 .m-modal__dialog {
   width: 100%;
   max-width: 480px;
   background: var(--surface-elevated);
-  border: 1px solid var(--surface-line-strong);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line-strong);
   border-radius: var(--mctl-radius-lg);
   box-shadow: var(--mctl-shadow-overlay);
   outline: none;
@@ -106,7 +106,7 @@ const { backdropHandlers } = useDialog({
   justify-content: space-between;
   gap: var(--mctl-space-3);
   padding: var(--mctl-space-4) var(--mctl-space-5);
-  border-bottom: 1px solid var(--surface-line);
+  border-bottom: var(--mctl-border-width-hairline) solid var(--surface-line);
 }
 
 .m-modal__title {
@@ -135,8 +135,8 @@ const { backdropHandlers } = useDialog({
 }
 
 .m-modal__close:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .m-modal__body {
@@ -152,7 +152,7 @@ const { backdropHandlers } = useDialog({
   justify-content: flex-end;
   gap: var(--mctl-space-3);
   padding: var(--mctl-space-4) var(--mctl-space-5);
-  border-top: 1px solid var(--surface-line);
+  border-top: var(--mctl-border-width-hairline) solid var(--surface-line);
 }
 
 .m-modal-enter-active,

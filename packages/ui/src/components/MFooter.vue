@@ -23,7 +23,7 @@ withDefaults(
 
 <style scoped>
 .m-footer {
-  border-top: 1px solid var(--surface-line);
+  border-top: var(--mctl-border-width-hairline) solid var(--surface-line);
   background: var(--surface-bg);
   font-family: var(--font-mono);
   font-size: var(--mctl-typography-font-size-marker);
@@ -36,7 +36,7 @@ withDefaults(
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--mctl-space-3);
-  max-width: 960px;
+  max-width: var(--mctl-layout-container-md);
   margin-inline: auto;
   padding: var(--mctl-space-4) var(--mctl-layout-page-padding);
 }
@@ -58,8 +58,8 @@ withDefaults(
 }
 
 .m-footer__link:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
   color: var(--surface-fg-muted);
 }
 

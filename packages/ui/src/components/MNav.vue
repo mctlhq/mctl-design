@@ -29,7 +29,7 @@ withDefaults(
 <style scoped>
 .m-nav {
   background: var(--surface-elevated);
-  border-bottom: 1px solid var(--surface-line);
+  border-bottom: var(--mctl-border-width-hairline) solid var(--surface-line);
   font-family: var(--font-mono);
 }
 
@@ -55,7 +55,7 @@ withDefaults(
   font-size: var(--mctl-typography-font-size-body);
   color: var(--surface-fg-muted);
   text-decoration: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: var(--mctl-border-width-thick) solid transparent;
   transition:
     color var(--mctl-motion-duration-fast) var(--mctl-motion-easing-standard),
     border-color var(--mctl-motion-duration-fast) var(--mctl-motion-easing-standard);
@@ -66,8 +66,8 @@ withDefaults(
 }
 
 .m-nav__link:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(-1 * var(--focus-ring-offset));
   color: var(--surface-fg);
 }
 

@@ -23,6 +23,10 @@ export const layout = {
   stack: '24px',
   proseWidth: '720px',
   pageWidth: '1400px',
+  // MPageLayout's maxWidth steps; MFooter centres on containerMd.
+  containerSm: '640px',
+  containerMd: '960px',
+  containerLg: '1280px',
   siteHeaderHeight: '80px',
   siteHeaderBlur: '12px',
   siteWordmarkSize: '24px',

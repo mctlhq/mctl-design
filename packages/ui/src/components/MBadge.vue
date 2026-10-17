@@ -26,7 +26,7 @@ withDefaults(
   letter-spacing: var(--mctl-typography-letter-spacing-marker);
   text-transform: uppercase;
   padding: var(--mctl-space-1) var(--mctl-space-2);
-  border: 1px solid var(--surface-line);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line);
   border-radius: var(--mctl-radius-sm);
   color: var(--surface-fg-muted);
   white-space: nowrap;

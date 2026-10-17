@@ -89,14 +89,15 @@ function onSpaceUp() {
 <style scoped>
 .m-tg-order-card {
   background: var(--tg-surface, #ffffff);
-  border: 1px solid var(--tg-line, #e7e6e1);
+  border: var(--mctl-border-width-hairline, 1px) solid var(--tg-line, #e7e6e1);
   border-radius: var(--tg-radius-card, 18px);
   padding: 16px 18px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   cursor: pointer;
-  transition: opacity 0.12s ease;
+  transition: opacity var(--mctl-motion-duration-fast, 120ms)
+    var(--mctl-motion-easing-standard, ease);
   outline: 2px solid transparent;
   outline-offset: 2px;
 }
@@ -183,7 +184,7 @@ function onSpaceUp() {
   align-items: center;
   justify-content: space-between;
   padding-top: 4px;
-  border-top: 1px solid var(--tg-line, #e7e6e1);
+  border-top: var(--mctl-border-width-hairline, 1px) solid var(--tg-line, #e7e6e1);
 }
 
 .m-tg-order-card__author {

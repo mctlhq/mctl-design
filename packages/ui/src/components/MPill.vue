@@ -22,7 +22,7 @@ withDefaults(
   font-weight: var(--mctl-typography-font-weight-medium);
   padding: 1px var(--mctl-space-2);
   border-radius: var(--mctl-radius-md);
-  border: 1px solid transparent;
+  border: var(--mctl-border-width-hairline) solid transparent;
   white-space: nowrap;
   vertical-align: middle;
   line-height: 1.6;

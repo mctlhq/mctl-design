@@ -43,8 +43,8 @@ const field = useField(() => props.id);
   font-family: var(--font-mono);
   font-size: var(--mctl-typography-font-size-body);
   color: var(--surface-fg);
-  background: var(--surface-card);
-  border: 1px solid var(--surface-line-strong);
+  background: var(--control-bg);
+  border: var(--mctl-border-width-hairline) solid var(--control-border);
   border-radius: var(--mctl-radius-md);
   padding: var(--mctl-space-3) var(--mctl-space-4);
   transition:
@@ -63,7 +63,7 @@ const field = useField(() => props.id);
 .m-input:focus-visible {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow: var(--control-focus-shadow);
 }
 
 .m-input--invalid {
@@ -76,7 +76,8 @@ const field = useField(() => props.id);
 }
 
 .m-input:disabled {
-  opacity: 0.5;
+  background: var(--control-disabled-bg);
+  opacity: var(--mctl-opacity-disabled);
   cursor: not-allowed;
 }
 </style>

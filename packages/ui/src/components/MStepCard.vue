@@ -26,7 +26,7 @@ withDefaults(
   flex-direction: column;
   gap: var(--mctl-space-3);
   padding: var(--mctl-space-5) 0;
-  border-top: 1px solid var(--surface-line);
+  border-top: var(--mctl-border-width-hairline) solid var(--surface-line);
 }
 
 .m-step-card__numeral {
@@ -57,7 +57,7 @@ withDefaults(
   color: var(--syntax-string);
   padding: var(--mctl-space-2) var(--mctl-space-3);
   background: var(--surface-card);
-  border: 1px solid var(--surface-line);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line);
   border-radius: var(--mctl-radius-sm);
   align-self: flex-start;
 }

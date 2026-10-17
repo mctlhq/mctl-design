@@ -98,7 +98,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
   display: flex;
   align-items: stretch;
   gap: var(--mctl-space-1);
-  border-bottom: 1px solid var(--surface-line);
+  border-bottom: var(--mctl-border-width-hairline) solid var(--surface-line);
 }
 
 .m-tabs__tab {
@@ -107,7 +107,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
   color: var(--surface-fg-muted);
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: var(--mctl-border-width-thick) solid transparent;
   margin-bottom: -1px;
   padding: var(--mctl-space-3) var(--mctl-space-4);
   cursor: pointer;
@@ -121,8 +121,8 @@ function onKeydown(event: KeyboardEvent, index: number) {
 }
 
 .m-tabs__tab:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(-1 * var(--focus-ring-offset));
 }
 
 .m-tabs__tab--active {
@@ -137,7 +137,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
 }
 
 .m-tabs__panel:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 </style>

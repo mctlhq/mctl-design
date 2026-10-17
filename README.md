@@ -66,7 +66,7 @@ moves under you.
 
 | Path                                                | Moves when            | Use for                                              |
 | --------------------------------------------------- | --------------------- | ---------------------------------------------------- |
-| `https://ui.mctl.ai/0.10.0/{mctl,global,prose}.css` | never                 | anything shipped to users                            |
+| `https://ui.mctl.ai/0.11.0/{mctl,global,prose}.css` | never                 | anything shipped to users                            |
 | `https://ui.mctl.ai/{mctl,global,prose}.css`        | every merge to `main` | previews, internal tools, seeing a token change land |
 | `@mctlhq/css` on GitHub Packages                    | on a semver tag       | builds that already have a Packages token            |
 
@@ -78,7 +78,7 @@ All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.
 
-Each sheet names its own version on line 1 (`/* @mctlhq/css 0.10.0 … */`), so a
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.11.0 … */`), so a
 vendored copy records what it was taken from and a mismatch shows up in a diff.
 
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
@@ -90,9 +90,9 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
 />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.10.0/mctl.css" />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.10.0/global.css" />
-<!-- docs / markdown only: https://ui.mctl.ai/0.10.0/prose.css -->
+<link rel="stylesheet" href="https://ui.mctl.ai/0.11.0/mctl.css" />
+<link rel="stylesheet" href="https://ui.mctl.ai/0.11.0/global.css" />
+<!-- docs / markdown only: https://ui.mctl.ai/0.11.0/prose.css -->
 ```
 
 Bumping to a new version is then a one-line edit made on purpose, not something
@@ -196,8 +196,9 @@ with `color-mix()`, which the theme and the components use throughout.
 `@mctlhq/ui` is built for the same list. The theme sets `color-scheme` per
 `data-theme`, so native controls and scrollbars follow it. Under
 `prefers-reduced-motion: reduce` the `--mctl-motion-duration-*` variables, and
-the Tailwind `duration-*` utilities built on them, drop to zero; a transition
-with a literal duration (several `MTg*` components, for now) is not covered.
+the Tailwind `duration-*` utilities and the `@mctlhq/ui` transitions built on
+them, drop to zero. The `MTg*` components fall back to literal durations when
+`theme.css` is not loaded, and those are not covered.
 
 ## Components
 
@@ -225,8 +226,9 @@ announces changes made after it is in the page, and switching `variant` adds
 the role and the new text in the same update, so a switch to `error` is
 usually spoken but a switch to `loading` is not reliably, and a component
 mounted already in either variant is not announced at all. If the loading
-announcement matters, keep your own persistent `role="status"` element around
-the component.
+announcement matters, keep your own persistent `role="status"` element next to
+the component, not around it (the component's own region would shadow a
+wrapper), and write the message into it yourself.
 
 ## Public site shell
 

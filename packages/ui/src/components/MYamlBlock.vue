@@ -67,7 +67,7 @@ const lines = computed<Segment[][]>(() => props.code.replace(/\n$/, '').split('\
 <style scoped>
 .m-yaml {
   margin: 0;
-  border: 1px solid var(--surface-line);
+  border: var(--mctl-border-width-hairline) solid var(--surface-line);
   background: var(--surface-card);
 }
 
@@ -78,7 +78,7 @@ const lines = computed<Segment[][]>(() => props.code.replace(/\n$/, '').split('\
   text-transform: uppercase;
   color: var(--surface-fg-subtle);
   padding: var(--mctl-space-2) var(--mctl-space-4);
-  border-bottom: 1px solid var(--surface-line);
+  border-bottom: var(--mctl-border-width-hairline) solid var(--surface-line);
 }
 
 .m-yaml__pre {
@@ -91,8 +91,8 @@ const lines = computed<Segment[][]>(() => props.code.replace(/\n$/, '').split('\
 }
 
 .m-yaml__pre:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(-1 * var(--focus-ring-offset));
 }
 
 .m-yaml__line {

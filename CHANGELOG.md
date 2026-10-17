@@ -9,6 +9,32 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.11.0 — 2026-10-17
+
+### Added
+
+- `layout.containerSm`, `containerMd` and `containerLg` (640, 960 and
+  1280px; `--mctl-layout-container-{sm,md,lg}`), the widths `MPageLayout`
+  and `MFooter` used as literals.
+
+### Changed
+
+- Components take their values from tokens instead of literals:
+  hairline and thick borders, focus rings (`--focus-ring`,
+  `--focus-ring-width`, `--focus-ring-offset`), the disabled opacity
+  (`--mctl-opacity-disabled`, 0.45 everywhere; the form fields were 0.5)
+  and `MPageLayout` / `MFooter` widths.
+- `MInput`, `MSelect` and `MTextarea` use the documented `--control-bg`,
+  `--control-border`, `--control-focus-shadow` and `--control-disabled-bg`.
+  Fields now sit on the page background rather than the card colour, and
+  the focus halo is 20% accent instead of 22%.
+- `MModal`'s backdrop is `--overlay-scrim`, so it follows the theme (a
+  light scrim under `data-theme="light"`) instead of 70% ink everywhere.
+- `MTgOrderCard`, `MTgSheet` and `MTgTabBar` use the motion tokens, so
+  their transitions honour `prefers-reduced-motion` when `theme.css` is
+  loaded, and `MTgTabBar` uses `--mctl-z-index-sticky`. Each keeps a
+  literal fallback for Mini Apps that load only `telegram.css`.
+
 ## 0.10.0 — 2026-10-17
 
 ### Changed

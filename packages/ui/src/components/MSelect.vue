@@ -86,8 +86,8 @@ function normalize(opt: string | Option): Option {
   font-family: var(--font-mono);
   font-size: var(--mctl-typography-font-size-body);
   color: var(--surface-fg);
-  background: var(--surface-card);
-  border: 1px solid var(--surface-line-strong);
+  background: var(--control-bg);
+  border: var(--mctl-border-width-hairline) solid var(--control-border);
   border-radius: var(--mctl-radius-md);
   padding: var(--mctl-space-3) var(--mctl-space-7) var(--mctl-space-3) var(--mctl-space-4);
   cursor: pointer;
@@ -104,7 +104,7 @@ function normalize(opt: string | Option): Option {
 .m-select__control:focus-visible {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow: var(--control-focus-shadow);
 }
 
 .m-select--invalid .m-select__control {
@@ -127,10 +127,11 @@ function normalize(opt: string | Option): Option {
 }
 
 .m-select--disabled {
-  opacity: 0.5;
+  opacity: var(--mctl-opacity-disabled);
 }
 
 .m-select--disabled .m-select__control {
+  background: var(--control-disabled-bg);
   cursor: not-allowed;
 }
 </style>

@@ -44,11 +44,11 @@ const groupName = `m-accordion-${getCurrentInstance()?.uid ?? 0}`;
 
 <style scoped>
 .m-accordion {
-  border-top: 1px solid var(--surface-line);
+  border-top: var(--mctl-border-width-hairline) solid var(--surface-line);
 }
 
 .m-accordion__item {
-  border-bottom: 1px solid var(--surface-line);
+  border-bottom: var(--mctl-border-width-hairline) solid var(--surface-line);
 }
 
 .m-accordion__summary {
@@ -74,8 +74,8 @@ const groupName = `m-accordion-${getCurrentInstance()?.uid ?? 0}`;
 }
 
 .m-accordion__summary:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .m-accordion__icon {
