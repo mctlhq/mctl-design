@@ -11,7 +11,7 @@
     "url": "https://github.com/mctlhq/mctl-design.git"
   },
   "engines": {
-    "node": ">=22.12"
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "packageManager": "pnpm@9.12.0",
   "scripts": {

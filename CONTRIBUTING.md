@@ -4,9 +4,10 @@ Thank you for your interest in contributing to the MCTL design system.
 
 ## Prerequisites
 
-- **Node.js** 22.12+, the floor `vite` 7 requires (`^20.19.0 || >=22.12.0`);
-  22.0-22.11 satisfies a bare `22` and then fails inside the build. That floor
-  is `engines.node` in the root `package.json`. `.nvmrc` is a different
+- **Node.js** 22.18+ (or 24.11+, or 26+): the range `tsup` 9 requires
+  (`^22.18.0 || ^24.11.0 || >=26.0.0`), which is narrower than `vite` 7's
+  (`^20.19.0 || >=22.12.0`). An older 22.x satisfies a bare `22` and then fails
+  inside the build. That range is `engines.node` in the root `package.json`. `.nvmrc` is a different
   question — the version this project is *developed* on — and holds a current
   22.x, so a contributor's machine matches CI (`node-version: 22`) and the
   published image (`node:22-alpine`) rather than sitting on the oldest release
