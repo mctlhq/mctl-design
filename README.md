@@ -194,8 +194,10 @@ marked `$extensions["ai.mctl"].css`.
 Chrome and Edge 111, Firefox 113, Safari 16.2 and later: the first versions
 with `color-mix()`, which the theme and the components use throughout.
 `@mctlhq/ui` is built for the same list. The theme sets `color-scheme` per
-`data-theme`, so native controls and scrollbars follow it, and motion
-durations drop to zero under `prefers-reduced-motion: reduce`.
+`data-theme`, so native controls and scrollbars follow it. Under
+`prefers-reduced-motion: reduce` the `--mctl-motion-duration-*` variables, and
+the Tailwind `duration-*` utilities built on them, drop to zero; a transition
+with a literal duration (several `MTg*` components, for now) is not covered.
 
 ## Components
 
@@ -208,6 +210,23 @@ durations drop to zero under `prefers-reduced-motion: reduce`.
 - **Disclosure & overlay** — `MTabs`, `MAccordion`, `MTooltip`, `MModal`
 - **Data & status** — `MTable`, `MStat`, `MBadge`, `MPill`, `MAlert`
 - **Content** — `MCodeBlock`, `MYamlBlock`, `MStepCard`, `MSpecCard`
+- **Telegram Mini App** — `MTgTabBar`, `MTgSheet`, `MTgOrderCard`,
+  `MTgStatusBadge`, `MTgDeltaTag`, `MTgEmptyState`, styled by
+  `@mctlhq/css/telegram.css`
+
+The Telegram components read the `--tg-*` palette, which follows `data-theme`
+on `<html>`. Set it from `Telegram.WebApp.colorScheme` before the app mounts
+(the snippet is in the header of `telegram.css`), or the first paint uses the
+light palette and then flips.
+
+`MTgEmptyState` gives its `loading` variant `role="status"` and its `error`
+variant `role="alert"`; the `empty` variant has no role. A live region only
+announces changes made after it is in the page, and switching `variant` adds
+the role and the new text in the same update, so a switch to `error` is
+usually spoken but a switch to `loading` is not reliably, and a component
+mounted already in either variant is not announced at all. If the loading
+announcement matters, keep your own persistent `role="status"` element around
+the component.
 
 ## Public site shell
 
