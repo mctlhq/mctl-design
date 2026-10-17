@@ -18,7 +18,7 @@
     "@mctlhq/ui": "workspace:*"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^9.1.21",
+    "@storybook/addon-a11y": "^10.6.2",
     "@storybook/vue3-vite": "^9.1.21",
     "@vitejs/plugin-vue": "catalog:",
     "@vueless/storybook-dark-mode": "^9.0.10",
