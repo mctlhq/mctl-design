@@ -2,7 +2,8 @@
 // Guards the README-to-LICENSE reference: LICENSE must exist at the repo
 // root, README.md must link to it from a License section, and every
 // non-private workspace package.json must declare the same license id as
-// the root package.json. Run in CI so a rename/removal of LICENSE or a
+// the root package.json, and each published package must carry a copy of
+// LICENSE identical to the root one. Run in CI so a rename/removal of LICENSE or a
 // drifted SPDX id is caught instead of silently shipping a broken reference.
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -55,6 +56,16 @@ for (const dir of dirs) {
     }
     if (pkg.license !== expected) {
       mismatches.push(`  ${pkg.name}: ${pkg.license} (expected ${expected})`);
+    }
+    // npm ships a package's own LICENSE, not the repository's, so each
+    // published package carries a copy; it must not drift from the root.
+    if (dir === 'packages' && existsSync(licensePath)) {
+      const own = join(base, entry, 'LICENSE');
+      if (!existsSync(own)) {
+        mismatches.push(`  ${pkg.name}: no LICENSE file (copy the root LICENSE)`);
+      } else if (readFileSync(own, 'utf8') !== readFileSync(licensePath, 'utf8')) {
+        mismatches.push(`  ${pkg.name}: LICENSE differs from the root LICENSE`);
+      }
     }
   }
 }

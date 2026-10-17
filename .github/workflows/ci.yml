@@ -124,6 +124,11 @@ jobs:
       - name: Check license reference
         run: pnpm check:license
 
+      - name: Check published package shape
+        # publint on each packed manifest, and arethetypeswrong on every JS
+        # entry point; reads dist/, so it runs after the build.
+        run: pnpm check:packages
+
       - name: Check token changes carry a version bump
         # ui.mctl.ai serves /<version>/mctl.css immutable for a year, and it
         # deploys on every green merge to main rather than on a tag — so this
