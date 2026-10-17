@@ -8,9 +8,18 @@ const meta: Meta<typeof MTgSheet> = {
   tags: ['autodocs'],
   argTypes: {
     title: { control: 'text' },
+    ariaLabel: { control: 'text' },
     safeArea: { control: 'boolean' },
   },
   args: { title: 'Sheet Title', safeArea: false },
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A modal bottom sheet. While open it moves focus inside, keeps Tab there, closes on Escape or a tap on the scrim, locks page scroll and makes the rest of the page inert; on close, focus returns to the element that opened it. The title names the dialog; without one, set `ariaLabel`.',
+      },
+    },
+  },
 };
 
 export default meta;

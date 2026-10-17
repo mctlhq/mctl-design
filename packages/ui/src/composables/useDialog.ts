@@ -1,14 +1,24 @@
 import { nextTick, onBeforeUnmount, watch, type Ref } from 'vue';
 
+interface Entry {
+  key: symbol;
+  /** The dialog's top-level element in <body>; kept interactive. */
+  top: HTMLElement | null;
+  /** Where focus goes when this dialog closes. */
+  returnFocus: HTMLElement | null;
+}
+
 // Shared by every modal surface (MModal, MTgSheet), so a sheet opened over a
 // modal, or the other way round, still leaves exactly one dialog in charge of
-// Escape, Tab and the page behind it.
-const stack: symbol[] = [];
+// Escape, Tab and the page behind it. Page-level state (scroll lock, inert)
+// is owned here rather than per dialog, so dialogs may close in any order.
+const stack: Entry[] = [];
 
-// Saved page state, held while any dialog is open: the first dialog to open
-// locks scroll, the last to close restores it.
 let savedOverflow = '';
 let savedPaddingRight = '';
+// Elements this module made inert. Anything inert for another reason is left
+// alone, and never "restored".
+const inerted = new Set<HTMLElement>();
 
 const FOCUSABLE = [
   'a[href]',
@@ -33,10 +43,56 @@ function isVisible(el: HTMLElement): boolean {
   return check ? check.call(el) : true;
 }
 
+/** The overlay's ancestor that is a direct child of <body>. */
+function topLevel(el: HTMLElement | null): HTMLElement | null {
+  let node = el;
+  while (node?.parentElement && node.parentElement !== document.body) node = node.parentElement;
+  return node?.parentElement === document.body ? node : null;
+}
+
+function lockScroll() {
+  const body = document.body;
+  savedOverflow = body.style.overflow;
+  savedPaddingRight = body.style.paddingRight;
+  // Hiding the scrollbar widens the viewport; pad the body by the
+  // scrollbar's width so content does not jump sideways.
+  const scrollbar = window.innerWidth - document.documentElement.clientWidth;
+  if (scrollbar > 0) {
+    const current = parseFloat(getComputedStyle(body).paddingRight) || 0;
+    body.style.paddingRight = `${current + scrollbar}px`;
+  }
+  body.style.overflow = 'hidden';
+}
+
+function unlockScroll() {
+  document.body.style.overflow = savedOverflow;
+  document.body.style.paddingRight = savedPaddingRight;
+}
+
+/** Everything in <body> except the topmost dialog is inert; nothing when no dialog is open. */
+function syncInert() {
+  const top = stack[stack.length - 1]?.top ?? null;
+  if (!top) {
+    for (const el of inerted) el.removeAttribute('inert');
+    inerted.clear();
+    return;
+  }
+  for (const el of Array.from(document.body.children)) {
+    if (!(el instanceof HTMLElement)) continue;
+    if (el === top) {
+      if (inerted.delete(el)) el.removeAttribute('inert');
+    } else if (!el.hasAttribute('inert')) {
+      // The attribute, not the property: it is what the property reflects.
+      el.setAttribute('inert', '');
+      inerted.add(el);
+    }
+  }
+}
+
 export interface DialogOptions {
   /** The element with role="dialog"; receives focus on open. */
   dialog: Ref<HTMLElement | null>;
-  /** The outermost teleported element. Its siblings in <body> are made inert. */
+  /** The outermost teleported element. */
   overlay: Ref<HTMLElement | null>;
   open: () => boolean;
   /** Called on Escape when this dialog is topmost and dismissible. */
@@ -47,21 +103,20 @@ export interface DialogOptions {
 /**
  * Modal behaviour for a teleported dialog: Escape for the topmost dialog only,
  * a Tab trap, focus moved in on open and returned on close, scroll lock that
- * does not shift the layout, and the rest of the page made inert.
+ * does not shift the layout, and everything but the topmost dialog inert.
  *
- * Also returns `backdropHandlers` for the overlay: dismiss only when the press
- * both started and ended on the backdrop, so a drag that begins inside the
- * dialog (selecting text) and ends outside does not close it.
+ * Also returns `backdropHandlers` for an overlay that is its own backdrop:
+ * dismiss only when the press both starts and ends on the backdrop, so a drag
+ * between the dialog and the backdrop, in either direction, does not close it.
  */
 export function useDialog(options: DialogOptions) {
-  const key = Symbol('m-dialog');
+  const entry: Entry = { key: Symbol('m-dialog'), top: null, returnFocus: null };
   let active = false;
-  let returnFocus: HTMLElement | null = null;
-  let inerted: HTMLElement[] = [];
-  let pressStartedOnBackdrop = false;
+  let pressStart: EventTarget | null = null;
+  let pressEnd: EventTarget | null = null;
 
   const dismissible = () => options.dismissible?.() ?? true;
-  const isTopmost = () => stack[stack.length - 1] === key;
+  const isTopmost = () => stack[stack.length - 1] === entry;
 
   function focusables(): HTMLElement[] {
     const root = options.dialog.value;
@@ -99,55 +154,17 @@ export function useDialog(options: DialogOptions) {
     }
   }
 
-  function lockScroll() {
-    const body = document.body;
-    savedOverflow = body.style.overflow;
-    savedPaddingRight = body.style.paddingRight;
-    // Hiding the scrollbar narrows nothing but widens the viewport; pad the
-    // body by the scrollbar's width so content does not jump sideways.
-    const scrollbar = window.innerWidth - document.documentElement.clientWidth;
-    if (scrollbar > 0) {
-      const current = parseFloat(getComputedStyle(body).paddingRight) || 0;
-      body.style.paddingRight = `${current + scrollbar}px`;
-    }
-    body.style.overflow = 'hidden';
-  }
-
-  function unlockScroll() {
-    document.body.style.overflow = savedOverflow;
-    document.body.style.paddingRight = savedPaddingRight;
-  }
-
-  function inertSiblings() {
-    // Walk up to the overlay's top-level ancestor in <body>, so a wrapper
-    // between the teleport target and the overlay is not mistaken for page.
-    let top = options.overlay.value;
-    while (top?.parentElement && top.parentElement !== document.body) top = top.parentElement;
-    if (!top || top.parentElement !== document.body) return;
-    for (const el of Array.from(document.body.children)) {
-      // The attribute, not the property: it is what the property reflects,
-      // and a sibling that is already inert stays the owner's to restore.
-      if (el === top || !(el instanceof HTMLElement) || el.hasAttribute('inert')) continue;
-      el.setAttribute('inert', '');
-      inerted.push(el);
-    }
-  }
-
-  function restoreSiblings() {
-    for (const el of inerted) el.removeAttribute('inert');
-    inerted = [];
-  }
-
   async function activate() {
     if (typeof document === 'undefined' || active) return;
     active = true;
-    returnFocus = document.activeElement as HTMLElement | null;
+    entry.returnFocus = document.activeElement as HTMLElement | null;
     if (stack.length === 0) lockScroll();
-    stack.push(key);
+    stack.push(entry);
     document.addEventListener('keydown', onKeydown);
     await nextTick();
     if (!active) return;
-    inertSiblings();
+    entry.top = topLevel(options.overlay.value);
+    syncInert();
     options.dialog.value?.focus();
   }
 
@@ -155,22 +172,48 @@ export function useDialog(options: DialogOptions) {
     if (typeof document === 'undefined' || !active) return;
     active = false;
     document.removeEventListener('keydown', onKeydown);
-    restoreSiblings();
-    const i = stack.lastIndexOf(key);
-    if (i !== -1) stack.splice(i, 1);
+    const i = stack.indexOf(entry);
+    const wasTopmost = i === stack.length - 1;
+    if (i !== -1) {
+      // Closing from under another dialog: the one above was opened from
+      // inside this one, so its focus target is about to disappear. Hand it
+      // this dialog's own target instead.
+      const above = stack[i + 1];
+      if (above && (!above.returnFocus || entry.top?.contains(above.returnFocus))) {
+        above.returnFocus = entry.returnFocus;
+      }
+      stack.splice(i, 1);
+    }
+    syncInert();
     if (stack.length === 0) unlockScroll();
-    if (returnFocus?.isConnected) returnFocus.focus();
-    returnFocus = null;
+    // Only the topmost dialog moves focus; a lower one closing leaves focus in
+    // the dialog that is still open.
+    if (wasTopmost && entry.returnFocus?.isConnected) entry.returnFocus.focus();
+    entry.returnFocus = null;
+    entry.top = null;
   }
 
   const backdropHandlers = {
     onPointerdown(event: PointerEvent) {
-      pressStartedOnBackdrop = event.target === event.currentTarget;
+      pressStart = event.target;
+      pressEnd = null;
+    },
+    onPointerup(event: PointerEvent) {
+      pressEnd = event.target;
     },
     onClick(event: MouseEvent) {
-      const onBackdrop = event.target === event.currentTarget;
-      if (onBackdrop && pressStartedOnBackdrop && dismissible()) options.onDismiss();
-      pressStartedOnBackdrop = false;
+      const backdrop = event.currentTarget;
+      // click lands on the common ancestor of press and release, which is the
+      // backdrop for any drag that crosses the dialog edge, so check both ends.
+      if (
+        event.target === backdrop &&
+        pressStart === backdrop &&
+        (pressEnd === null || pressEnd === backdrop) &&
+        dismissible()
+      ) {
+        options.onDismiss();
+      }
+      pressStart = pressEnd = null;
     },
   };
 

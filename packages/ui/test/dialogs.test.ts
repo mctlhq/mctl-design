@@ -82,10 +82,43 @@ describe('MModal dialog behaviour', () => {
     backdrop.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(wrapper.emitted('update:open')).toBeUndefined();
 
+    // The other direction: press on the backdrop, release inside the dialog.
     backdrop.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    dialog().dispatchEvent(new Event('pointerup', { bubbles: true }));
+    backdrop.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(wrapper.emitted('update:open')).toBeUndefined();
+
+    backdrop.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    backdrop.dispatchEvent(new Event('pointerup', { bubbles: true }));
     backdrop.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(wrapper.emitted('update:open')?.[0]).toEqual([false]);
     wrapper.unmount();
+  });
+
+  it('has a generic accessible name when given neither title nor ariaLabel', async () => {
+    const wrapper = mount(MModal, { props: { open: true }, attachTo: document.body });
+    await flushPromises();
+    expect(dialog().getAttribute('aria-label')).toBe('Dialog');
+    wrapper.unmount();
+  });
+
+  it('pads the body by the scrollbar width on top of its own padding, and restores it', async () => {
+    const width = Object.getOwnPropertyDescriptor(Element.prototype, 'clientWidth')!;
+    Object.defineProperty(document.documentElement, 'clientWidth', {
+      configurable: true,
+      value: window.innerWidth - 15,
+    });
+    document.body.style.paddingRight = '4px';
+    try {
+      const wrapper = modalWithButtons();
+      await flushPromises();
+      expect(document.body.style.paddingRight).toBe('19px');
+      await wrapper.setProps({ open: false });
+      expect(document.body.style.paddingRight).toBe('4px');
+      wrapper.unmount();
+    } finally {
+      Object.defineProperty(document.documentElement, 'clientWidth', width);
+    }
   });
 });
 
@@ -128,6 +161,38 @@ describe('MTgSheet dialog behaviour', () => {
 });
 
 describe('stacked dialogs', () => {
+  it('keeps the page inert and focus in the sheet when the modal under it closes first', async () => {
+    const app = document.createElement('div');
+    const trigger = document.createElement('button');
+    app.appendChild(trigger);
+    document.body.appendChild(app);
+    trigger.focus();
+
+    const modal = modalWithButtons();
+    await flushPromises();
+    const sheet = mount(MTgSheet, {
+      props: { modelValue: true, title: 'Over the modal' },
+      attachTo: document.body,
+    });
+    await flushPromises();
+    const sheetEl = document.querySelector<HTMLElement>('.m-tg-sheet')!;
+    expect(document.activeElement).toBe(sheetEl);
+
+    await modal.setProps({ open: false });
+    expect(app.hasAttribute('inert')).toBe(true);
+    expect(document.activeElement).toBe(sheetEl);
+    expect(document.body.style.overflow).toBe('hidden');
+
+    // The sheet's own focus target lived in the closed modal; it inherits the
+    // modal's, the button that opened the whole stack.
+    await sheet.setProps({ modelValue: false });
+    expect(app.hasAttribute('inert')).toBe(false);
+    expect(document.activeElement).toBe(trigger);
+    expect(document.body.style.overflow).toBe('');
+    sheet.unmount();
+    modal.unmount();
+  });
+
   it('lets only the topmost of a modal and a sheet handle Escape, and keeps scroll locked until both close', async () => {
     const modal = modalWithButtons();
     await flushPromises();

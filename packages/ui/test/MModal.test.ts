@@ -6,6 +6,7 @@ import MModal from '../src/components/MModal.vue';
 afterEach(() => {
   document.body.innerHTML = '';
   document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
 });
 
 describe('MModal', () => {

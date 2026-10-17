@@ -7,12 +7,12 @@ const props = withDefaults(
     /** v-model:open — controls visibility. */
     open?: boolean;
     title?: string;
-    /** Accessible name when there is no visible title. */
+    /** Accessible name when there is no visible title. Set it: the default is generic. */
     ariaLabel?: string;
     /** Hide the close affordance and disable backdrop/Esc dismissal. */
     dismissible?: boolean;
   }>(),
-  { open: false, title: '', ariaLabel: undefined, dismissible: true },
+  { open: false, title: '', ariaLabel: 'Dialog', dismissible: true },
 );
 
 const emit = defineEmits<{ 'update:open': [value: boolean] }>();
@@ -42,6 +42,7 @@ const { backdropHandlers } = useDialog({
         ref="overlayRef"
         class="m-modal"
         @pointerdown="backdropHandlers.onPointerdown"
+        @pointerup="backdropHandlers.onPointerup"
         @click="backdropHandlers.onClick"
       >
         <div
