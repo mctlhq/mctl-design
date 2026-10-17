@@ -9,10 +9,29 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
-## Unreleased
+## 0.10.0 — 2026-10-17
+
+### Changed
+
+- Browser floor: `@mctlhq/ui` is built for Chrome/Edge 111, Firefox 113
+  and Safari 16.2, the versions the CSS already required for
+  `color-mix()`. The JS target used to claim Chrome 87 and Safari 14. The
+  README has a Browser support section. (#117)
 
 ### Fixed
 
+- The theme sets `color-scheme` (`dark` by default, `light` under
+  `data-theme="light"`), so native form controls, scrollbars and the page
+  canvas follow it. A light host page importing `mctl.css` should set
+  `data-theme="light"` on `<html>`. (#117)
+- Motion durations (`--mctl-motion-duration-*`) drop to `0ms` under
+  `prefers-reduced-motion: reduce`, so component transitions built on them
+  stop animating. The Tailwind `duration-*` utilities (v3 preset and v4
+  theme) read the same variables, with the token as fallback, so they stop
+  too. (#117)
+- `theme.css` no longer declares `--focus-ring`, `--site-header-bg` and
+  `--site-header-border` twice; they are set once, with the other derived
+  colours. (#117)
 - `MTgOrderCard` activates on Space keyup after a keydown on the card,
   like a native button, rather than on keydown; Escape or leaving the card
   cancels the press. (#116)

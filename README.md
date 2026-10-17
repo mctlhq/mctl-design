@@ -64,17 +64,21 @@ lands without one.
 There are three supported ways to consume the CSS, and they differ only in what
 moves under you.
 
-| Path                                               | Moves when            | Use for                                              |
-| -------------------------------------------------- | --------------------- | ---------------------------------------------------- |
-| `https://ui.mctl.ai/0.8.0/{mctl,global,prose}.css` | never                 | anything shipped to users                            |
-| `https://ui.mctl.ai/{mctl,global,prose}.css`       | every merge to `main` | previews, internal tools, seeing a token change land |
-| `@mctlhq/css` on GitHub Packages                   | on a semver tag       | builds that already have a Packages token            |
+| Path                                                | Moves when            | Use for                                              |
+| --------------------------------------------------- | --------------------- | ---------------------------------------------------- |
+| `https://ui.mctl.ai/0.10.0/{mctl,global,prose}.css` | never                 | anything shipped to users                            |
+| `https://ui.mctl.ai/{mctl,global,prose}.css`        | every merge to `main` | previews, internal tools, seeing a token change land |
+| `@mctlhq/css` on GitHub Packages                    | on a semver tag       | builds that already have a Packages token            |
+
+`mctl.css` sets `color-scheme` (dark unless `data-theme="light"`), so from
+0.10.0 importing it also turns the page canvas, default text colour and
+scrollbars dark. On a light host page, put `data-theme="light"` on `<html>`.
 
 All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.
 
-Each sheet names its own version on line 1 (`/* @mctlhq/css 0.8.0 … */`), so a
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.10.0 … */`), so a
 vendored copy records what it was taken from and a mismatch shows up in a diff.
 
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
@@ -86,9 +90,9 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
 />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.8.0/mctl.css" />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.8.0/global.css" />
-<!-- docs / markdown only: https://ui.mctl.ai/0.8.0/prose.css -->
+<link rel="stylesheet" href="https://ui.mctl.ai/0.10.0/mctl.css" />
+<link rel="stylesheet" href="https://ui.mctl.ai/0.10.0/global.css" />
+<!-- docs / markdown only: https://ui.mctl.ai/0.10.0/prose.css -->
 ```
 
 Bumping to a new version is then a one-line edit made on purpose, not something
@@ -184,6 +188,14 @@ Dictionary, Terrazzo and Tokens Studio / Figma. Semantic colours are aliases
 (`surface.dark.bg` is `{color.ink}`), not copies. Values the format has no
 type for — `clamp()` sizes, `em` letter spacing — keep their CSS text and are
 marked `$extensions["ai.mctl"].css`.
+
+## Browser support
+
+Chrome and Edge 111, Firefox 113, Safari 16.2 and later: the first versions
+with `color-mix()`, which the theme and the components use throughout.
+`@mctlhq/ui` is built for the same list. The theme sets `color-scheme` per
+`data-theme`, so native controls and scrollbars follow it, and motion
+durations drop to zero under `prefers-reduced-motion: reduce`.
 
 ## Components
 

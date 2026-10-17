@@ -8,6 +8,9 @@
  */
 :root,
 [data-theme='dark'] {
+  /* Native controls, scrollbars and the canvas follow the theme. */
+  color-scheme: dark;
+
   /* Surface — dark "Engineering" is the default. */
   --surface-bg: var(--mctl-surface-dark-bg);
   --surface-elevated: var(--mctl-surface-dark-elevated);
@@ -61,16 +64,14 @@
   --shadow-md: var(--mctl-shadow-dark-md);
   --shadow-overlay: var(--mctl-shadow-dark-overlay);
 
-  /* Focus ring follows the active accent. */
-  --focus-ring: var(--accent);
+  /* Focus ring width and offset; its colour follows the accent and is set
+     with the other derived colours at the end of this file. */
   --focus-ring-width: var(--mctl-focus-ring-width);
   --focus-ring-offset: var(--mctl-focus-ring-offset);
 
   /* Public site shell: shared by the landing site and documentation adapters. */
   --site-header-height: var(--mctl-layout-site-header-height);
-  --site-header-bg: color-mix(in srgb, var(--surface-bg) 80%, transparent);
   --site-header-blur: var(--mctl-layout-site-header-blur);
-  --site-header-border: var(--surface-line);
   --site-content-width: var(--mctl-layout-page-width);
   --site-gutter: var(--mctl-layout-gutter);
   --site-wordmark-size: var(--mctl-layout-site-wordmark-size);
@@ -87,8 +88,7 @@
 }
 
 [data-theme='light'] {
-  --site-header-bg: color-mix(in srgb, var(--surface-bg) 80%, transparent);
-  --site-header-border: var(--surface-line);
+  color-scheme: light;
   --surface-bg: var(--mctl-surface-light-bg);
   --surface-elevated: var(--mctl-surface-light-elevated);
   --surface-card: var(--mctl-surface-light-card);
@@ -287,4 +287,15 @@
   --site-grid-line: color-mix(in srgb, var(--surface-fg) 2%, transparent);
   --site-header-bg: color-mix(in srgb, var(--surface-bg) 80%, transparent);
   --site-header-border: var(--surface-line);
+}
+
+/* Motion tokens collapse when the user asks for less motion, so every
+   component transition built on them stops animating. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --mctl-motion-duration-fast: var(--mctl-motion-duration-instant);
+    --mctl-motion-duration-base: var(--mctl-motion-duration-instant);
+    --mctl-motion-duration-slow: var(--mctl-motion-duration-instant);
+    --mctl-motion-duration-emphasis: var(--mctl-motion-duration-instant);
+  }
 }

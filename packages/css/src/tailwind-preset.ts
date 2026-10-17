@@ -155,7 +155,12 @@ const preset = {
       opacity: { ...opacity },
       outlineWidth: { focus: 'var(--focus-ring-width)' },
       outlineOffset: { focus: 'var(--focus-ring-offset)' },
-      transitionDuration: { ...motion.duration },
+      // The runtime var with the token as fallback, not the bare token: the
+      // theme zeroes these under prefers-reduced-motion, and duration-base
+      // has to follow it like the components do.
+      transitionDuration: Object.fromEntries(
+        Object.entries(motion.duration).map(([k, v]) => [k, `var(--mctl-motion-duration-${k}, ${v})`]),
+      ),
       transitionTimingFunction: { ...motion.easing },
     },
   },

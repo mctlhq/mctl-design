@@ -21,11 +21,31 @@ try {
   process.exit(1);
 }
 
+// What the sheet's reduced-motion block sets, name -> value; null if absent.
+let reducedMotion = null;
+
 // Custom-property rules of a sheet, in source order.
 function parseRules(text) {
-  const css = text.replace(/\/\*[\s\S]*?\*\//g, ' ');
-  // Top-level rules only: theme.css has no at-rules, and a nested one would
-  // be silently skipped here, so refuse it.
+  let css = text.replace(/\/\*[\s\S]*?\*\//g, ' ');
+  // The reduced-motion block only zeroes motion durations, which no case
+  // reads; drop it, but refuse it if it ever sets anything else.
+  css = css.replace(
+    /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{((?:[^{}]*\{[^{}]*\})*)[^{}]*\}/g,
+    (block, inner) => {
+      reducedMotion = {};
+      for (const [, name, value] of inner.matchAll(/[{;]\s*([-\w]+)\s*:\s*([^;}]*)/g)) {
+        reducedMotion[name] = value.trim();
+        if (!name.startsWith('--mctl-motion-')) {
+          throw new Error(
+            `check-themes: the reduced-motion block sets ${name}; check it here first.`,
+          );
+        }
+      }
+      return '';
+    },
+  );
+  // Top-level rules only: any other at-rule would be silently skipped here,
+  // so refuse it.
   if (/@(media|supports|layer|scope|container)/.test(css)) {
     throw new Error('check-themes: the sheet has an at-rule; teach this check about it first.');
   }
@@ -36,7 +56,9 @@ function parseRules(text) {
       const i = part.indexOf(':');
       if (i === -1) continue;
       const name = part.slice(0, i).trim();
-      if (name.startsWith('--')) decls.push([name, part.slice(i + 1)]);
+      // color-scheme is inherited like a custom property, so it resolves
+      // the same way.
+      if (name.startsWith('--') || name === 'color-scheme') decls.push([name, part.slice(i + 1)]);
     }
     for (const selector of selectorText.split(',').map((t) => t.trim())) {
       rules.push({ selector: parseSelector(selector), decls, order: rules.length });
@@ -253,6 +275,7 @@ function run(rules) {
     const got = computeChain(rules, chain[0]?.root ? chain : [html(), ...chain]);
     const expect = {
       '--surface-bg': surface[theme].bg,
+      'color-scheme': theme,
       '--focus-ring': accent[name][theme].primary,
       ...Object.fromEntries(Object.entries(ROLES).map(([v, r]) => [v, accent[name][theme][r]])),
     };
@@ -282,7 +305,7 @@ if (process.argv.includes('--selftest')) {
   }
   raw.push('}');
   const themeBlock = (theme, selector, accentDecls) =>
-    `${selector} { --surface-bg: var(--mctl-surface-${theme}-bg); ${accentDecls(theme)} }`;
+    `${selector} { color-scheme: ${theme}; --surface-bg: var(--mctl-surface-${theme}-bg); ${accentDecls(theme)} }`;
   const aliases = (name) =>
     name === 'terracotta'
       ? `[data-accent='terracotta'], [data-accent='vermilion']`
@@ -350,6 +373,22 @@ if (!existsSync(SHEET)) {
   process.exit(1);
 }
 const failures = run(parseRules(readFileSync(SHEET, 'utf8')));
+
+// The reduced-motion block has to exist and zero every motion duration that
+// is not already zero, so deleting it, mistyping a name, or adding a duration
+// token without zeroing it fails here rather than silently.
+const ZERO = new Set(['0ms', '0s', 'var(--mctl-motion-duration-instant)']);
+if (!reducedMotion) {
+  failures.push('theme.css has no @media (prefers-reduced-motion: reduce) block');
+} else {
+  for (const [k, v] of Object.entries(tokens.motion.duration)) {
+    if (parseFloat(v) === 0) continue;
+    const name = `--mctl-motion-duration-${k}`;
+    if (!ZERO.has(reducedMotion[name])) {
+      failures.push(`reduced motion: ${name} is ${reducedMotion[name] ?? 'not set'}, expected 0`);
+    }
+  }
+}
 if (failures.length) {
   console.log(failures.map((f) => `FAIL ${f}`).join('\n'));
   console.error(
@@ -357,4 +396,6 @@ if (failures.length) {
   );
   process.exit(1);
 }
-console.log(`check-themes: all ${cases.length} nesting cases resolve to the right palette.`);
+console.log(
+  `check-themes: all ${cases.length} nesting cases resolve to the right palette, and reduced motion zeroes every duration.`,
+);

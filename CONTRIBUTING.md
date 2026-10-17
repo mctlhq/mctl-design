@@ -172,6 +172,7 @@ else both of them consume here rather than to two manifests.
 
 `packages/ui` also pins `build.target` explicitly rather than taking vite's
 default, so the published browser floor of `@mctlhq/ui` does not move when
-vite changes that default. It is currently the pre-vite-7 floor
-(`es2020, chrome87, edge88, firefox78, safari14`); raising it is a deliberate
-change, not an upgrade side effect.
+vite changes that default. It is the floor the CSS already requires for
+`color-mix()` (`es2020, chrome111, edge111, firefox113, safari16.2`), stated
+the same way in README's Browser support section; moving it is a deliberate
+change made in both places, not an upgrade side effect.
