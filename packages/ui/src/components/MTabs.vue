@@ -21,9 +21,9 @@ const model = defineModel<string>({ default: '' });
 // on one page (avoids ambiguous aria-labelledby across instances). Ids use the
 // tab index, not its value: a value is free text and may hold spaces.
 // useId is stable between server and client render, unlike the instance uid.
-const uid = useId();
-const tabId = (index: number) => `m-tab-${uid}-${index}`;
-const panelId = `m-tabpanel-${uid}`;
+const idBase = useId();
+const tabId = (index: number) => `m-tab-${idBase}-${index}`;
+const panelId = `m-tabpanel-${idBase}`;
 
 // Resolved through the index, so a value that matches no tab (a stale
 // persisted key, a tab removed after navigation) falls back to the first tab

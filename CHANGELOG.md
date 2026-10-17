@@ -13,7 +13,11 @@ headings below and are all included in 0.8.0.
 
 ### Changed
 
-- `@mctlhq/ui` needs Vue 3.5 (peer `^3.5.0`, was `^3.4.0 || ^3.5.0`).
+- **Breaking for Vue 3.4 consumers:** `@mctlhq/ui` needs Vue 3.5 (peer
+  `^3.5.0`, was `^3.4.0 || ^3.5.0`), so the release carrying this is a minor.
+- Ids now number per Vue app (`useId()`), where they used to be unique across
+  the runtime. A page mounting several Vue apps should set a distinct
+  `app.config.idPrefix` on each; the Storybook preview does.
 
 ### Fixed
 
@@ -21,7 +25,8 @@ headings below and are all included in 0.8.0.
   component instance uid, a process-wide counter, so a server render and the
   client numbered them differently and every `aria-*` / `for` reference broke
   on hydration. They now use `useId()`, which is stable across the two (the
-  reason for the Vue 3.5 floor).
+  reason for the Vue 3.5 floor). `MModal` and `MTgSheet` had the same bug in
+  their title ids (a module-level counter) and use `useId()` too.
 
 ## 0.12.1 — 2026-10-17
 

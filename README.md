@@ -14,7 +14,11 @@ preset, and Vue 3 UI components, plus a Storybook showcase deployed at
 
 `@mctlhq/tokens` and `@mctlhq/css` are framework-agnostic and can be consumed
 by any frontend. `@mctlhq/ui` ships Vue 3 SFCs — consumable from Nuxt/Vue and
-VitePress.
+VitePress. It needs Vue 3.5: element ids come from `useId()`, so they match
+between a server render and hydration. `useId()` numbers per app, so a page
+that mounts several Vue apps should give each its own
+`app.config.idPrefix`, or their ids (and `MAccordion`'s exclusive groups)
+collide.
 
 ## Repository layout
 
