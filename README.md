@@ -70,6 +70,10 @@ moves under you.
 | `https://ui.mctl.ai/{mctl,global,prose}.css`        | every merge to `main` | previews, internal tools, seeing a token change land |
 | `@mctlhq/css` on GitHub Packages                    | on a semver tag       | builds that already have a Packages token            |
 
+`mctl.css` sets `color-scheme` (dark unless `data-theme="light"`), so from
+0.10.0 importing it also turns the page canvas, default text colour and
+scrollbars dark. On a light host page, put `data-theme="light"` on `<html>`.
+
 All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.

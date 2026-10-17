@@ -29,7 +29,7 @@ function parseRules(text) {
   css = css.replace(
     /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{((?:[^{}]*\{[^{}]*\})*)[^{}]*\}/g,
     (block, inner) => {
-      for (const [, name] of inner.matchAll(/(--?[a-z-]+)\s*:/g)) {
+      for (const [, name] of inner.matchAll(/[{;]\s*([-\w]+)\s*:/g)) {
         if (!name.startsWith('--mctl-motion-')) {
           throw new Error(
             `check-themes: the reduced-motion block sets ${name}; check it here first.`,

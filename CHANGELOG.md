@@ -22,10 +22,13 @@ headings below and are all included in 0.8.0.
 
 - The theme sets `color-scheme` (`dark` by default, `light` under
   `data-theme="light"`), so native form controls, scrollbars and the page
-  canvas follow it. (#117)
+  canvas follow it. A light host page importing `mctl.css` should set
+  `data-theme="light"` on `<html>`. (#117)
 - Motion durations (`--mctl-motion-duration-*`) drop to `0ms` under
   `prefers-reduced-motion: reduce`, so component transitions built on them
-  stop animating. (#117)
+  stop animating. The Tailwind `duration-*` utilities (v3 preset and v4
+  theme) read the same variables, with the token as fallback, so they stop
+  too. (#117)
 - `theme.css` no longer declares `--focus-ring`, `--site-header-bg` and
   `--site-header-border` twice; they are set once, with the other derived
   colours. (#117)

@@ -138,8 +138,11 @@ export function tailwindV4Css(t, version) {
   // Tailwind duration-<n>, whose `--tw-*: initial` reset then covers it. We
   // do not emit that reset ourselves: a `@layer properties` first declared
   // here would order after `utilities` and override duration-base itself.
+  // The runtime var with the token as fallback, so the theme's
+  // prefers-reduced-motion override reaches these utilities too.
   for (const [k, v] of Object.entries(motion.duration)) {
-    u(`duration-${k}`, `--tw-duration: ${v};\n  transition-duration: ${v}`);
+    const d = `var(--mctl-motion-duration-${k}, ${v})`;
+    u(`duration-${k}`, `--tw-duration: ${d};\n  transition-duration: ${d}`);
   }
   for (const [k, v] of Object.entries(opacity)) u(`opacity-${kebab(k)}`, `opacity: ${v}`);
   // v3's borderWidth scale also yields the per-side utilities (border-b-hairline
