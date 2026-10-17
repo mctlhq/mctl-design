@@ -20,27 +20,28 @@ try {
   process.exit(1);
 }
 
-const css = readFileSync('packages/css/dist/theme.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, ' ');
-
-// Top-level rules only: theme.css has no at-rules, and a nested one would be
-// silently skipped here, so refuse it.
-if (/@(media|supports|layer|scope|container)/.test(css)) {
-  console.error('check-themes: theme.css has an at-rule; teach this check about it first.');
-  process.exit(1);
-}
-
-const rules = [];
-for (const [, selectorText, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-  const decls = [];
-  for (const part of body.split(';')) {
-    const i = part.indexOf(':');
-    if (i === -1) continue;
-    const name = part.slice(0, i).trim();
-    if (name.startsWith('--')) decls.push([name, part.slice(i + 1)]);
+// Custom-property rules of a sheet, in source order.
+function parseRules(text) {
+  const css = text.replace(/\/\*[\s\S]*?\*\//g, ' ');
+  // Top-level rules only: theme.css has no at-rules, and a nested one would
+  // be silently skipped here, so refuse it.
+  if (/@(media|supports|layer|scope|container)/.test(css)) {
+    throw new Error('check-themes: the sheet has an at-rule; teach this check about it first.');
   }
-  for (const selector of selectorText.split(',').map((s) => s.trim())) {
-    rules.push({ selector: parseSelector(selector), decls, order: rules.length });
+  const rules = [];
+  for (const [, selectorText, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const decls = [];
+    for (const part of body.split(';')) {
+      const i = part.indexOf(':');
+      if (i === -1) continue;
+      const name = part.slice(0, i).trim();
+      if (name.startsWith('--')) decls.push([name, part.slice(i + 1)]);
+    }
+    for (const selector of selectorText.split(',').map((t) => t.trim())) {
+      rules.push({ selector: parseSelector(selector), decls, order: rules.length });
+    }
   }
+  return rules;
 }
 
 function parseSelector(text) {
@@ -61,7 +62,7 @@ const matches = (selector, el) =>
   );
 
 // Winning declared value per custom property: specificity, then source order.
-function declared(el) {
+function declared(rules, el) {
   const won = new Map();
   for (const rule of rules) {
     if (!matches(rule.selector, el)) continue;
@@ -82,10 +83,10 @@ function declared(el) {
 
 // Computed custom properties for each element of a root-first chain.
 // null is the guaranteed-invalid value.
-function computeChain(chain) {
+function computeChain(rules, chain) {
   let inherited = new Map();
   for (const el of chain) {
-    const own = declared(el);
+    const own = declared(rules, el);
     const done = new Map();
     const resolving = new Set();
     const valueOf = (name) => {
@@ -134,42 +135,26 @@ function substitute(value, valueOf) {
 }
 
 const { accent, surface } = tokens;
+// Every accent the tokens define; vermilion is an alias of terracotta.
+const ACCENTS = Object.keys(accent).filter((name) => name !== 'vermilion');
+const THEMES = ['dark', 'light'];
 const scope = (attrs = {}) => ({ root: false, attrs });
 const html = { root: true, attrs: {} };
 
 // [description, chain below <html>, expected theme, expected accent]
 const cases = [
   ['the root default', [], 'dark', 'terracotta'],
-  ['data-theme="light" alone', [scope({ 'data-theme': 'light' })], 'light', 'terracotta'],
   [
-    'theme and accent on one element',
-    [scope({ 'data-theme': 'light', 'data-accent': 'lilac' })],
+    'a plain element inherits the nearest scopes',
+    [scope({ 'data-theme': 'light' }), scope({ 'data-accent': 'lilac' }), scope()],
     'light',
     'lilac',
-  ],
-  [
-    'data-accent inside data-theme="light"',
-    [scope({ 'data-theme': 'light' }), scope({ 'data-accent': 'cyan' })],
-    'light',
-    'cyan',
-  ],
-  [
-    'data-theme="light" inside data-accent',
-    [scope({ 'data-accent': 'cyan' }), scope({ 'data-theme': 'light' })],
-    'light',
-    'cyan',
   ],
   [
     'data-theme="dark" inside a light, lime scope',
     [scope({ 'data-theme': 'light', 'data-accent': 'lime' }), scope({ 'data-theme': 'dark' })],
     'dark',
     'lime',
-  ],
-  [
-    'a plain element inherits the nearest scopes',
-    [scope({ 'data-theme': 'light' }), scope({ 'data-accent': 'lilac' }), scope()],
-    'light',
-    'lilac',
   ],
   [
     'four levels, each overriding one of the two',
@@ -183,34 +168,145 @@ const cases = [
     'terracotta',
   ],
 ];
+// Every theme and accent pair, three ways: on one element, accent inside
+// theme, theme inside accent. Derived from the tokens, so an accent added
+// there but not wired into theme.css fails here.
+for (const theme of THEMES) {
+  for (const name of ACCENTS) {
+    cases.push(
+      [
+        `${theme} + ${name} on one element`,
+        [scope({ 'data-theme': theme, 'data-accent': name })],
+        theme,
+        name,
+      ],
+      [
+        `${name} inside ${theme}`,
+        [scope({ 'data-theme': theme }), scope({ 'data-accent': name })],
+        theme,
+        name,
+      ],
+      [
+        `${theme} inside ${name}`,
+        [scope({ 'data-accent': name }), scope({ 'data-theme': theme })],
+        theme,
+        name,
+      ],
+    );
+  }
+}
 
-const roles = {
+const ROLES = {
   '--accent': 'primary',
   '--accent-highlight': 'highlight',
   '--accent-fg': 'fg',
   '--accent-soft': 'soft',
 };
-let failed = 0;
-for (const [label, chain, theme, accentName] of cases) {
-  const got = computeChain([html, ...chain]);
-  const expect = {
-    '--surface-bg': surface[theme].bg,
-    '--focus-ring': accent[accentName][theme].primary,
-    ...Object.fromEntries(Object.entries(roles).map(([v, r]) => [v, accent[accentName][theme][r]])),
-  };
-  for (const [name, want] of Object.entries(expect)) {
-    const have = got.get(name);
-    if (have?.toLowerCase() !== want.toLowerCase()) {
-      failed++;
-      console.log(
-        `FAIL ${label}: ${name} is ${have ?? '(invalid)'}, expected ${want} (${theme} ${accentName})`,
-      );
+
+// Wrong values the sheet produces across all cases.
+function run(rules) {
+  const failures = [];
+  for (const [label, chain, theme, name] of cases) {
+    const got = computeChain(rules, [html, ...chain]);
+    const expect = {
+      '--surface-bg': surface[theme].bg,
+      '--focus-ring': accent[name][theme].primary,
+      ...Object.fromEntries(Object.entries(ROLES).map(([v, r]) => [v, accent[name][theme][r]])),
+    };
+    for (const [prop, want] of Object.entries(expect)) {
+      const have = got.get(prop);
+      if (have?.toLowerCase() !== want.toLowerCase()) {
+        failures.push(
+          `${label}: ${prop} is ${have ?? '(invalid)'}, expected ${want} (${theme} ${name})`,
+        );
+      }
     }
   }
+  return failures;
 }
 
-if (failed) {
-  console.error(`\ncheck-themes: ${failed} wrong values across ${cases.length} nesting cases.`);
+// Self-test: the resolver passes a sheet wired the 0.9.0 way and fails one
+// with the 0.8.0 same-element pairing, both built from the tokens here.
+if (process.argv.includes('--selftest')) {
+  const raw = [':root {'];
+  for (const theme of THEMES) {
+    raw.push(`--mctl-surface-${theme}-bg: ${surface[theme].bg};`);
+    for (const name of ACCENTS) {
+      for (const role of Object.values(ROLES)) {
+        raw.push(`--mctl-accent-${name}-${theme}-${role}: ${accent[name][theme][role]};`);
+      }
+    }
+  }
+  raw.push('}');
+  const themeBlock = (theme, selector, accentDecls) =>
+    `${selector} { --surface-bg: var(--mctl-surface-${theme}-bg); ${accentDecls(theme)} }`;
+  const aliases = (name) =>
+    name === 'terracotta'
+      ? `[data-accent='terracotta'], [data-accent='vermilion']`
+      : `[data-accent='${name}']`;
+  const roleDecls = (prefix, name, theme) =>
+    Object.entries(ROLES)
+      .map(([v, r]) => `${prefix(v)}: var(--mctl-accent-${name}-${theme}-${r});`)
+      .join(' ');
+
+  const palettes = (theme) =>
+    ACCENTS.map((name) => roleDecls((v) => `--_accent-${name}-${ROLES[v]}`, name, theme)).join(' ');
+  const wired = [
+    ...raw,
+    themeBlock('dark', `:root, [data-theme='dark']`, palettes),
+    themeBlock('light', `[data-theme='light']`, palettes),
+    ...ACCENTS.map(
+      (picked) =>
+        `${picked === 'terracotta' ? ':root, ' : ''}${aliases(picked)} { ${ACCENTS.map(
+          (n) => `--_pick-${n}: ${n === picked ? 'initial' : '/*!*/ /*!*/'};`,
+        ).join(' ')} }`,
+    ),
+    `:root, [data-theme], [data-accent] { ${Object.entries(ROLES)
+      .map(
+        ([v, r]) =>
+          `${v}: ${ACCENTS.map((n) => `var(--_pick-${n}, var(--_accent-${n}-${r}))`).join(' ')};`,
+      )
+      .join(' ')} --focus-ring: var(--accent); }`,
+  ].join('\n');
+
+  const paired = [
+    ...raw,
+    themeBlock('dark', `:root, [data-theme='dark']`, (t) => roleDecls((v) => v, 'terracotta', t)),
+    themeBlock('light', `[data-theme='light']`, (t) => roleDecls((v) => v, 'terracotta', t)),
+    ...ACCENTS.flatMap((name) => [
+      `${aliases(name)} { ${roleDecls((v) => v, name, 'dark')} }`,
+      `${aliases(name)
+        .split(', ')
+        .map((sel) => `[data-theme='light']${sel}`)
+        .join(', ')} { ${roleDecls((v) => v, name, 'light')} }`,
+    ]),
+    `:root, [data-theme], [data-accent] { --focus-ring: var(--accent); }`,
+  ].join('\n');
+
+  const wiredFailures = run(parseRules(wired));
+  const pairedFailures = run(parseRules(paired));
+  if (wiredFailures.length || !pairedFailures.length) {
+    console.error('check-themes selftest failed:');
+    if (wiredFailures.length)
+      console.error(
+        `  wired sheet: ${wiredFailures.length} wrong\n    ${wiredFailures.join('\n    ')}`,
+      );
+    if (!pairedFailures.length)
+      console.error('  the 0.8.0 pairing passed; the resolver no longer sees the bug');
+    process.exit(1);
+  }
+  console.log(
+    `check-themes: selftest ok (wired sheet passes ${cases.length} cases; the 0.8.0 pairing fails ${pairedFailures.length} values).`,
+  );
+  process.exit(0);
+}
+
+const failures = run(parseRules(readFileSync('packages/css/dist/theme.css', 'utf8')));
+if (failures.length) {
+  console.log(failures.map((f) => `FAIL ${f}`).join('\n'));
+  console.error(
+    `\ncheck-themes: ${failures.length} wrong values across ${cases.length} nesting cases.`,
+  );
   process.exit(1);
 }
 console.log(`check-themes: all ${cases.length} nesting cases resolve to the right palette.`);
