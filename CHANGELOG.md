@@ -75,4 +75,4 @@ headings below and are all included in 0.8.0.
 
 ## 0.5.0 and earlier
 
-See the [GitHub releases](https://github.com/mctlhq/mctl-design/releases).
+See the [tags](https://github.com/mctlhq/mctl-design/tags) and the git history.

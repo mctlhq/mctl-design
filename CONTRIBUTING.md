@@ -53,7 +53,8 @@ Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`,
 
 All published packages are versioned lockstep with the repository. To cut a
 release, bump the version in **every** `package.json` (root + each package) to
-the same `X.Y.Z`, add its entry to `CHANGELOG.md`, then tag `X.Y.Z` (no `v`
+the same `X.Y.Z`, add a `## X.Y.Z` entry to `CHANGELOG.md` (the publish job
+fails without one), then tag `X.Y.Z` (no `v`
 prefix) on `main`. The tag publishes the packages to GitHub Packages; a
 prerelease tag such as `0.9.0-rc.1` publishes under the `next` dist-tag.
 `pnpm check:versions` is enforced in CI and before publish.

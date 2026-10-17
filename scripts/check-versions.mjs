@@ -32,6 +32,18 @@ if (gitTag && gitTag !== expected) {
   mismatches.push(`  git tag: ${gitTag} (expected ${expected})`);
 }
 
+// A tagged release must have its CHANGELOG.md entry; 0.6.0 and 0.7.0 went
+// out with nothing written down. A prerelease may use its final version's
+// heading (0.9.0-rc.1 is covered by "## 0.9.0").
+if (gitTag) {
+  const changelog = join(root, 'CHANGELOG.md');
+  const text = existsSync(changelog) ? readFileSync(changelog, 'utf8') : '';
+  const heading = (v) => new RegExp(`^## ${v.replace(/[.+]/g, '\\$&')}(\\s|$)`, 'm');
+  if (!heading(expected).test(text) && !heading(expected.split('-')[0]).test(text)) {
+    mismatches.push(`  CHANGELOG.md: no "## ${expected}" entry`);
+  }
+}
+
 if (mismatches.length > 0) {
   console.error(`Version mismatch — expected ${expected}:\n${mismatches.join('\n')}`);
   process.exit(1);
