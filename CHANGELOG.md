@@ -9,6 +9,26 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## Unreleased
+
+### Added
+
+- `MModal` and `MTgSheet`: an `ariaLabel` prop names the dialog when there
+  is no visible title (defaults `'Dialog'` and `'Sheet'`). (#97)
+
+### Fixed
+
+- `MTgSheet` now behaves as the modal dialog it declared: Escape closes it,
+  focus moves in and is trapped, returns to the opener on close, page scroll
+  is locked and the rest of the page is inert. Its z-index moves from a
+  fixed 400 to `--mctl-z-index-modal`. An app that relied on the sheet not
+  trapping focus, not locking scroll or sitting under its dropdowns will see
+  the change. (#97)
+- `MModal`: named by its title via `aria-labelledby`; the scroll lock no
+  longer shifts the layout; the page behind is inert; a drag between the
+  dialog and the backdrop no longer closes it. Stacked modals and sheets can
+  close in any order, and the one opened last paints on top. (#97)
+
 ## 0.8.0 — 2026-10-17
 
 ### Added
