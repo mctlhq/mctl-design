@@ -63,7 +63,7 @@ useDialog({ dialog: sheetRef, overlay: rootRef, open: () => props.modelValue, on
 .m-tg-sheet-root {
   position: fixed;
   inset: 0;
-  z-index: 400;
+  z-index: var(--mctl-z-index-modal, 1100);
   display: flex;
   align-items: flex-end;
 }

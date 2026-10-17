@@ -3,6 +3,8 @@ import { nextTick, onBeforeUnmount, watch, type Ref } from 'vue';
 interface Entry {
   /** The dialog's top-level element in <body>; kept interactive. */
   top: HTMLElement | null;
+  /** The overlay, which carries the dialog's z-index. */
+  layer: HTMLElement | null;
   /** Where focus goes when this dialog closes. */
   returnFocus: HTMLElement | null;
 }
@@ -19,8 +21,7 @@ let savedPaddingRight = '';
 // alone, and never "restored".
 const inerted = new Set<HTMLElement>();
 
-// Title ids for aria-labelledby. A module counter, not the component uid:
-// uids restart at 0 in every Vue app, so two apps on one page would collide.
+// Title ids for aria-labelledby, from one counter shared by both families.
 let idSeq = 0;
 export const nextDialogId = (prefix: string) => `${prefix}-${++idSeq}`;
 
@@ -98,6 +99,22 @@ function syncInert() {
   }
 }
 
+/**
+ * Paint the dialog above every dialog under it in the stack. Families set
+ * their own z-index in CSS, so a sheet opened over a modal could otherwise
+ * be focused and topmost while painted behind the modal's scrim.
+ */
+function raise(entry: Entry) {
+  const layer = entry.layer;
+  if (!layer) return;
+  const z = (el: HTMLElement) => parseInt(getComputedStyle(el).zIndex, 10) || 0;
+  let floor: number | null = null;
+  for (const below of stack.slice(0, stack.indexOf(entry))) {
+    if (below.layer) floor = Math.max(floor ?? 0, z(below.layer));
+  }
+  if (floor !== null && z(layer) <= floor) layer.style.zIndex = String(floor + 1);
+}
+
 export interface DialogOptions {
   /** The element with role="dialog"; receives focus on open. */
   dialog: Ref<HTMLElement | null>;
@@ -119,7 +136,7 @@ export interface DialogOptions {
  * between the dialog and the backdrop, in either direction, does not close it.
  */
 export function useDialog(options: DialogOptions) {
-  const entry: Entry = { top: null, returnFocus: null };
+  const entry: Entry = { top: null, layer: null, returnFocus: null };
   let active = false;
   let pressStart: EventTarget | null = null;
   let pressEnd: EventTarget | null = null;
@@ -172,7 +189,9 @@ export function useDialog(options: DialogOptions) {
     document.addEventListener('keydown', onKeydown);
     await nextTick();
     if (!active) return;
-    entry.top = topLevel(options.overlay.value);
+    entry.layer = options.overlay.value;
+    entry.top = topLevel(entry.layer);
+    raise(entry);
     syncInert();
     options.dialog.value?.focus();
   }
@@ -186,9 +205,11 @@ export function useDialog(options: DialogOptions) {
     if (i !== -1) {
       // Closing from under other dialogs: any opened from inside this one
       // would return focus into a subtree that is about to disappear. Hand
-      // them this dialog's own target instead, however deep the stack.
+      // them this dialog's own target instead, however deep the stack. Before
+      // its first tick `top` is unresolved; the overlay still bounds it.
+      const subtree = entry.top ?? options.overlay.value;
       for (const above of stack.slice(i + 1)) {
-        if (!above.returnFocus || entry.top?.contains(above.returnFocus)) {
+        if (!above.returnFocus || subtree?.contains(above.returnFocus)) {
           above.returnFocus = entry.returnFocus;
         }
       }
@@ -201,6 +222,7 @@ export function useDialog(options: DialogOptions) {
     if (wasTopmost && entry.returnFocus?.isConnected) entry.returnFocus.focus();
     entry.returnFocus = null;
     entry.top = null;
+    entry.layer = null;
   }
 
   const backdropHandlers = {

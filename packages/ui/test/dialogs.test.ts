@@ -103,7 +103,6 @@ describe('MModal dialog behaviour', () => {
   });
 
   it('pads the body by the scrollbar width on top of its own padding, and restores it', async () => {
-    const width = Object.getOwnPropertyDescriptor(Element.prototype, 'clientWidth')!;
     Object.defineProperty(document.documentElement, 'clientWidth', {
       configurable: true,
       value: window.innerWidth - 15,
@@ -117,7 +116,7 @@ describe('MModal dialog behaviour', () => {
       expect(document.body.style.paddingRight).toBe('4px');
       wrapper.unmount();
     } finally {
-      Object.defineProperty(document.documentElement, 'clientWidth', width);
+      Reflect.deleteProperty(document.documentElement, 'clientWidth');
     }
   });
 });
@@ -213,6 +212,27 @@ describe('stacked dialogs', () => {
     expect(document.body.style.overflow).toBe('');
     sheet.unmount();
     modal.unmount();
+  });
+
+  it('paints a dialog opened over another above it, whatever their CSS z-index', async () => {
+    const style = document.createElement('style');
+    style.textContent = '.m-modal { z-index: 900; } .m-tg-sheet-root { z-index: 400; }';
+    document.head.appendChild(style);
+    try {
+      const modal = modalWithButtons();
+      await flushPromises();
+      const sheet = mount(MTgSheet, {
+        props: { modelValue: true, title: 'Over the modal' },
+        attachTo: document.body,
+      });
+      await flushPromises();
+      const root = document.querySelector<HTMLElement>('.m-tg-sheet-root')!;
+      expect(getComputedStyle(root).zIndex).toBe('901');
+      sheet.unmount();
+      modal.unmount();
+    } finally {
+      style.remove();
+    }
   });
 
   it('lets only the topmost of a modal and a sheet handle Escape, and keeps scroll locked until both close', async () => {

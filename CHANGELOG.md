@@ -20,12 +20,14 @@ headings below and are all included in 0.8.0.
 
 - `MTgSheet` now behaves as the modal dialog it declared: Escape closes it,
   focus moves in and is trapped, returns to the opener on close, page scroll
-  is locked and the rest of the page is inert. An app that relied on the
-  sheet not trapping focus or not locking scroll will see the change. (#97)
+  is locked and the rest of the page is inert. Its z-index moves from a
+  fixed 400 to `--mctl-z-index-modal`. An app that relied on the sheet not
+  trapping focus, not locking scroll or sitting under its dropdowns will see
+  the change. (#97)
 - `MModal`: named by its title via `aria-labelledby`; the scroll lock no
   longer shifts the layout; the page behind is inert; a drag between the
   dialog and the backdrop no longer closes it. Stacked modals and sheets can
-  close in any order. (#97)
+  close in any order, and the one opened last paints on top. (#97)
 
 ## 0.8.0 — 2026-10-17
 
