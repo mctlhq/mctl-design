@@ -37,7 +37,9 @@
 // - the MTg exemption covers the whole file, not just its var() fallbacks;
 // - easings are not checked: MTgSheet keeps a curve no token matches;
 // - only box-shadow is checked for shadows: text-shadow and
-//   filter: drop-shadow() are not (MLogo's glow has no matching token).
+//   filter: drop-shadow() are not (MLogo's glow has no matching token);
+// - the font rule reads var() fallbacks only: a new literal
+//   `font-family: 'Inter', sans-serif` with no var() is not caught.
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { basename, join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -146,6 +148,10 @@ export function fontFallbacks(source) {
       if (text[k] === '(') depth++;
       else if (text[k] === ')') depth--;
     }
+    if (depth) {
+      out.push({ line: text.slice(0, m.index).split('\n').length, stack: '<unterminated var()>' });
+      continue;
+    }
     out.push({
       line: text.slice(0, m.index).split('\n').length,
       stack: normalizeStack(text.slice(m.index + m[0].length, k - 1)),
@@ -237,12 +243,17 @@ if (process.argv.includes('--selftest')) {
     `.d { font-family: var(--tg-font, 'Old', serif) !important; }`,
     `.e { font-family: var(--font-display, 'Old', serif) }`,
     `/* was: font-family: var(--tg-font, 'Inter', sans-serif); */`,
+    `.f { font-family: var(--tg-font, 'Old', serif); }`,
   ].join('\n');
+  // Line 10 is the plain shape all 13 real copies use.
   const drift = fontDrift(fonts, stack).map((f) => f.line);
-  if (drift.join(' ') !== '6 7 8')
-    problems.push(`font drift reported lines ${drift.join(' ') || 'none'}, expected 6 7 8`);
-  if (fontFallbacks(fonts).length !== 5)
-    problems.push(`font fallbacks found ${fontFallbacks(fonts).length}, expected 5`);
+  if (drift.join(' ') !== '6 7 8 10')
+    problems.push(`font drift reported lines ${drift.join(' ') || 'none'}, expected 6 7 8 10`);
+  if (fontFallbacks(fonts).length !== 6)
+    problems.push(`font fallbacks found ${fontFallbacks(fonts).length}, expected 6`);
+  const open = fontFallbacks('.g { font-family: var(--tg-font, a, b').map((f) => f.stack);
+  if (open.join() !== '<unterminated var()>')
+    problems.push(`unterminated var() reported as ${open.join() || 'nothing'}`);
   if (badFound.join('\n') !== expected.join('\n'))
     problems.push(
       `bad fixture reported\n    ${badFound.join('\n    ')}\n  expected\n    ${expected.join('\n    ')}`,
@@ -309,7 +320,11 @@ const failures = [
   ...(fontTotal >= FONT_SITES
     ? []
     : [
-        `font fallbacks: found ${fontTotal}, expected at least ${FONT_SITES} (renamed or dropped?)`,
+        `font fallbacks: found ${fontTotal}, expected at least ${FONT_SITES} (` +
+          Object.entries(fontSites)
+            .map(([f, n]) => `${f}: ${n}`)
+            .join(', ') +
+          `). Renamed or dropped by mistake? If the drop is deliberate, lower FONT_SITES in scripts/check-component-tokens.mjs.`,
       ]),
   ...Object.entries(fontSources).flatMap(([f, src]) =>
     fontDrift(src, display).map(
