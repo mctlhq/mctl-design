@@ -13,9 +13,7 @@ const props = withDefaults(
   { size: 180, glow: false, label: 'MCTL' },
 );
 
-const sizeCss = computed(() =>
-  typeof props.size === 'number' ? `${props.size}px` : props.size,
-);
+const sizeCss = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size));
 </script>
 
 <template>

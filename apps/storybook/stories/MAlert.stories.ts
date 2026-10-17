@@ -12,7 +12,8 @@ const meta: Meta<typeof MAlert> = {
   render: (args) => ({
     components: { MAlert },
     setup: () => ({ args }),
-    template: '<MAlert v-bind="args">Streamable HTTP transport is enabled. Each session maintains an open SSE connection.</MAlert>',
+    template:
+      '<MAlert v-bind="args">Streamable HTTP transport is enabled. Each session maintains an open SSE connection.</MAlert>',
   }),
 };
 

@@ -50,15 +50,15 @@ function parseLine(line: string): Segment[] {
   return segments;
 }
 
-const lines = computed<Segment[][]>(() =>
-  props.code.replace(/\n$/, '').split('\n').map(parseLine),
-);
+const lines = computed<Segment[][]>(() => props.code.replace(/\n$/, '').split('\n').map(parseLine));
 </script>
 
 <template>
   <figure class="m-yaml">
     <figcaption v-if="filename" class="m-yaml__caption">{{ filename }}</figcaption>
-    <pre class="m-yaml__pre"><code><span v-for="(line, i) in lines" :key="i" class="m-yaml__line"><span v-for="(seg, j) in line" :key="j" :class="`m-yaml__t-${seg.kind}`">{{ seg.text }}</span></span></code></pre>
+    <pre
+      class="m-yaml__pre"
+    ><code><span v-for="(line, i) in lines" :key="i" class="m-yaml__line"><span v-for="(seg, j) in line" :key="j" :class="`m-yaml__t-${seg.kind}`">{{ seg.text }}</span></span></code></pre>
   </figure>
 </template>
 

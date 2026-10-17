@@ -5,6 +5,7 @@
 ## Test plan
 
 - [ ] `pnpm lint` passes
+- [ ] `pnpm format:check` passes
 - [ ] `pnpm typecheck` passes
 - [ ] `pnpm build` passes
 - [ ] `pnpm build:storybook` passes

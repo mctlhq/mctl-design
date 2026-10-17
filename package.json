@@ -19,6 +19,8 @@
     "build:storybook": "turbo run build:storybook",
     "dev": "turbo run dev",
     "lint": "turbo run lint && eslint scripts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "check:versions": "node scripts/check-versions.mjs",

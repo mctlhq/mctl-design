@@ -81,7 +81,9 @@ for (const p of pairs) {
   const ok = r >= p.min;
   if (!ok) failed++;
   if (report || !ok) {
-    console.log(`${ok ? 'ok  ' : 'FAIL'} ${r.toFixed(2).padStart(5)}:1 (min ${p.min})  ${p.label}  ${p.fg} on ${p.bg}`);
+    console.log(
+      `${ok ? 'ok  ' : 'FAIL'} ${r.toFixed(2).padStart(5)}:1 (min ${p.min})  ${p.label}  ${p.fg} on ${p.bg}`,
+    );
   }
 }
 

@@ -36,14 +36,11 @@ addons.getChannel().on(DARK_MODE_EVENT_NAME, (dark: boolean) => {
 // Toolbar globals do not remount the Vue decorator on Storybook 9. Read the
 // channel so cyan/lime/lilac actually land on <html> without a story change.
 const accentName = ref(DEFAULT_ACCENT);
-addons.getChannel().on(
-  GLOBALS_UPDATED,
-  ({ globals }: { globals?: { accent?: unknown } }) => {
-    if (globals && 'accent' in globals) {
-      accentName.value = String(globals.accent ?? DEFAULT_ACCENT);
-    }
-  },
-);
+addons.getChannel().on(GLOBALS_UPDATED, ({ globals }: { globals?: { accent?: unknown } }) => {
+  if (globals && 'accent' in globals) {
+    accentName.value = String(globals.accent ?? DEFAULT_ACCENT);
+  }
+});
 
 // Initial attributes so the iframe root is themed before the first story
 // renders — avoids a default-surface flash.
@@ -60,7 +57,10 @@ const preview: Preview = {
           'Foundations',
           'Components',
           'Patterns',
-          ['Telegram', ['Introduction', 'Foundations', 'Components', 'Patterns', 'Rewards', 'PairDesk']],
+          [
+            'Telegram',
+            ['Introduction', 'Foundations', 'Components', 'Patterns', 'Rewards', 'PairDesk'],
+          ],
         ],
       },
     },

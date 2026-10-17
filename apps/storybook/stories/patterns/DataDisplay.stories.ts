@@ -60,9 +60,27 @@ export const ServiceCards: Story = {
     `,
     setup: () => ({
       services: [
-        { name: 'mctl-api', tone: 'ok', status: 'operational', desc: 'REST API + MCP server', url: 'api.mctl.ai' },
-        { name: 'mctl-agent', tone: 'ok', status: 'operational', desc: 'Self-healing agent', url: 'agent.mctl.ai' },
-        { name: 'mctl-docs', tone: 'warn', status: 'degraded', desc: 'VitePress docs portal', url: 'docs.mctl.ai' },
+        {
+          name: 'mctl-api',
+          tone: 'ok',
+          status: 'operational',
+          desc: 'REST API + MCP server',
+          url: 'api.mctl.ai',
+        },
+        {
+          name: 'mctl-agent',
+          tone: 'ok',
+          status: 'operational',
+          desc: 'Self-healing agent',
+          url: 'agent.mctl.ai',
+        },
+        {
+          name: 'mctl-docs',
+          tone: 'warn',
+          status: 'degraded',
+          desc: 'VitePress docs portal',
+          url: 'docs.mctl.ai',
+        },
       ],
     }),
   }),

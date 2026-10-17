@@ -51,8 +51,13 @@ const iconMap = {
 }
 
 @keyframes m-tg-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .m-tg-empty__title {

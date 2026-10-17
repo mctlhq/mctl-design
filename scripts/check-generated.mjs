@@ -31,7 +31,9 @@ const problems = [];
 
 // tailwind.css
 const tw = readFileSync(TW, 'utf8');
-const themeVars = new Set([...readFileSync(THEME, 'utf8').matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]));
+const themeVars = new Set(
+  [...readFileSync(THEME, 'utf8').matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]),
+);
 // A `reference` block is never emitted, so `--shadow-sm: var(--shadow-sm)`
 // there only tells utilities which runtime var to use. In an emitted block the
 // same line would be a self-reference that voids theme.css's value.
@@ -41,7 +43,8 @@ for (const [, options, body] of tw.matchAll(/@theme([^{]*)\{([^}]*)\}/g)) {
   for (const [, name, value] of body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
     emittedDecls++;
     for (const [, ref] of value.matchAll(/var\((--[\w-]+)\s*[,)]/g)) {
-      if (ref === name) problems.push(`${TW}: ${name} references itself in an emitted @theme block`);
+      if (ref === name)
+        problems.push(`${TW}: ${name} references itself in an emitted @theme block`);
     }
   }
 }
@@ -53,15 +56,20 @@ for (const [, ref] of tw.matchAll(/var\((--[\w-]+)\s*[,)]/g)) {
   // --tw-* are Tailwind's own registered properties, not ours to define.
   if (ref.startsWith('--tw-')) continue;
   refs++;
-  if (!themeVars.has(ref)) problems.push(`${TW}: ${ref} is referenced, but theme.css does not define it`);
+  if (!themeVars.has(ref))
+    problems.push(`${TW}: ${ref} is referenced, but theme.css does not define it`);
 }
 
 // Zero references checked would read exactly like all references passing:
 // a parser that stopped matching the generator's output must fail, not pass.
-if (refs === 0) problems.push(`${TW}: no var() references found -- the var() scan no longer matches this file`);
+if (refs === 0)
+  problems.push(`${TW}: no var() references found -- the var() scan no longer matches this file`);
 // The self-reference guard above is the only structural parse left; if the
 // @theme block regex stops matching, it would go quiet while refs stays high.
-if (emittedDecls === 0) problems.push(`${TW}: no declarations found in an emitted @theme block -- the @theme parser no longer matches this file`);
+if (emittedDecls === 0)
+  problems.push(
+    `${TW}: no declarations found in an emitted @theme block -- the @theme parser no longer matches this file`,
+  );
 
 // Compile it with the real Tailwind v4 (the devDependency of @mctlhq/css) and
 // check what the utilities resolve to: a theme sheet can be internally
@@ -73,10 +81,16 @@ const sheets = { tailwindcss: twIndex, './theme.css': THEME, './tailwind.css': T
 const twEntry = '@import "tailwindcss";\n@import "./theme.css";\n@import "./tailwind.css";';
 const twOptions = {
   base: process.cwd(),
-  loadStylesheet: async (id) => ({ path: sheets[id], base: process.cwd(), content: readFileSync(sheets[id], 'utf8') }),
+  loadStylesheet: async (id) => ({
+    path: sheets[id],
+    base: process.cwd(),
+    content: readFileSync(sheets[id], 'utf8'),
+  }),
 };
 const compiler = await compile(twEntry, twOptions);
-const { default: preset } = await import(new URL('../packages/css/dist/tailwind-preset.js', import.meta.url));
+const { default: preset } = await import(
+  new URL('../packages/css/dist/tailwind-preset.js', import.meta.url)
+);
 const ext = preset.theme.extend;
 const expected = {
   'bg-surface-card': 'background-color: var(--surface-card)',
@@ -104,12 +118,18 @@ const expected = {
   'border-t-2': 'border-top-width: 2px',
   'border-x-2': 'border-inline-width: 2px',
   // --tw-duration is what .transition reads, so this is the order-independent part.
-  'duration-base': [`--tw-duration: ${ext.transitionDuration.base}`, `transition-duration: ${ext.transitionDuration.base}`],
+  'duration-base': [
+    `--tw-duration: ${ext.transitionDuration.base}`,
+    `transition-duration: ${ext.transitionDuration.base}`,
+  ],
   // Tailwind's static max-w-prose (65ch) outranks --spacing-prose and
   // --container-prose, which is why the README routes to the latter.
   'max-w-prose': 'max-width: 65ch',
   // A lone outline-focus must draw, as Tailwind's own outline-2 does.
-  'outline-focus': ['outline-style: var(--tw-outline-style, solid)', 'outline-width: var(--focus-ring-width)'],
+  'outline-focus': [
+    'outline-style: var(--tw-outline-style, solid)',
+    'outline-width: var(--focus-ring-width)',
+  ],
   'outline-offset-focus': 'outline-offset: var(--focus-ring-offset)',
   'outline-2': 'outline-style: var(--tw-outline-style)',
 };
@@ -119,10 +139,14 @@ for (const [utility, declarations] of Object.entries(expected)) {
   const start = built.indexOf(selector);
   const end = start === -1 ? -1 : built.indexOf('\n  }', start);
   if (start === -1) problems.push(`tailwind v4: ${utility} produced no rule`);
-  else if (end === -1) problems.push(`tailwind v4: cannot delimit the ${utility} rule -- the compiled output format changed`);
+  else if (end === -1)
+    problems.push(
+      `tailwind v4: cannot delimit the ${utility} rule -- the compiled output format changed`,
+    );
   else {
     for (const declaration of [declarations].flat()) {
-      if (!built.slice(start, end).includes(declaration)) problems.push(`tailwind v4: ${utility} does not contain "${declaration}"`);
+      if (!built.slice(start, end).includes(declaration))
+        problems.push(`tailwind v4: ${utility} does not contain "${declaration}"`);
     }
   }
 }
@@ -130,7 +154,9 @@ for (const [utility, declarations] of Object.entries(expected)) {
 // registration: ours must be there, or duration-base inherits.
 const lone = (await compile(twEntry, twOptions)).build(['duration-base']);
 if (!/@property --tw-duration \{[^}]*inherits: false/.test(lone)) {
-  problems.push('tailwind v4: duration-base without a numeric duration-* leaves --tw-duration unregistered (inheriting)');
+  problems.push(
+    'tailwind v4: duration-base without a numeric duration-* leaves --tw-duration unregistered (inheriting)',
+  );
 }
 for (const [, name, ref] of built.matchAll(/(--[\w-]+):\s*var\((--[\w-]+)\);/g)) {
   if (name === ref) problems.push(`tailwind v4: compiled output emits self-referencing ${name}`);
@@ -161,32 +187,42 @@ const add = (candidate, key, source) => {
   }
   parity.set(candidate, [key, source]);
 };
-for (const p of flat(ext.colors)) add(`bg-${name(p)}`, `colors.${p.join('.')}`, `--color-${name(p)}`);
+for (const p of flat(ext.colors))
+  add(`bg-${name(p)}`, `colors.${p.join('.')}`, `--color-${name(p)}`);
 for (const k of Object.keys(ext.fontFamily)) add(`font-${k}`, `fontFamily.${k}`, `--font-${k}`);
-for (const k of Object.keys(ext.fontWeight)) add(`font-${k}`, `fontWeight.${k}`, `--font-weight-${k}`);
+for (const k of Object.keys(ext.fontWeight))
+  add(`font-${k}`, `fontWeight.${k}`, `--font-weight-${k}`);
 for (const k of Object.keys(ext.fontSize)) add(`text-${k}`, `fontSize.${k}`, `--text-${k}`);
-for (const k of Object.keys(ext.letterSpacing)) add(`tracking-${k}`, `letterSpacing.${k}`, `--tracking-${k}`);
+for (const k of Object.keys(ext.letterSpacing))
+  add(`tracking-${k}`, `letterSpacing.${k}`, `--tracking-${k}`);
 for (const k of Object.keys(ext.spacing)) {
   const key = /^\d+$/.test(k) ? `mctl-${k}` : k;
   add(`p-${key}`, `spacing.${k}`, `--spacing-${key}`);
 }
-for (const k of Object.keys(ext.borderRadius)) add(`rounded-${k}`, `borderRadius.${k}`, `--radius-${k}`);
+for (const k of Object.keys(ext.borderRadius))
+  add(`rounded-${k}`, `borderRadius.${k}`, `--radius-${k}`);
 for (const k of Object.keys(ext.boxShadow)) add(`shadow-${k}`, `boxShadow.${k}`, `--shadow-${k}`);
 for (const k of Object.keys(ext.screens)) add(`${k}:p-1`, `screens.${k}`, `--breakpoint-${k}`);
 for (const k of Object.keys(ext.width)) add(`w-${k}`, `width.${k}`, `--spacing-${k}`);
 for (const k of Object.keys(ext.height)) add(`h-${k}`, `height.${k}`, `--spacing-${k}`);
-for (const k of Object.keys(ext.transitionTimingFunction)) add(`ease-${k}`, `transitionTimingFunction.${k}`, `--ease-${k}`);
+for (const k of Object.keys(ext.transitionTimingFunction))
+  add(`ease-${k}`, `transitionTimingFunction.${k}`, `--ease-${k}`);
 // Documented differences (README, "Tailwind -- npm") and @utility families.
 const kebab = (str) => str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 // Hand-mapped groups are still iterated, so a new key in them fails until it
 // is given a v4 mapping here (and a README row if it differs).
-const maxWidthV4 = { page: ['max-w-pagew', '--spacing-pagew'], prose: ['max-w-(--container-prose)', '--container-prose'] };
+const maxWidthV4 = {
+  page: ['max-w-pagew', '--spacing-pagew'],
+  prose: ['max-w-(--container-prose)', '--container-prose'],
+};
 for (const k of Object.keys(ext.maxWidth)) {
   if (maxWidthV4[k]) add(maxWidthV4[k][0], `maxWidth.${k}`, maxWidthV4[k][1]);
   else problems.push(`tailwind v4 parity: maxWidth.${k} has no v4 mapping in check-generated`);
 }
-for (const k of Object.keys(ext.transitionDuration)) add(`duration-${k}`, `transitionDuration.${k}`, `@utility duration-${k}`);
-for (const k of Object.keys(ext.opacity)) add(`opacity-${kebab(k)}`, `opacity.${k}`, `@utility opacity-${kebab(k)}`);
+for (const k of Object.keys(ext.transitionDuration))
+  add(`duration-${k}`, `transitionDuration.${k}`, `@utility duration-${k}`);
+for (const k of Object.keys(ext.opacity))
+  add(`opacity-${kebab(k)}`, `opacity.${k}`, `@utility opacity-${kebab(k)}`);
 // borderWidth.none is Tailwind's own border-none (border-style: none): no MCTL declaration.
 for (const k of Object.keys(ext.borderWidth)) {
   // v3 also derives divideWidth from borderWidth (divide-y-hairline). v4 cannot
@@ -194,11 +230,16 @@ for (const k of Object.keys(ext.borderWidth)) {
   // whose variable theme.css must define; divide-*-none is Tailwind's divide-*-0.
   if (k === 'none') {
     add('border-none', 'borderWidth.none', null);
-    for (const side of ['x', 'y']) add(`divide-${side}-0`, `borderWidth.none (divide-${side})`, null);
+    for (const side of ['x', 'y'])
+      add(`divide-${side}-0`, `borderWidth.none (divide-${side})`, null);
     continue;
   }
   for (const side of ['x', 'y']) {
-    add(`divide-${side}-(length:--mctl-border-width-${k})`, `borderWidth.${k} (divide-${side})`, `theme:--mctl-border-width-${k}`);
+    add(
+      `divide-${side}-(length:--mctl-border-width-${k})`,
+      `borderWidth.${k} (divide-${side})`,
+      `theme:--mctl-border-width-${k}`,
+    );
   }
   for (const side of ['', 'x', 'y', 't', 'r', 'b', 'l', 's', 'e']) {
     const utility = `border${side && `-${side}`}-${k}`;
@@ -217,15 +258,33 @@ for (const [k, v] of Object.entries(ext.opacity)) {
   modifierPct[`bg-ink/${pct}`] = pct;
   add(`bg-ink/${pct}`, `opacity.${k} (modifier)`, null);
 }
-for (const k of Object.keys(ext.outlineWidth)) add(`outline-${k}`, `outlineWidth.${k}`, `@utility outline-${k}`);
-for (const k of Object.keys(ext.outlineOffset)) add(`outline-offset-${k}`, `outlineOffset.${k}`, `@utility outline-offset-${k}`);
+for (const k of Object.keys(ext.outlineWidth))
+  add(`outline-${k}`, `outlineWidth.${k}`, `@utility outline-${k}`);
+for (const k of Object.keys(ext.outlineOffset))
+  add(`outline-offset-${k}`, `outlineOffset.${k}`, `@utility outline-offset-${k}`);
 const covered = new Set([
-  'colors', 'fontFamily', 'fontWeight', 'fontSize', 'letterSpacing', 'spacing', 'borderRadius',
-  'boxShadow', 'screens', 'width', 'height', 'transitionTimingFunction', 'maxWidth',
-  'transitionDuration', 'opacity', 'borderWidth', 'outlineWidth', 'outlineOffset',
+  'colors',
+  'fontFamily',
+  'fontWeight',
+  'fontSize',
+  'letterSpacing',
+  'spacing',
+  'borderRadius',
+  'boxShadow',
+  'screens',
+  'width',
+  'height',
+  'transitionTimingFunction',
+  'maxWidth',
+  'transitionDuration',
+  'opacity',
+  'borderWidth',
+  'outlineWidth',
+  'outlineOffset',
 ]);
 for (const group of Object.keys(ext)) {
-  if (!covered.has(group)) problems.push(`tailwind v4 parity: preset group "${group}" is not mapped in check-generated`);
+  if (!covered.has(group))
+    problems.push(`tailwind v4 parity: preset group "${group}" is not mapped in check-generated`);
 }
 const parityCss = compiler.build([...parity.keys()]);
 // One preset key can need several candidates (per-side borders, modifiers).
@@ -276,7 +335,8 @@ for (const [id, token] of leaves) {
   if (typeof v === 'string' && /^\{.+\}$/.test(v)) {
     const target = leaves.get(v.slice(1, -1));
     if (!target) problems.push(`${DTCG}: ${id} aliases ${v}, which does not exist`);
-    else if (target.$type !== token.$type) problems.push(`${DTCG}: ${id} ($type ${token.$type}) aliases ${v} ($type ${target.$type})`);
+    else if (target.$type !== token.$type)
+      problems.push(`${DTCG}: ${id} ($type ${token.$type}) aliases ${v} ($type ${target.$type})`);
   } else if (token.$type === 'color' && !/^#[0-9a-f]{6}$/.test(v?.hex ?? '')) {
     problems.push(`${DTCG}: ${id} is a color without a hex`);
   } else if (token.$type === 'dimension' && !['px', 'rem'].includes(v?.unit)) {
