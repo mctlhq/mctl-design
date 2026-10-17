@@ -1,0 +1,154 @@
+import { afterEach, describe, expect, it } from 'vitest';
+import { flushPromises, mount } from '@vue/test-utils';
+import { h } from 'vue';
+import MModal from '../src/components/MModal.vue';
+import MTgSheet from '../src/components/MTgSheet.vue';
+import { expectNoAxeViolations } from './axe';
+
+afterEach(() => {
+  document.body.innerHTML = '';
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+});
+
+const key = (k: string, shiftKey = false) =>
+  document.dispatchEvent(new KeyboardEvent('keydown', { key: k, shiftKey, bubbles: true }));
+const dialog = () => document.querySelector<HTMLElement>('[role="dialog"]')!;
+
+function modalWithButtons(props: Record<string, unknown> = {}) {
+  return mount(MModal, {
+    props: { open: true, title: 'Settings', ...props },
+    slots: { default: () => [h('button', 'First'), h('button', 'Last')] },
+    attachTo: document.body,
+  });
+}
+
+describe('MModal dialog behaviour', () => {
+  it('keeps Tab inside the dialog in both directions', async () => {
+    const wrapper = modalWithButtons({ dismissible: false });
+    await flushPromises();
+    const buttons = Array.from(dialog().querySelectorAll('button'));
+    const [first, last] = [buttons[0], buttons[buttons.length - 1]];
+
+    last.focus();
+    key('Tab');
+    expect(document.activeElement).toBe(first);
+
+    first.focus();
+    key('Tab', true);
+    expect(document.activeElement).toBe(last);
+    wrapper.unmount();
+  });
+
+  it('makes the rest of the page inert while open and restores it on close', async () => {
+    const app = document.createElement('div');
+    app.id = 'app';
+    document.body.appendChild(app);
+    const wrapper = modalWithButtons();
+    await flushPromises();
+    expect(app.hasAttribute('inert')).toBe(true);
+
+    await wrapper.setProps({ open: false });
+    expect(app.hasAttribute('inert')).toBe(false);
+    wrapper.unmount();
+  });
+
+  it('names the dialog by its title, or by ariaLabel without one', async () => {
+    const titled = modalWithButtons();
+    await flushPromises();
+    const id = dialog().getAttribute('aria-labelledby');
+    expect(id && document.getElementById(id)?.textContent).toBe('Settings');
+    await expectNoAxeViolations(dialog());
+    titled.unmount();
+
+    const untitled = mount(MModal, {
+      props: { open: true, ariaLabel: 'Confirm delete' },
+      attachTo: document.body,
+    });
+    await flushPromises();
+    expect(dialog().getAttribute('aria-label')).toBe('Confirm delete');
+    expect(dialog().hasAttribute('aria-labelledby')).toBe(false);
+    untitled.unmount();
+  });
+
+  it('closes on a backdrop press, not on a drag that ends on the backdrop', async () => {
+    const wrapper = modalWithButtons();
+    await flushPromises();
+    const backdrop = document.querySelector<HTMLElement>('.m-modal')!;
+
+    // Text selection: press inside the dialog, release over the backdrop.
+    // The click lands on the common ancestor, the backdrop.
+    dialog().dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    backdrop.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(wrapper.emitted('update:open')).toBeUndefined();
+
+    backdrop.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    backdrop.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(wrapper.emitted('update:open')?.[0]).toEqual([false]);
+    wrapper.unmount();
+  });
+});
+
+describe('MTgSheet dialog behaviour', () => {
+  it('moves focus in, closes on Escape and returns focus', async () => {
+    const trigger = document.createElement('button');
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    const wrapper = mount(MTgSheet, {
+      props: { modelValue: false, title: 'Confirm action' },
+      attachTo: document.body,
+    });
+    await wrapper.setProps({ modelValue: true });
+    await flushPromises();
+    expect(document.activeElement).toBe(dialog());
+    expect(document.body.style.overflow).toBe('hidden');
+
+    key('Escape');
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false]);
+
+    await wrapper.setProps({ modelValue: false });
+    expect(document.activeElement).toBe(trigger);
+    expect(document.body.style.overflow).toBe('');
+    wrapper.unmount();
+  });
+
+  it('is named by its title and passes axe', async () => {
+    const wrapper = mount(MTgSheet, {
+      props: { modelValue: true, title: 'Confirm action' },
+      slots: { default: () => h('p', 'Body') },
+      attachTo: document.body,
+    });
+    await flushPromises();
+    const id = dialog().getAttribute('aria-labelledby');
+    expect(id && document.getElementById(id)?.textContent).toBe('Confirm action');
+    await expectNoAxeViolations(dialog());
+    wrapper.unmount();
+  });
+});
+
+describe('stacked dialogs', () => {
+  it('lets only the topmost of a modal and a sheet handle Escape, and keeps scroll locked until both close', async () => {
+    const modal = modalWithButtons();
+    await flushPromises();
+    const sheet = mount(MTgSheet, {
+      props: { modelValue: true, title: 'Over the modal' },
+      attachTo: document.body,
+    });
+    await flushPromises();
+
+    key('Escape');
+    expect(sheet.emitted('update:modelValue')?.[0]).toEqual([false]);
+    expect(modal.emitted('update:open')).toBeUndefined();
+
+    await sheet.setProps({ modelValue: false });
+    expect(document.body.style.overflow).toBe('hidden');
+
+    key('Escape');
+    expect(modal.emitted('update:open')?.[0]).toEqual([false]);
+    await modal.setProps({ open: false });
+    expect(document.body.style.overflow).toBe('');
+    sheet.unmount();
+    modal.unmount();
+  });
+});

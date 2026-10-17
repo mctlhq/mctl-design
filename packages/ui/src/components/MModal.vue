@@ -1,130 +1,60 @@
-<script lang="ts">
-// Module-scoped (declared in a plain <script>, so it is evaluated once and
-// shared across instances — unlike <script setup>, which re-runs per instance).
-// Lets several stacked modals coordinate so only the topmost handles Escape.
-const modalStack: symbol[] = [];
-</script>
-
 <script setup lang="ts">
-import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
+import { getCurrentInstance, ref } from 'vue';
+import { useDialog } from '../composables/useDialog';
 
 const props = withDefaults(
   defineProps<{
     /** v-model:open — controls visibility. */
     open?: boolean;
     title?: string;
+    /** Accessible name when there is no visible title. */
+    ariaLabel?: string;
     /** Hide the close affordance and disable backdrop/Esc dismissal. */
     dismissible?: boolean;
   }>(),
-  { open: false, title: '', dismissible: true },
+  { open: false, title: '', ariaLabel: undefined, dismissible: true },
 );
 
 const emit = defineEmits<{ 'update:open': [value: boolean] }>();
 
-const instanceKey = Symbol('m-modal');
-
+const overlayRef = ref<HTMLElement | null>(null);
 const dialogRef = ref<HTMLElement | null>(null);
-// Remember the host's prior body overflow so closing restores it rather than
-// clobbering a scroll policy set by the app or an outer modal.
-let previousOverflow = '';
-let overflowLocked = false;
-// The element focused before the modal opened, so focus can return to it
-// (typically the trigger) on close.
-let previouslyFocused: HTMLElement | null = null;
-
-function isTopmost(): boolean {
-  return modalStack[modalStack.length - 1] === instanceKey;
-}
+const titleId = `m-modal-title-${getCurrentInstance()?.uid ?? 0}`;
 
 function close() {
   if (props.dismissible) emit('update:open', false);
 }
 
-function focusable(): HTMLElement[] {
-  if (!dialogRef.value) return [];
-  return Array.from(
-    dialogRef.value.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    ),
-  ).filter((el) => el.offsetParent !== null || el === dialogRef.value);
-}
-
-function onKeydown(event: KeyboardEvent) {
-  // Only the topmost open modal reacts to the shared document listener.
-  if (!isTopmost()) return;
-  if (event.key === 'Escape') {
-    close();
-    return;
-  }
-  // Trap Tab focus inside the dialog while it is open.
-  if (event.key === 'Tab') {
-    const items = focusable();
-    if (items.length === 0) {
-      event.preventDefault();
-      dialogRef.value?.focus();
-      return;
-    }
-    const first = items[0];
-    const last = items[items.length - 1];
-    const activeEl = document.activeElement;
-    if (event.shiftKey && (activeEl === first || activeEl === dialogRef.value)) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && activeEl === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }
-}
-
-function activate() {
-  if (typeof document === 'undefined' || overflowLocked) return;
-  previouslyFocused = document.activeElement as HTMLElement | null;
-  previousOverflow = document.body.style.overflow;
-  document.body.style.overflow = 'hidden';
-  overflowLocked = true;
-  modalStack.push(instanceKey);
-  document.addEventListener('keydown', onKeydown);
-  nextTick(() => dialogRef.value?.focus());
-}
-
-function deactivate() {
-  if (typeof document === 'undefined' || !overflowLocked) return;
-  document.body.style.overflow = previousOverflow;
-  overflowLocked = false;
-  const idx = modalStack.lastIndexOf(instanceKey);
-  if (idx !== -1) modalStack.splice(idx, 1);
-  document.removeEventListener('keydown', onKeydown);
-  // Return focus to whatever was focused before opening (usually the trigger).
-  previouslyFocused?.focus?.();
-  previouslyFocused = null;
-}
-
-// immediate so a modal mounted with open=true still locks scroll, traps Esc
-// and moves focus.
-watch(
-  () => props.open,
-  (isOpen) => (isOpen ? activate() : deactivate()),
-  { immediate: true },
-);
-
-onBeforeUnmount(deactivate);
+const { backdropHandlers } = useDialog({
+  dialog: dialogRef,
+  overlay: overlayRef,
+  open: () => props.open,
+  onDismiss: close,
+  dismissible: () => props.dismissible,
+});
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="m-modal">
-      <div v-if="open" class="m-modal" @click.self="close">
+      <div
+        v-if="open"
+        ref="overlayRef"
+        class="m-modal"
+        @pointerdown="backdropHandlers.onPointerdown"
+        @click="backdropHandlers.onClick"
+      >
         <div
           ref="dialogRef"
           class="m-modal__dialog"
           role="dialog"
           aria-modal="true"
-          :aria-label="title || undefined"
+          :aria-labelledby="title ? titleId : undefined"
+          :aria-label="title ? undefined : ariaLabel"
           tabindex="-1"
         >
           <header v-if="title || dismissible" class="m-modal__header">
-            <h2 v-if="title" class="m-modal__title">{{ title }}</h2>
+            <h2 v-if="title" :id="titleId" class="m-modal__title">{{ title }}</h2>
             <button
               v-if="dismissible"
               class="m-modal__close"
