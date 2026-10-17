@@ -7,4 +7,4 @@ packages:
 # lockstep by hand; a catalog makes the next major a one-line change.
 catalog:
   vite: ^7.3.6
-  "@vitejs/plugin-vue": ^6.0.8
+  "@vitejs/plugin-vue": ^6.0.10

@@ -32,13 +32,11 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      # Gates at `moderate`, not `low`. One low advisory is knowingly open --
-      # esbuild GHSA-g7r4-m6w7-qqqr, which `pnpm audit` reports on four paths,
-      # every one of them through tsup, which pins `esbuild@^0.27.0` in its
-      # latest release; closing it would mean forcing 0.28 across a range tsup
-      # does not declare. A gate that has to be bypassed on its first run
-      # teaches the bypass, so it sits one level above what is actually open.
-      # See CONTRIBUTING.md -> Dependency overrides for the full condition.
+      # Gates at `low`: nothing is knowingly open. The last low advisory
+      # (esbuild GHSA-g7r4-m6w7-qqqr, through tsup 8) closed with tsup 9. If one
+      # has to stay open, lower the gate to one level above it and write the
+      # reason down, rather than ignore it. See CONTRIBUTING.md -> Dependency
+      # overrides.
       #
       # Placed right after the install because that is all it needs, and
       # because it is the one step here that can go red with no change to
@@ -47,7 +45,7 @@ jobs:
       # deploy.yml waits for this workflow, a red audit on main also holds
       # the ui.mctl.ai deploy until it is answered.
       - name: Audit dependencies
-        run: pnpm audit --audit-level moderate
+        run: pnpm audit --audit-level low
 
       - name: Lint
         run: pnpm lint

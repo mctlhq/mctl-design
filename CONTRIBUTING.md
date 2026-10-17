@@ -112,20 +112,18 @@ import and no `@storybook/addon-vitest`. The `Test` step in `ci.yml` runs
 not load Storybook's test stack. If any of the Storybook pieces arrive,
 re-check this key before trusting it.
 
-CI runs `pnpm audit --audit-level moderate` as a gate, so a transitive bump
+CI runs `pnpm audit --audit-level low` as a gate, so a transitive bump
 that reintroduces one of these advisories fails the pull request rather than
 filing an alert after merge.
 
-It gates at `moderate` rather than `low` because exactly one low advisory is
-knowingly open: esbuild `GHSA-g7r4-m6w7-qqqr`, which affects `>=0.27.3
-<0.28.1`. `pnpm audit` reports it on four paths, all of them
-`packages/css` / `packages/tokens` → `tsup@8.5.1` → `esbuild@0.27.7`, and
-`tsup`'s latest release still pins `esbuild@^0.27.0`; closing it would mean
-forcing 0.28 across a range `tsup` does not declare. The tree holds a second
-copy, `esbuild@0.25.12` under `storybook`, which is outside the affected range
-and is not what keeps this open. Raise the gate to `low` once `tsup` widens —
-and re-read `pnpm audit`'s paths first, because the second copy is the one
-that would make that assumption wrong for a future advisory.
+It gates at `low` because nothing is knowingly open. The last low advisory,
+esbuild `GHSA-g7r4-m6w7-qqqr` (`>=0.27.3 <0.28.1`), reached the tree only
+through `tsup@8` → `esbuild@0.27.x`; `tsup@9` depends on `esbuild@^0.28.2` and
+closed it. The tree still holds a second copy, `esbuild@0.25.12` under
+`storybook` / `vite`, which is outside that range — re-read `pnpm audit`'s
+paths before assuming a future esbuild advisory comes from one copy only. If an
+advisory has to stay open, lower the gate to one level above it and record the
+reason here rather than ignoring it.
 
 ### Audit exceptions
 
