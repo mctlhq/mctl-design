@@ -250,5 +250,9 @@ describe('behaviour', () => {
     expect(table.attributes('tabindex')).toBe('0');
     expect(table.attributes('role')).toBe('region');
     expect(table.attributes('aria-label')).toBe('Services');
+    // Without a label the tab stop still has a role and a name.
+    const unnamed = mount(MTable).find('.m-table-wrap');
+    expect(unnamed.attributes('role')).toBe('region');
+    expect(unnamed.attributes('aria-label')).toBe('Table');
   });
 });

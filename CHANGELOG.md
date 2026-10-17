@@ -22,7 +22,7 @@ headings below and are all included in 0.8.0.
   props stay for other controls. (#113)
 - `MSelect`: a `placeholder` prop, shown as a disabled empty option. (#113)
 - `MNav`: an `ariaLabel` prop names the landmark (default `'Main'`). (#113)
-- `MTable`: a `label` prop names the scroll region. (#113)
+- `MTable`: a `label` prop names the scroll region (default `'Table'`). (#113)
 
 ### Fixed
 

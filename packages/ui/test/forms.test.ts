@@ -157,14 +157,25 @@ describe('MField auto-wiring', () => {
     expect(wrapper.find('label').attributes('for')).toBe('username');
   });
 
-  it('keeps an explicit id and aria-describedby on the control', () => {
+  it.each([
+    ['MInput', MInput, 'input'],
+    ['MTextarea', MTextarea, 'textarea'],
+    ['MSelect', MSelect, 'select'],
+  ] as const)('keeps an explicit id and aria-describedby on %s', (_n, control, tag) => {
     const wrapper = mount(MField, {
       props: { label: 'Namespace', for: 'ns', hint: 'Hint' },
-      slots: { default: () => h(MInput, { id: 'ns', 'aria-describedby': 'custom' }) },
+      slots: {
+        default: () =>
+          h(control as never, {
+            id: 'ns',
+            'aria-describedby': 'custom',
+            ...(control === MSelect ? { options: ['dev'] } : {}),
+          }),
+      },
     });
-    const input = wrapper.find('input');
-    expect(input.attributes('id')).toBe('ns');
-    expect(input.attributes('aria-describedby')).toBe('custom');
+    const el = wrapper.find(tag);
+    expect(el.attributes('id')).toBe('ns');
+    expect(el.attributes('aria-describedby')).toBe('custom');
   });
 });
 
