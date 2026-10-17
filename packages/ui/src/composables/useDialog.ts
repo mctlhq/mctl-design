@@ -1,4 +1,4 @@
-import { nextTick, onBeforeUnmount, watch, type Ref } from 'vue';
+import { nextTick, onBeforeUnmount, useId, watch, type Ref } from 'vue';
 
 interface Entry {
   /** The dialog's top-level element in <body>; kept interactive. */
@@ -21,9 +21,9 @@ let savedPaddingRight = '';
 // alone, and never "restored".
 const inerted = new Set<HTMLElement>();
 
-// Title ids for aria-labelledby, from one counter shared by both families.
-let idSeq = 0;
-export const nextDialogId = (prefix: string) => `${prefix}-${++idSeq}`;
+// Title id for aria-labelledby. Call from setup: useId keeps it stable between
+// a server render and hydration, which a module-scope counter did not.
+export const nextDialogId = (prefix: string) => `${prefix}-${useId()}`;
 
 const FOCUSABLE = [
   'a[href]',

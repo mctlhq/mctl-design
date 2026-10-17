@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, provide, shallowRef } from 'vue';
+import { computed, provide, shallowRef, useId } from 'vue';
 import { fieldKey } from '../composables/useField';
 
 const props = withDefaults(
@@ -24,11 +24,12 @@ const props = withDefaults(
 // MSelect in the slot pick up this id, aria-describedby, aria-invalid and
 // aria-required from the field, so the consumer does not have to wire them.
 // A control with its own `id` lends it to the label instead.
-const uid = getCurrentInstance()?.uid ?? 0;
+// useId is stable between server and client render, unlike the instance uid.
+const idBase = useId();
 const explicitId = shallowRef<(() => string | undefined) | null>(null);
-const controlId = computed(() => props.for || explicitId.value?.() || `m-field-control-${uid}`);
+const controlId = computed(() => props.for || explicitId.value?.() || `m-field-control-${idBase}`);
 // Only emitted when a message is actually shown.
-const messageId = computed(() => (props.error || props.hint ? `m-field-msg-${uid}` : undefined));
+const messageId = computed(() => (props.error || props.hint ? `m-field-msg-${idBase}` : undefined));
 
 provide(fieldKey, {
   id: controlId,

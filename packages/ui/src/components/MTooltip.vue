@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getCurrentInstance, onBeforeUnmount, ref, watch } from 'vue';
+import { onBeforeUnmount, ref, useId, watch } from 'vue';
 
 withDefaults(
   defineProps<{
@@ -10,10 +10,9 @@ withDefaults(
   { placement: 'top' },
 );
 
-// Per-instance id via the component uid (works on Vue 3.4+, unlike useId which
-// is 3.5-only and would break the peer range). Lets the bubble be referenced
-// by id without adding a separate tab stop.
-const tipId = `m-tooltip-${getCurrentInstance()?.uid ?? 0}`;
+// Per-instance id from useId, so server and client render agree. Lets the
+// bubble be referenced by id without adding a separate tab stop.
+const tipId = `m-tooltip-${useId()}`;
 
 // WCAG 1.4.13: Escape hides the bubble without moving focus or the pointer,
 // and it stays hidden until both hover and focus have left.

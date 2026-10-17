@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getCurrentInstance } from 'vue';
+import { useId } from 'vue';
 
 interface Item {
   /** Stable id, also used as the slot name for rich content. */
@@ -20,7 +20,7 @@ withDefaults(
 
 // Per-instance <details name> so exclusivity is scoped to this accordion —
 // otherwise two accordions on a page would form one shared exclusive group.
-const groupName = `m-accordion-${getCurrentInstance()?.uid ?? 0}`;
+const groupName = `m-accordion-${useId()}`;
 </script>
 
 <template>

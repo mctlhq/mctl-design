@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/vue3-vite';
+import { setup, type Preview } from '@storybook/vue3-vite';
 import { addons } from 'storybook/preview-api';
 import { GLOBALS_UPDATED } from 'storybook/internal/core-events';
 import { DARK_MODE_EVENT_NAME } from '@vueless/storybook-dark-mode';
@@ -13,6 +13,14 @@ import '@mctlhq/ui/style.css';
 import { mctlDark, mctlLight } from './mctl-theme';
 
 const DEFAULT_ACCENT = 'terracotta';
+
+// useId() numbers per app, and a docs page mounts one app per story, so give
+// each its own prefix. Without it every MAccordion on the page shares one
+// exclusive group and MTabs/MField/MTooltip ids repeat.
+let storyApp = 0;
+setup((app) => {
+  app.config.idPrefix = `s${++storyApp}`;
+});
 
 // theme.css: terracotta is :root (no data-accent). cyan / lime / lilac /
 // vermilion (terracotta alias) flip --accent via [data-accent='…'] on <html>.
