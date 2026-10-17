@@ -10,7 +10,9 @@
 // - only <style> blocks are read; a literal in a template `style` or
 //   `:style` binding is not seen;
 // - the MTg exemption covers the whole file, not just its var() fallbacks;
-// - easings are not checked: MTgSheet keeps a curve no token matches.
+// - easings are not checked: MTgSheet keeps a curve no token matches;
+// - only box-shadow is checked for shadows: text-shadow and
+//   filter: drop-shadow() are not (MLogo's glow has no matching token).
 import { readFileSync, readdirSync } from 'node:fs';
 import { basename, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,7 +38,7 @@ const RULES = [
   },
   {
     why: 'a literal shadow (use --control-focus-shadow*, --shadow-* or --mctl-shadow-*)',
-    test: (prop, value) => prop === 'box-shadow' && /\b\d*\.?\d+(px|%)/.test(value),
+    test: (prop, value) => prop === 'box-shadow' && PX.test(value),
   },
   {
     why: 'a literal focus offset (use --focus-ring-offset)',
@@ -97,6 +99,7 @@ if (process.argv.includes('--selftest')) {
 .a { border: var(--mctl-border-width-hairline) solid red; border-radius: var(--mctl-radius-md); opacity: 0; }
 .b { transition: color var(--mctl-motion-duration-fast, 120ms) ease; z-index: var(--mctl-z-index-sticky, 100); }
 .c { outline-offset: calc(-1 * var(--focus-ring-offset)); margin: 0 1px; box-shadow: var(--control-focus-shadow); }
+.d { box-shadow: 0 0 0 var(--focus-ring-width) color-mix(in srgb, var(--accent) 20%, transparent); }
 </style>`;
   const badFound = findLiterals(bad).map((f) => f.why);
   const goodFound = findLiterals(good);

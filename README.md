@@ -265,12 +265,12 @@ width, sidebar, table overflow and mobile navigation.
 Forms use `--control-bg`, `--control-disabled-bg`, `--control-border`,
 `--control-focus-shadow` and, on an invalid field,
 `--control-focus-shadow-invalid`. Feedback uses `--status-{ok,warn,bad}-soft`
-with the matching foreground. Overlays use `--overlay-scrim` and `--shadow-overlay`;
-public background grids use `--site-grid-line`. Derived colors recompute at
-every scoped theme or accent boundary, and the two attributes nest
-independently, so `data-accent="cyan"` inside `data-theme="light"` gets the
-light cyan. Up to 0.8.0, a scope had to set both on the same element. Read
-from script, `--accent` and its `-highlight`, `-fg` and `-soft` variants
-are the colour padded with whitespace, so trim before comparing. See
-**Foundations/Public Sites** and **Foundations/Typography** in Storybook for
-both themes and the complete scale.
+with the matching foreground. Overlays use `--overlay-scrim` and
+`--shadow-overlay`; public background grids use `--site-grid-line`. Derived
+colors recompute at every scoped theme or accent boundary, and the two
+attributes nest independently, so `data-accent="cyan"` inside
+`data-theme="light"` gets the light cyan. Up to 0.8.0, a scope had to set both
+on the same element. Read from script, `--accent` and its `-highlight`, `-fg`
+and `-soft` variants are the colour padded with whitespace, so trim before
+comparing. See **Foundations/Public Sites** and **Foundations/Typography** in
+Storybook for both themes and the complete scale.
