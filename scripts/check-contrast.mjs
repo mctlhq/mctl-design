@@ -81,6 +81,11 @@ export function classify(pairs, known) {
   return { rows, stale: [...known.keys()].filter((l) => !labels.has(l)) };
 }
 
+// Rows that fail the gate: everything but ok and known.
+export function gateFailures(rows) {
+  return rows.filter((r) => r.tag !== 'ok' && r.tag !== 'known').length;
+}
+
 if (process.argv.includes('--selftest')) {
   const problems = [];
   const eq = (what, got, want) =>
@@ -119,6 +124,7 @@ if (process.argv.includes('--selftest')) {
   ]);
   const { rows, stale } = classify(fixture, listed);
   eq('tags', rows.map((r) => r.tag).join(' '), 'ok ok FAIL known FIXED WORSE BETTER');
+  eq('gateFailures', gateFailures(rows), 4);
   eq('stale', stale.join(' '), 'gone');
   if (problems.length) {
     console.error(`check-contrast selftest failed:\n  ${problems.join('\n  ')}`);
@@ -225,8 +231,8 @@ for (const theme of ['light', 'dark']) {
     }
   }
   // MTgOrderCard's ring sits 2px outside the card, so it is drawn on what
-  // holds the card (the page or a sheet), never on --tg-surface itself.
-  for (const bgName of ['bg', 'surfaceSub']) {
+  // holds the card: the page (bg), an MTgSheet (surface) or a sub-surface.
+  for (const bgName of ['bg', 'surface', 'surfaceSub']) {
     add(`tg ${theme} focus ring accent vs ${bgName}`, p.accent, p[bgName], UI);
   }
   // MTgOrderCard's arrow is aria-hidden and decorative (the card carries the
@@ -307,7 +313,7 @@ const KNOWN = new Map([
 
 const { rows, stale } = classify(pairs, KNOWN);
 const count = (tag) => rows.filter((r) => r.tag === tag).length;
-const failed = count('FAIL') + count('FIXED') + count('WORSE') + count('BETTER');
+const failed = gateFailures(rows);
 const known = count('known');
 for (const r of rows) {
   if (report || r.tag !== 'ok') {
