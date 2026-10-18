@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { contrastDebt } from '../../.storybook/a11y';
 
-const meta: Meta = { title: 'Foundations/Public Sites', parameters: { a11y: contrastDebt } };
+const meta: Meta = { title: 'Foundations/Public Sites' };
 export default meta;
 type Story = StoryObj;
 
@@ -23,8 +22,8 @@ export const ShellAndReading: Story = {
               <input aria-label="Service name" value="my-service" style="font:inherit;background:var(--control-bg);color:var(--surface-fg);border:1px solid var(--control-border);padding:12px" />
             </label>
             <input aria-label="Disabled service field" disabled value="Managed by the platform" style="margin-top:12px;font:inherit;background:var(--control-disabled-bg);color:var(--surface-fg-muted);border:1px solid var(--control-border);padding:12px" />
-            <p style="background:var(--status-ok-soft);color:var(--status-ok);padding:12px">Deployment completed</p>
-            <p style="background:var(--status-bad-soft);color:var(--status-bad);padding:12px">Check the repository and tag</p>
+            <p style="background:var(--status-ok-soft);color:var(--status-ok-text);padding:12px">Deployment completed</p>
+            <p style="background:var(--status-bad-soft);color:var(--status-bad-text);padding:12px">Check the repository and tag</p>
             <pre style="overflow:auto;background:var(--surface-card);border:1px solid var(--surface-line);padding:16px;font-family:var(--font-mono);font-size:var(--text-code-size)">mctl_get_service_status</pre>
           </article>
         </section>

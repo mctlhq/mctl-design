@@ -24,14 +24,23 @@
   --tg-surface: #ffffff;
   --tg-surface-sub: #f3f2ec;
   --tg-ink: #15171b;
-  --tg-muted: #6a6e76;
-  --tg-faint: #9a9da3;
+  --tg-muted: #60646c;
+  /* Icons and dividers only (3:1); receding text uses --tg-muted. */
+  --tg-faint: #878a90;
   --tg-accent: #2d7df6;
   --tg-accent-soft: #eaf1fe;
   --tg-success: #1f9d57;
   --tg-danger: #d64545;
   --tg-warn: #d97706;
   --tg-line: #e7e6e1;
+  /* Text shades of the fills (see telegramTextMix in @mctlhq/tokens). */
+  --tg-accent-text: color-mix(in srgb, var(--tg-accent) 80%, var(--tg-ink));
+  --tg-success-text: color-mix(in srgb, var(--tg-success) 65%, var(--tg-ink));
+  --tg-danger-text: color-mix(in srgb, var(--tg-danger) 80%, var(--tg-ink));
+  --tg-warn-text: color-mix(in srgb, var(--tg-warn) 70%, var(--tg-ink));
+  /* A filled button: white text clears 4.5:1 on it. */
+  --tg-button: color-mix(in srgb, var(--tg-accent) 90%, #000);
+  --tg-button-text: #fff;
   --tg-radius-card: 18px;
   --tg-radius-chip: 10px;
   --tg-radius-sheet: 22px;
@@ -53,14 +62,22 @@
   --tg-surface: #232e3c;
   --tg-surface-sub: #1a2432;
   --tg-ink: #f5f5f5;
-  --tg-muted: #8a8f99;
-  --tg-faint: #5a5f69;
+  --tg-muted: #9fa4ae;
+  --tg-faint: #727782;
   --tg-accent: #4c92f8;
   --tg-accent-soft: #1a2e4a;
   --tg-success: #3db86a;
   --tg-danger: #e05555;
   --tg-warn: #e08b30;
   --tg-line: #2a3744;
+  /* Text shades of the fills (see telegramTextMix in @mctlhq/tokens). */
+  --tg-accent-text: color-mix(in srgb, var(--tg-accent) 95%, var(--tg-ink));
+  --tg-success-text: color-mix(in srgb, var(--tg-success) 90%, var(--tg-ink));
+  --tg-danger-text: color-mix(in srgb, var(--tg-danger) 70%, var(--tg-ink));
+  --tg-warn-text: color-mix(in srgb, var(--tg-warn) 100%, var(--tg-ink));
+  /* A filled button: white text clears 4.5:1 on it. */
+  --tg-button: color-mix(in srgb, var(--tg-accent) 80%, #000);
+  --tg-button-text: #fff;
 }
 
 /* Safe area utility classes. */

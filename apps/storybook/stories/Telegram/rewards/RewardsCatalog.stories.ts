@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Rewards/RewardsCatalog',
 };
 
@@ -26,8 +24,8 @@ export const Catalog: Story = {
 
         <div style="padding:20px 20px 12px;">
           <div style="font-size:20px; font-weight:700; color:var(--tg-ink,#15171b);">Rewards</div>
-          <div style="font-size:13px; color:var(--tg-muted,#6a6e76); margin-top:4px;">
-            Your balance: <strong style="color:var(--tg-accent,#2d7df6);">1,240 pts</strong>
+          <div style="font-size:13px; color:var(--tg-muted,#60646c); margin-top:4px;">
+            Your balance: <strong style="color:var(--tg-accent-text,#2869ca);">1,240 pts</strong>
           </div>
         </div>
 
@@ -44,20 +42,20 @@ export const Catalog: Story = {
 
             <div style="flex:1; min-width:0;">
               <div style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b);">{{ r.name }}</div>
-              <div style="font-size:12px; color:var(--tg-muted,#6a6e76); margin-top:2px;">
+              <div style="font-size:12px; color:var(--tg-muted,#60646c); margin-top:2px;">
                 {{ r.merchant }}
               </div>
             </div>
 
             <div style="text-align:right; flex-shrink:0;">
               <div style="font-size:15px; font-weight:700;"
-                :style="{ color: r.available ? 'var(--tg-success,#1f9d57)' : 'var(--tg-faint,#9a9da3)' }">
+                :style="{ color: r.available ? 'var(--tg-success-text,#1c6e42)' : 'var(--tg-muted,#60646c)' }">
                 {{ r.pts }} pts
               </div>
               <button :disabled="!r.available"
                 :style="{
-                  background: r.available ? 'var(--tg-accent,#2d7df6)' : 'var(--tg-surface-sub,#f3f2ec)',
-                  color: r.available ? '#fff' : 'var(--tg-faint,#9a9da3)',
+                  background: r.available ? 'var(--tg-button,#2970dd)' : 'var(--tg-surface-sub,#f3f2ec)',
+                  color: r.available ? '#fff' : 'var(--tg-muted,#60646c)',
                   cursor: r.available ? 'pointer' : 'default',
                 }"
                 style="border:none; border-radius:8px; padding:6px 14px;

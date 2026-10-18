@@ -15,5 +15,20 @@ export const status = {
   },
 } as const;
 
+// Status as text on a tint of itself (MPill filled). Dark text already
+// clears its tint; light needs one step deeper than the paper pair.
+export const statusText = {
+  dark: {
+    ok: color.ok,
+    warn: color.warn,
+    bad: color.bad,
+  },
+  light: {
+    ok: color.okText,
+    warn: color.warnText,
+    bad: color.badText,
+  },
+} as const;
+
 export type Status = typeof status;
 export type StatusName = keyof (typeof status)['dark'];

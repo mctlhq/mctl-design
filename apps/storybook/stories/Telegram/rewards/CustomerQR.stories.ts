@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Rewards/CustomerQR',
 };
 
@@ -19,12 +17,12 @@ export const Screen: Story = {
         <!-- Header -->
         <div style="padding:20px 20px 0; display:flex; align-items:center; justify-content:space-between;">
           <span style="font-size:20px; font-weight:700; color:var(--tg-ink,#15171b);">My QR</span>
-          <span style="font-size:13px; color:var(--tg-muted,#6a6e76);">refreshes in 0:47</span>
+          <span style="font-size:13px; color:var(--tg-muted,#60646c);">refreshes in 0:47</span>
         </div>
 
         <!-- Balance -->
         <div style="padding:20px; text-align:center;">
-          <div style="font-size:13px; color:var(--tg-muted,#6a6e76); margin-bottom:4px;">Balance</div>
+          <div style="font-size:13px; color:var(--tg-muted,#60646c); margin-bottom:4px;">Balance</div>
           <div style="font-size:40px; font-weight:700; color:var(--tg-ink,#15171b); letter-spacing:-1px;">
             1,240 pts
           </div>
@@ -39,14 +37,14 @@ export const Screen: Story = {
             ▣
           </div>
           <div style="font-family:'JetBrains Mono',monospace; font-size:12px;
-            color:var(--tg-faint,#9a9da3); letter-spacing:0.1em;">
+            color:var(--tg-muted,#60646c); letter-spacing:0.1em;">
             MCTL-8745-1158
           </div>
         </div>
 
         <!-- Hint -->
         <div style="padding:20px; text-align:center;">
-          <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0; line-height:1.5;">
+          <p style="font-size:13px; color:var(--tg-muted,#60646c); margin:0; line-height:1.5;">
             Show this QR at the cashier to earn points.<br>
             Tap and hold to show to the scanner.
           </p>
@@ -66,9 +64,9 @@ export const Screen: Story = {
               padding:10px 0; border-bottom:1px solid var(--tg-line,#e7e6e1);">
             <div>
               <div style="font-size:14px; color:var(--tg-ink,#15171b);">{{ tx.label }}</div>
-              <div style="font-size:12px; color:var(--tg-faint,#9a9da3);">{{ tx.time }}</div>
+              <div style="font-size:12px; color:var(--tg-muted,#60646c);">{{ tx.time }}</div>
             </div>
-            <div :style="{ color: tx.pts.startsWith('+') ? 'var(--tg-success,#1f9d57)' : 'var(--tg-danger,#d64545)',
+            <div :style="{ color: tx.pts.startsWith('+') ? 'var(--tg-success-text,#1c6e42)' : 'var(--tg-danger-text,#af3c3d)',
               fontWeight: 600, fontSize: '15px' }">
               {{ tx.pts }} pts
             </div>

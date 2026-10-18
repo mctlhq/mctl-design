@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { MTgStatusBadge, MTgDeltaTag } from '@mctlhq/ui';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/PairDesk/OrderDetail',
 };
 
@@ -31,7 +29,7 @@ export const BuyOrder: Story = {
           padding:20px; border:1px solid var(--tg-line,#e7e6e1); display:flex;
           flex-direction:column; gap:8px; margin-bottom:12px;">
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="background:color-mix(in srgb,#1f9d57 12%,transparent); color:#1f9d57;
+            <span style="background:color-mix(in srgb,var(--tg-success,#1f9d57) 12%,transparent); color:var(--tg-success-text,#1c6e42);
               font-size:13px; font-weight:700; padding:3px 10px; border-radius:8px;">BUY</span>
             <span style="font-size:16px; font-weight:600; color:var(--tg-ink,#15171b);">EUR / RUB</span>
           </div>
@@ -53,14 +51,14 @@ export const BuyOrder: Story = {
           ]" :key="row[0]"
             :style="i > 0 ? 'border-top:1px solid var(--tg-line,#e7e6e1)' : ''"
             style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px;">
-            <span style="font-size:13px; color:var(--tg-muted,#6a6e76);">{{ row[0] }}</span>
+            <span style="font-size:13px; color:var(--tg-muted,#60646c);">{{ row[0] }}</span>
             <span style="font-size:14px; font-weight:500; color:var(--tg-ink,#15171b);">{{ row[1] }}</span>
           </div>
         </div>
 
         <!-- CTA -->
         <div style="padding:0 16px 20px;">
-          <button style="width:100%; background:var(--tg-accent,#2d7df6); color:#fff; border:none;
+          <button style="width:100%; background:var(--tg-button,#2970dd); color:#fff; border:none;
             border-radius:14px; padding:16px; font-family:'Onest',system-ui,sans-serif;
             font-size:16px; font-weight:700; cursor:pointer;">
             Respond to this order

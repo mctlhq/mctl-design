@@ -1,10 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref } from 'vue';
 import { MTgTabBar } from '@mctlhq/ui';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta<typeof MTgTabBar> = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Components/MTgTabBar',
   component: MTgTabBar,
   tags: ['autodocs'],

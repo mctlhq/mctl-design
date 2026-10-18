@@ -17,6 +17,7 @@
   --surface-card: var(--mctl-surface-dark-card);
   --surface-line: var(--mctl-surface-dark-line);
   --surface-line-strong: var(--mctl-surface-dark-line-strong);
+  --surface-control-border: var(--mctl-surface-dark-control-border);
   --surface-fg: var(--mctl-surface-dark-fg);
   --surface-fg-muted: var(--mctl-surface-dark-fg-muted);
   --surface-fg-subtle: var(--mctl-surface-dark-fg-subtle);
@@ -27,18 +28,22 @@
   --_accent-terracotta-highlight: var(--mctl-accent-terracotta-dark-highlight);
   --_accent-terracotta-fg: var(--mctl-accent-terracotta-dark-fg);
   --_accent-terracotta-soft: var(--mctl-accent-terracotta-dark-soft);
+  --_accent-terracotta-text: var(--mctl-accent-terracotta-dark-text);
   --_accent-cyan-primary: var(--mctl-accent-cyan-dark-primary);
   --_accent-cyan-highlight: var(--mctl-accent-cyan-dark-highlight);
   --_accent-cyan-fg: var(--mctl-accent-cyan-dark-fg);
   --_accent-cyan-soft: var(--mctl-accent-cyan-dark-soft);
+  --_accent-cyan-text: var(--mctl-accent-cyan-dark-text);
   --_accent-lime-primary: var(--mctl-accent-lime-dark-primary);
   --_accent-lime-highlight: var(--mctl-accent-lime-dark-highlight);
   --_accent-lime-fg: var(--mctl-accent-lime-dark-fg);
   --_accent-lime-soft: var(--mctl-accent-lime-dark-soft);
+  --_accent-lime-text: var(--mctl-accent-lime-dark-text);
   --_accent-lilac-primary: var(--mctl-accent-lilac-dark-primary);
   --_accent-lilac-highlight: var(--mctl-accent-lilac-dark-highlight);
   --_accent-lilac-fg: var(--mctl-accent-lilac-dark-fg);
   --_accent-lilac-soft: var(--mctl-accent-lilac-dark-soft);
+  --_accent-lilac-text: var(--mctl-accent-lilac-dark-text);
 
   /* Named accent primaries for Tailwind swatches (bg-accent-cyan, etc.). */
   --accent-terracotta: var(--mctl-accent-terracotta-dark-primary);
@@ -50,6 +55,10 @@
   --status-ok: var(--mctl-status-dark-ok);
   --status-warn: var(--mctl-status-dark-warn);
   --status-bad: var(--mctl-status-dark-bad);
+  /* Status as text on a tint of itself (filled pills). */
+  --status-ok-text: var(--mctl-status-text-dark-ok);
+  --status-warn-text: var(--mctl-status-text-dark-warn);
+  --status-bad-text: var(--mctl-status-text-dark-bad);
 
   /* Syntax. */
   --syntax-key: var(--mctl-syntax-dark-key);
@@ -94,6 +103,7 @@
   --surface-card: var(--mctl-surface-light-card);
   --surface-line: var(--mctl-surface-light-line);
   --surface-line-strong: var(--mctl-surface-light-line-strong);
+  --surface-control-border: var(--mctl-surface-light-control-border);
   --surface-fg: var(--mctl-surface-light-fg);
   --surface-fg-muted: var(--mctl-surface-light-fg-muted);
   --surface-fg-subtle: var(--mctl-surface-light-fg-subtle);
@@ -102,18 +112,22 @@
   --_accent-terracotta-highlight: var(--mctl-accent-terracotta-light-highlight);
   --_accent-terracotta-fg: var(--mctl-accent-terracotta-light-fg);
   --_accent-terracotta-soft: var(--mctl-accent-terracotta-light-soft);
+  --_accent-terracotta-text: var(--mctl-accent-terracotta-light-text);
   --_accent-cyan-primary: var(--mctl-accent-cyan-light-primary);
   --_accent-cyan-highlight: var(--mctl-accent-cyan-light-highlight);
   --_accent-cyan-fg: var(--mctl-accent-cyan-light-fg);
   --_accent-cyan-soft: var(--mctl-accent-cyan-light-soft);
+  --_accent-cyan-text: var(--mctl-accent-cyan-light-text);
   --_accent-lime-primary: var(--mctl-accent-lime-light-primary);
   --_accent-lime-highlight: var(--mctl-accent-lime-light-highlight);
   --_accent-lime-fg: var(--mctl-accent-lime-light-fg);
   --_accent-lime-soft: var(--mctl-accent-lime-light-soft);
+  --_accent-lime-text: var(--mctl-accent-lime-light-text);
   --_accent-lilac-primary: var(--mctl-accent-lilac-light-primary);
   --_accent-lilac-highlight: var(--mctl-accent-lilac-light-highlight);
   --_accent-lilac-fg: var(--mctl-accent-lilac-light-fg);
   --_accent-lilac-soft: var(--mctl-accent-lilac-light-soft);
+  --_accent-lilac-text: var(--mctl-accent-lilac-light-text);
 
   --accent-terracotta: var(--mctl-accent-terracotta-light-primary);
   --accent-cyan: var(--mctl-accent-cyan-light-primary);
@@ -123,6 +137,10 @@
   --status-ok: var(--mctl-status-light-ok);
   --status-warn: var(--mctl-status-light-warn);
   --status-bad: var(--mctl-status-light-bad);
+  /* Status as text on a tint of itself (filled pills). */
+  --status-ok-text: var(--mctl-status-text-light-ok);
+  --status-warn-text: var(--mctl-status-text-light-warn);
+  --status-bad-text: var(--mctl-status-text-light-bad);
 
   --syntax-key: var(--mctl-syntax-light-key);
   --syntax-string: var(--mctl-syntax-light-string);
@@ -265,10 +283,14 @@
   --accent-soft: var(--_pick-terracotta, var(--_accent-terracotta-soft))
     var(--_pick-cyan, var(--_accent-cyan-soft)) var(--_pick-lime, var(--_accent-lime-soft))
     var(--_pick-lilac, var(--_accent-lilac-soft));
+  /* The accent as text on a tint of itself (filled pills). */
+  --accent-text: var(--_pick-terracotta, var(--_accent-terracotta-text))
+    var(--_pick-cyan, var(--_accent-cyan-text)) var(--_pick-lime, var(--_accent-lime-text))
+    var(--_pick-lilac, var(--_accent-lilac-text));
   --focus-ring: var(--accent);
   --control-bg: var(--surface-bg);
   --control-disabled-bg: var(--surface-elevated);
-  --control-border: var(--surface-line-strong);
+  --control-border: var(--surface-control-border);
   --control-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
   --control-focus-shadow-invalid: 0 0 0 3px color-mix(in srgb, var(--status-bad) 20%, transparent);
   --status-ok-soft: color-mix(in srgb, var(--status-ok) 10%, transparent);

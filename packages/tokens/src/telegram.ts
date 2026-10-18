@@ -8,8 +8,10 @@ export const telegramPalette = {
     surface: '#ffffff',
     surfaceSub: '#f3f2ec',
     ink: '#15171b',
-    muted: '#6a6e76',
-    faint: '#9a9da3',
+    muted: '#60646c',
+    // Icons, dividers and other non-text marks only (3:1). Text that should
+    // recede uses muted, which clears 4.5:1.
+    faint: '#878a90',
     accent: '#2d7df6',
     accentSoft: '#eaf1fe',
     success: '#1f9d57',
@@ -22,8 +24,8 @@ export const telegramPalette = {
     surface: '#232e3c',
     surfaceSub: '#1a2432',
     ink: '#f5f5f5',
-    muted: '#8a8f99',
-    faint: '#5a5f69',
+    muted: '#9fa4ae',
+    faint: '#727782',
     accent: '#4c92f8',
     accentSoft: '#1a2e4a',
     success: '#3db86a',
@@ -34,6 +36,20 @@ export const telegramPalette = {
 } as const;
 
 export type TelegramPalette = typeof telegramPalette;
+
+// The status colours and the accent are fills and icons; as text they are
+// mixed toward --tg-ink (color-mix in srgb), which darkens them on light and
+// lightens them on dark. Deriving instead of fixing a hex keeps the text in
+// the same hue when applyTheme() swaps in a user's Telegram theme.
+// telegram.css must declare exactly these weights (check-contrast reads both).
+export const telegramTextMix = {
+  light: { accent: 0.8, success: 0.65, danger: 0.8, warn: 0.7 },
+  dark: { accent: 0.95, success: 0.9, danger: 0.7, warn: 1 },
+} as const;
+
+// A filled button: the accent mixed toward black, so white text clears
+// 4.5:1 on it in both themes (the accent itself is too light for that).
+export const telegramButtonMix = { light: 0.9, dark: 0.8 } as const;
 
 // Telegram themeParams → CSS variable mapping reference.
 // At runtime, call applyTheme() to read window.Telegram.WebApp.themeParams

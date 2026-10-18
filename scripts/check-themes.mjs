@@ -267,6 +267,7 @@ const ROLES = {
   '--accent-highlight': 'highlight',
   '--accent-fg': 'fg',
   '--accent-soft': 'soft',
+  '--accent-text': 'text',
 };
 
 // Wrong values the sheet produces across all cases.

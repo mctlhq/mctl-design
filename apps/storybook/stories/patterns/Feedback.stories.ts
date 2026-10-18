@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { MAlert, MCard } from '@mctlhq/ui';
-import { contrastDebt } from '../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Patterns/Feedback',
 };
 
@@ -21,7 +19,7 @@ export const AlertStack: Story = {
         </MAlert>
         <MAlert tone="warn">
           <strong>Warning:</strong> This service stores an encrypted MTProto session.
-          Review the <a href="/security" style="color:var(--accent)">security model</a> before connecting.
+          Review the <a href="/security" style="color:var(--accent-text)">security model</a> before connecting.
         </MAlert>
         <MAlert tone="bad">
           <strong>Error:</strong> Connection failed — the OAuth authorization server returned 502.
@@ -41,7 +39,7 @@ export const AlertInCard: Story = {
         <div style="display:flex; flex-direction:column; gap:12px;">
           <MAlert tone="warn">
             You are about to grant this server access to your Telegram account.
-            Read the <a href="/privacy" style="color:var(--accent)">privacy policy</a> first.
+            Read the <a href="/privacy" style="color:var(--accent-text)">privacy policy</a> first.
           </MAlert>
           <p style="font-family:var(--font-mono); font-size:14px; color:var(--surface-fg-muted); margin:0;">
             Click the Telegram login widget below to authenticate.

@@ -19,10 +19,15 @@
 //
 //   node scripts/check-contrast.mjs            # gate
 //   node scripts/check-contrast.mjs --report   # print every pair
+import { readFileSync } from 'node:fs';
+
 let tokens;
 let telegramPalette;
+let telegramTextMix;
+let telegramButtonMix;
 try {
-  ({ tokens, telegramPalette } = await import('../packages/tokens/dist/index.js'));
+  ({ tokens, telegramPalette, telegramTextMix, telegramButtonMix } =
+    await import('../packages/tokens/dist/index.js'));
 } catch (error) {
   if (error?.code !== 'ERR_MODULE_NOT_FOUND') throw error;
   console.error('check-contrast: packages/tokens/dist is missing -- run `pnpm build` first.');
@@ -134,7 +139,7 @@ if (process.argv.includes('--selftest')) {
   process.exit(0);
 }
 
-const { surface, accent, status, syntax } = tokens;
+const { surface, accent, status, statusText, syntax } = tokens;
 const pairs = [];
 const add = (label, fg, bg, min = TEXT) => pairs.push({ label, fg, bg, min });
 
@@ -174,14 +179,22 @@ for (const theme of ['dark', 'light']) {
 
   // Translucent fills, composited over every surface they can sit on.
   for (const [bgName, bg] of Object.entries(backgrounds)) {
-    // MPill filled: the colour as text on a 15% tint of itself.
+    // MPill filled: the status text shade on a 15% tint of the status colour.
     for (const [name, value] of Object.entries(status[theme])) {
-      add(`${theme} MPill ${name} on its 15% tint over ${bgName}`, value, over(value, 0.15, bg));
+      add(
+        `${theme} MPill ${name} text on its 15% tint over ${bgName}`,
+        statusText[theme][name],
+        over(value, 0.15, bg),
+      );
     }
     for (const [name, a] of Object.entries(accent)) {
       if (name === 'vermilion') continue;
       const c = a[theme].primary;
-      add(`${theme} MPill accent.${name} on its 15% tint over ${bgName}`, c, over(c, 0.15, bg));
+      add(
+        `${theme} MPill accent.${name} text on its 15% tint over ${bgName}`,
+        a[theme].text,
+        over(c, 0.15, bg),
+      );
       // MAlert info: body text on a 6% accent tint.
       add(`${theme} MAlert fg on accent.${name} 6% over ${bgName}`, s.fg, over(c, 0.06, bg));
       // The focus ring is the accent drawn against the surface. --focus-ring
@@ -199,117 +212,111 @@ for (const theme of ['dark', 'light']) {
       over(s.fgSubtle, 0.2, bg),
     );
     add(`${theme} MTable hover fg on line 40% over ${bgName}`, s.fg, over(s.line, 0.4, bg));
+    // MTable's inline <code> chip: syntax.key on the same 40% line tint.
+    add(
+      `${theme} MTable code syntax.key on line 40% over ${bgName}`,
+      syntax[theme].key,
+      over(s.line, 0.4, bg),
+    );
     add(`${theme} MAlert fg on line 30% over ${bgName} (no tone)`, s.fg, over(s.line, 0.3, bg));
     // A field's border is its only edge: --control-bg is the page surface.
-    add(`${theme} control border (line-strong) vs ${bgName}`, s.lineStrong, bg, UI);
+    add(`${theme} control border vs ${bgName}`, s.controlBorder, bg, UI);
   }
 }
 
 // The --tg-* Mini App palette (telegram.css and the MTg* components). These
 // are the fallbacks: in a live Mini App applyTheme() overwrites most of them
 // from Telegram's themeParams, which no build-time check can see.
+const TG_TEXT = ['accent', 'success', 'danger', 'warn'];
+const tgText = (theme, name) =>
+  over(telegramPalette[theme][name], telegramTextMix[theme][name], telegramPalette[theme].ink);
 for (const theme of ['light', 'dark']) {
   const p = telegramPalette[theme];
   for (const bgName of ['bg', 'surface', 'surfaceSub']) {
-    for (const fg of ['ink', 'muted', 'accent', 'success', 'danger', 'warn']) {
+    for (const fg of ['ink', 'muted']) {
       add(`tg ${theme} ${fg} on ${bgName}`, p[fg], p[bgName]);
     }
+    // The fills as text: --tg-*-text, mixed toward ink.
+    for (const name of TG_TEXT) {
+      add(`tg ${theme} ${name}-text on ${bgName}`, tgText(theme, name), p[bgName]);
+    }
+    // --tg-faint is for icons and dividers only.
+    add(`tg ${theme} faint (icon) vs ${bgName}`, p.faint, p[bgName], UI);
   }
-  add(`tg ${theme} accent on accentSoft (status badge)`, p.accent, p.accentSoft);
-  // Status badges, delta tags and order directions tint whatever they sit on.
+  add(
+    `tg ${theme} accent-text on accentSoft (status badge)`,
+    tgText(theme, 'accent'),
+    p.accentSoft,
+  );
+  // Status badges, delta tags and order directions: the text shade on a tint
+  // of the fill, over whatever they sit on.
   for (const bgName of ['bg', 'surface', 'surfaceSub']) {
-    for (const [fg, pct] of [
+    for (const [name, pct] of [
       ['success', 0.12],
       ['danger', 0.1],
-      ['muted', 0.1],
     ]) {
       add(
-        `tg ${theme} ${fg} on its ${pct * 100}% tint over ${bgName}`,
-        p[fg],
-        over(p[fg], pct, p[bgName]),
+        `tg ${theme} ${name}-text on its ${pct * 100}% tint over ${bgName}`,
+        tgText(theme, name),
+        over(p[name], pct, p[bgName]),
       );
     }
+    add(`tg ${theme} muted on its 10% tint over ${bgName}`, p.muted, over(p.muted, 0.1, p[bgName]));
   }
+  // --tg-button with --tg-button-text (#fff).
+  add(
+    `tg ${theme} button text on button`,
+    '#ffffff',
+    over(p.accent, telegramButtonMix[theme], '#000000'),
+  );
   // MTgOrderCard's ring sits 2px outside the card, so it is drawn on what
   // holds the card: the page (bg), an MTgSheet (surface) or a sub-surface.
   for (const bgName of ['bg', 'surface', 'surfaceSub']) {
     add(`tg ${theme} focus ring accent vs ${bgName}`, p.accent, p[bgName], UI);
   }
-  // MTgOrderCard's arrow is aria-hidden and decorative (the card carries the
-  // affordance), so WCAG 1.4.11 does not apply to --tg-faint there.
+}
+
+// telegram.css is written by hand, so check it declares what was measured:
+// every palette hex, and every text/button weight, in both themes.
+{
+  const css = readFileSync(new URL('../packages/css/src/telegram.css', import.meta.url), 'utf8');
+  const block = (selector) => {
+    const i = css.indexOf(`${selector} {`);
+    return i === -1 ? '' : css.slice(i, css.indexOf('}', i));
+  };
+  const blocks = { light: block(':root'), dark: block("[data-theme='dark']") };
+  const kebab = (k) => k.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+  const drift = [];
+  for (const theme of ['light', 'dark']) {
+    const b = blocks[theme];
+    const declared = (name) => b.match(new RegExp(`--tg-${name}:\\s*([^;]+);`))?.[1].trim();
+    for (const [key, hex] of Object.entries(telegramPalette[theme])) {
+      const got = declared(kebab(key));
+      if (got?.toLowerCase() !== hex.toLowerCase())
+        drift.push(`${theme} --tg-${kebab(key)} is ${got}, tokens say ${hex}`);
+    }
+    for (const name of TG_TEXT) {
+      const want = `color-mix(in srgb, var(--tg-${name}) ${Math.round(telegramTextMix[theme][name] * 100)}%, var(--tg-ink))`;
+      const got = declared(`${name}-text`);
+      if (got !== want) drift.push(`${theme} --tg-${name}-text is ${got}, expected ${want}`);
+    }
+    const wantButton = `color-mix(in srgb, var(--tg-accent) ${Math.round(telegramButtonMix[theme] * 100)}%, #000)`;
+    if (declared('button') !== wantButton)
+      drift.push(`${theme} --tg-button is ${declared('button')}, expected ${wantButton}`);
+  }
+  if (drift.length) {
+    console.error(
+      `check-contrast: telegram.css has drifted from @mctlhq/tokens:\n  ${drift.join('\n  ')}`,
+    );
+    process.exit(1);
+  }
 }
 
 // label -> the ratio it measures today. A known pair may not get worse.
-const KNOWN = new Map([
-  // Light status colours clear 4.5:1 on paper by a hair, so any tint of
-  // themselves drops them under it; dark terracotta misses on raised
-  // surfaces. Needs a deeper text colour for tinted badges.
-  ['dark MPill accent.terracotta on its 15% tint over card', 4.12],
-  ['dark MPill accent.terracotta on its 15% tint over elevated', 4.43],
-  ['light MPill accent.cyan on its 15% tint over bg', 3.78],
-  ['light MPill accent.cyan on its 15% tint over card', 4.31],
-  ['light MPill accent.cyan on its 15% tint over elevated', 4.0],
-  ['light MPill accent.lime on its 15% tint over bg', 3.85],
-  ['light MPill accent.lime on its 15% tint over card', 4.36],
-  ['light MPill accent.lime on its 15% tint over elevated', 4.08],
-  ['light MPill accent.terracotta on its 15% tint over bg', 3.9],
-  ['light MPill accent.terracotta on its 15% tint over card', 4.42],
-  ['light MPill accent.terracotta on its 15% tint over elevated', 4.14],
-  ['light MPill bad on its 15% tint over bg', 3.66],
-  ['light MPill bad on its 15% tint over card', 4.17],
-  ['light MPill bad on its 15% tint over elevated', 3.87],
-  ['light MPill ok on its 15% tint over bg', 3.81],
-  ['light MPill ok on its 15% tint over card', 4.35],
-  ['light MPill ok on its 15% tint over elevated', 4.04],
-  ['light MPill warn on its 15% tint over bg', 3.78],
-  ['light MPill warn on its 15% tint over card', 4.3],
-  ['light MPill warn on its 15% tint over elevated', 4.0],
-  // Field borders are hairlines; meeting 3:1 is a visible change.
-  ['dark control border (line-strong) vs bg', 1.5],
-  ['dark control border (line-strong) vs card', 1.35],
-  ['dark control border (line-strong) vs elevated', 1.44],
-  ['light control border (line-strong) vs bg', 1.61],
-  ['light control border (line-strong) vs card', 1.85],
-  ['light control border (line-strong) vs elevated', 1.71],
-  // The light --tg-* accent and status colours are Telegram-bright and miss
-  // 4.5:1 as text, worse on their own tints.
-  ['tg light accent on accentSoft (status badge)', 3.44],
-  ['tg light accent on bg', 3.74],
-  ['tg light accent on surface', 3.91],
-  ['tg light accent on surfaceSub', 3.48],
-  ['tg light danger on bg', 4.19],
-  ['tg light danger on its 10% tint over bg', 3.67],
-  ['tg light danger on its 10% tint over surface', 3.82],
-  ['tg light danger on its 10% tint over surfaceSub', 3.44],
-  ['tg light danger on surface', 4.38],
-  ['tg light danger on surfaceSub', 3.9],
-  ['tg light muted on its 10% tint over bg', 4.32],
-  ['tg light muted on its 10% tint over surfaceSub', 4.05],
-  ['tg light success on bg', 3.34],
-  ['tg light success on its 12% tint over bg', 2.93],
-  ['tg light success on its 12% tint over surface', 3.04],
-  ['tg light success on its 12% tint over surfaceSub', 2.75],
-  ['tg light success on surface', 3.49],
-  ['tg light success on surfaceSub', 3.11],
-  ['tg light warn on bg', 3.05],
-  ['tg light warn on surface', 3.19],
-  ['tg light warn on surfaceSub', 2.84],
-  // Dark --tg-* danger, accent and muted miss on the raised surfaces and
-  // on their own tints.
-  ['tg dark accent on accentSoft (status badge)', 4.42],
-  ['tg dark accent on surface', 4.43],
-  ['tg dark danger on bg', 4.34],
-  ['tg dark danger on its 10% tint over bg', 3.94],
-  ['tg dark danger on its 10% tint over surface', 3.32],
-  ['tg dark danger on its 10% tint over surfaceSub', 3.77],
-  ['tg dark danger on surface', 3.67],
-  ['tg dark danger on surfaceSub', 4.17],
-  ['tg dark muted on its 10% tint over bg', 4.36],
-  ['tg dark muted on its 10% tint over surface', 3.67],
-  ['tg dark muted on its 10% tint over surfaceSub', 4.17],
-  ['tg dark muted on surface', 4.24],
-  ['tg dark success on its 12% tint over surface', 4.41],
-]);
+// Empty since 0.14.0: every pair meets AA. Keep the ratchet for the next
+// failure that has to wait on a palette decision: list it here with the exact
+// ratio it measures, and say why in a comment.
+const KNOWN = new Map([]);
 
 const { rows, stale } = classify(pairs, KNOWN);
 const count = (tag) => rows.filter((r) => r.tag === tag).length;

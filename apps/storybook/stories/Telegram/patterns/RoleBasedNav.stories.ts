@@ -1,10 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, computed } from 'vue';
 import { MTgTabBar } from '@mctlhq/ui';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Patterns/RoleBasedNav',
 };
 
@@ -44,7 +42,7 @@ export const RoleSelector: Story = {
     template: `
       <div style="font-family:'Onest',system-ui,sans-serif; display:flex; flex-direction:column; gap:24px;">
         <div>
-          <label style="font-size:13px; color:var(--tg-muted,#6a6e76); margin-bottom:8px; display:block;">
+          <label style="font-size:13px; color:var(--tg-muted,#60646c); margin-bottom:8px; display:block;">
             User role
           </label>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -52,7 +50,7 @@ export const RoleSelector: Story = {
               v-for="r in roles" :key="r"
               @click="role = r"
               :style="{
-                background: role === r ? 'var(--tg-accent,#2d7df6)' : 'var(--tg-surface-sub,#f3f2ec)',
+                background: role === r ? 'var(--tg-button,#2970dd)' : 'var(--tg-surface-sub,#f3f2ec)',
                 color: role === r ? '#fff' : 'var(--tg-ink,#15171b)',
               }"
               style="border:none; border-radius:8px; padding:8px 14px;
@@ -68,7 +66,7 @@ export const RoleSelector: Story = {
           </div>
           <MTgTabBar :tabs="tabs" v-model="active" :safe-area="false" />
         </div>
-        <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0;">
+        <p style="font-size:13px; color:var(--tg-muted,#60646c); margin:0;">
           Admin tab appears only for <strong>moderator</strong> role and above.
           Computed from server-provided role string — no client-side logic.
         </p>

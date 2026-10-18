@@ -1,10 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref, computed } from 'vue';
 import { MTgOrderCard, MTgEmptyState } from '@mctlhq/ui';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/PairDesk/OrderBook',
 };
 
@@ -78,7 +76,7 @@ export const Filtered: Story = {
           <button v-for="f in ['ALL','BUY','SELL']" :key="f"
             @click="filter = f"
             :style="{
-              background: filter === f ? 'var(--tg-accent,#2d7df6)' : 'var(--tg-surface-sub,#f3f2ec)',
+              background: filter === f ? 'var(--tg-button,#2970dd)' : 'var(--tg-surface-sub,#f3f2ec)',
               color: filter === f ? '#fff' : 'var(--tg-muted,#6a6e76)',
             }"
             style="border:none; border-radius:20px; padding:7px 18px;

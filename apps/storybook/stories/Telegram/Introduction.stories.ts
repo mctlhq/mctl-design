@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { contrastDebt } from '../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Introduction',
 };
 
@@ -16,7 +14,7 @@ export const Overview: Story = {
         <h1 style="font-size:28px; font-weight:700; color:var(--tg-ink,#15171b); margin:0 0 8px;">
           MCTL Mini App Kit
         </h1>
-        <p style="font-size:16px; color:var(--tg-muted,#6a6e76); margin:0 0 32px; line-height:1.6;">
+        <p style="font-size:16px; color:var(--tg-muted,#60646c); margin:0 0 32px; line-height:1.6;">
           A shared design system for MCTL Telegram Mini Apps — Direction C tokens,
           mobile-first components, and screen-level patterns for Rewards and PairDesk.
         </p>
@@ -26,7 +24,7 @@ export const Overview: Story = {
             border-radius:18px; padding:20px;">
             <div style="font-size:24px; margin-bottom:8px;">🎨</div>
             <h2 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Foundations</h2>
-            <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0; line-height:1.5;">
+            <p style="font-size:13px; color:var(--tg-muted,#60646c); margin:0; line-height:1.5;">
               Direction C palette, Onest typography, safe area insets, Telegram theme sync.
             </p>
           </div>
@@ -34,7 +32,7 @@ export const Overview: Story = {
             border-radius:18px; padding:20px;">
             <div style="font-size:24px; margin-bottom:8px;">🧩</div>
             <h2 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Components</h2>
-            <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0; line-height:1.5;">
+            <p style="font-size:13px; color:var(--tg-muted,#60646c); margin:0; line-height:1.5;">
               MTgTabBar, MTgSheet, MTgStatusBadge, MTgDeltaTag, MTgEmptyState, MTgOrderCard.
             </p>
           </div>
@@ -42,7 +40,7 @@ export const Overview: Story = {
             border-radius:18px; padding:20px;">
             <div style="font-size:24px; margin-bottom:8px;">📐</div>
             <h2 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Patterns</h2>
-            <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0; line-height:1.5;">
+            <p style="font-size:13px; color:var(--tg-muted,#60646c); margin:0; line-height:1.5;">
               Outside Telegram state, theme sync, role-based navigation.
             </p>
           </div>
@@ -50,7 +48,7 @@ export const Overview: Story = {
             border-radius:18px; padding:20px;">
             <div style="font-size:24px; margin-bottom:8px;">📱</div>
             <h2 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Screens</h2>
-            <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0; line-height:1.5;">
+            <p style="font-size:13px; color:var(--tg-muted,#60646c); margin:0; line-height:1.5;">
               Reference screens for MCTL Rewards and PairDesk Mini Apps.
             </p>
           </div>
@@ -64,7 +62,7 @@ import '@mctlhq/css/telegram.css';
 
 import { MTgTabBar, MTgStatusBadge, MTgOrderCard } from '@mctlhq/ui';</pre>
 
-        <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0;">
+        <p style="font-size:13px; color:var(--tg-muted,#60646c); margin:0;">
           Add <code style="background:var(--tg-surface-sub,#f3f2ec); padding:2px 6px; border-radius:6px;">viewport-fit=cover</code>
           to your viewport meta and call <code style="background:var(--tg-surface-sub,#f3f2ec); padding:2px 6px; border-radius:6px;">Telegram.WebApp.expand()</code>
           on mount for full-screen layout.

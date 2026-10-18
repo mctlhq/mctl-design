@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/PairDesk/AdminModeration',
 };
 
@@ -31,7 +29,7 @@ export const ApprovalQueue: Story = {
 
         <div>
           <div style="font-size:20px; font-weight:700; color:var(--tg-ink,#15171b);">Admin</div>
-          <div style="font-size:13px; color:var(--tg-muted,#6a6e76); margin-top:4px;">
+          <div style="font-size:13px; color:var(--tg-muted,#60646c); margin-top:4px;">
             {{ pending.length }} users awaiting approval
           </div>
         </div>
@@ -46,16 +44,16 @@ export const ApprovalQueue: Story = {
             </div>
             <div style="flex:1;">
               <div style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b);">{{ u.name }}</div>
-              <div style="font-size:12px; color:var(--tg-muted,#6a6e76);">{{ u.handle }} · joined {{ u.joined }}</div>
+              <div style="font-size:12px; color:var(--tg-muted,#60646c);">{{ u.handle }} · joined {{ u.joined }}</div>
             </div>
           </div>
           <div style="display:flex; gap:8px;">
-            <button style="flex:1; background:var(--tg-success,#1f9d57); color:#fff; border:none;
+            <button style="flex:1; background:color-mix(in srgb, var(--tg-success,#1f9d57) 70%, #000); color:#fff; border:none;
               border-radius:10px; padding:10px; font-family:'Onest',system-ui,sans-serif;
               font-size:14px; font-weight:600; cursor:pointer;">
               Approve
             </button>
-            <button style="background:var(--tg-surface-sub,#f3f2ec); color:var(--tg-danger,#d64545);
+            <button style="background:var(--tg-surface-sub,#f3f2ec); color:var(--tg-danger-text,#af3c3d);
               border:none; border-radius:10px; padding:10px 20px;
               font-family:'Onest',system-ui,sans-serif; font-size:14px; cursor:pointer;">
               Reject
@@ -90,11 +88,11 @@ export const AuditLog: Story = {
               <span style="font-size:14px; color:var(--tg-ink,#15171b);">
                 {{ entry.action.charAt(0).toUpperCase() + entry.action.slice(1) }}
               </span>
-              <span style="font-size:14px; color:var(--tg-accent,#2d7df6);"> {{ entry.user }}</span>
+              <span style="font-size:14px; color:var(--tg-accent-text,#2869ca);"> {{ entry.user }}</span>
             </div>
             <div style="text-align:right; flex-shrink:0;">
-              <div style="font-size:12px; color:var(--tg-faint,#9a9da3);">{{ entry.by }}</div>
-              <div style="font-size:11px; color:var(--tg-faint,#9a9da3);">{{ entry.time }}</div>
+              <div style="font-size:12px; color:var(--tg-muted,#60646c);">{{ entry.by }}</div>
+              <div style="font-size:11px; color:var(--tg-muted,#60646c);">{{ entry.time }}</div>
             </div>
           </div>
         </div>

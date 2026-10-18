@@ -52,14 +52,14 @@ const labelMap: Record<MTgStatusBadgeProps['status'], string> = {
 .m-tg-status-badge--active,
 .m-tg-status-badge--completed,
 .m-tg-status-badge--accepted {
-  color: var(--tg-success, #1f9d57);
+  color: var(--tg-success-text, #1c6e42);
   background: color-mix(in srgb, var(--tg-success, #1f9d57) 12%, transparent);
 }
 
 /* Blue / in-progress */
 .m-tg-status-badge--reserved,
 .m-tg-status-badge--pending {
-  color: var(--tg-accent, #2d7df6);
+  color: var(--tg-accent-text, #2869ca);
   background: var(--tg-accent-soft, #eaf1fe);
 }
 
@@ -67,7 +67,7 @@ const labelMap: Record<MTgStatusBadgeProps['status'], string> = {
 .m-tg-status-badge--cancelled,
 .m-tg-status-badge--rejected,
 .m-tg-status-badge--expired {
-  color: var(--tg-danger, #d64545);
+  color: var(--tg-danger-text, #af3c3d);
   background: color-mix(in srgb, var(--tg-danger, #d64545) 10%, transparent);
 }
 </style>

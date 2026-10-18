@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Rewards/MerchantAdmin',
 };
 
@@ -40,16 +38,16 @@ export const StaffView: Story = {
           </div>
           <div style="flex:1;">
             <div style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b);">{{ s.name }}</div>
-            <div style="font-size:12px; color:var(--tg-muted,#6a6e76);">{{ s.role }} · since {{ s.since }}</div>
+            <div style="font-size:12px; color:var(--tg-muted,#60646c);">{{ s.role }} · since {{ s.since }}</div>
           </div>
-          <button style="background:var(--tg-surface-sub,#f3f2ec); color:var(--tg-danger,#d64545);
+          <button style="background:var(--tg-surface-sub,#f3f2ec); color:var(--tg-danger-text,#af3c3d);
             border:none; border-radius:8px; padding:6px 14px;
             font-family:'Onest',system-ui,sans-serif; font-size:12px; cursor:pointer;">
             Remove
           </button>
         </div>
 
-        <button style="background:var(--tg-accent,#2d7df6); color:#fff; border:none;
+        <button style="background:var(--tg-button,#2970dd); color:#fff; border:none;
           border-radius:12px; padding:13px; width:100%;
           font-family:'Onest',system-ui,sans-serif; font-size:15px; font-weight:600; cursor:pointer;">
           + Add staff member
@@ -80,12 +78,12 @@ export const AccrualRules: Story = {
                 width:'8px', height:'8px', borderRadius:'50%',
                 background: r.status === 'active' ? 'var(--tg-success,#1f9d57)' : 'var(--tg-faint,#9a9da3)'
               }"></div>
-              <span style="font-size:12px; color:var(--tg-muted,#6a6e76);">{{ r.status }}</span>
+              <span style="font-size:12px; color:var(--tg-muted,#60646c);">{{ r.status }}</span>
             </div>
           </div>
-          <div style="font-size:12px; color:var(--tg-muted,#6a6e76);">Limit: {{ r.limit }}</div>
+          <div style="font-size:12px; color:var(--tg-muted,#60646c);">Limit: {{ r.limit }}</div>
           <div style="display:flex; gap:8px; margin-top:4px;">
-            <button :style="{ background: r.status === 'active' ? 'var(--tg-surface-sub,#f3f2ec)' : 'var(--tg-accent,#2d7df6)',
+            <button :style="{ background: r.status === 'active' ? 'var(--tg-surface-sub,#f3f2ec)' : 'var(--tg-button,#2970dd)',
               color: r.status === 'active' ? 'var(--tg-muted,#6a6e76)' : '#fff' }"
               style="flex:1; border:none; border-radius:10px; padding:9px;
                 font-family:'Onest',system-ui,sans-serif; font-size:13px; font-weight:600; cursor:pointer;">
@@ -94,7 +92,7 @@ export const AccrualRules: Story = {
           </div>
         </div>
 
-        <button style="background:transparent; color:var(--tg-accent,#2d7df6);
+        <button style="background:transparent; color:var(--tg-accent-text,#2869ca);
           border:1px dashed var(--tg-accent,#2d7df6); border-radius:12px; padding:13px; width:100%;
           font-family:'Onest',system-ui,sans-serif; font-size:15px; font-weight:600; cursor:pointer;">
           + New rule

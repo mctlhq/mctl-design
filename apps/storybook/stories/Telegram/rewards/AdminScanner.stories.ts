@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { MTgStatusBadge } from '@mctlhq/ui';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Rewards/AdminScanner',
 };
 
@@ -26,7 +24,7 @@ export const ScannerPanel: Story = {
         border:1px solid var(--tg-line,#e7e6e1);">
 
         <!-- Scanner area -->
-        <div style="background:var(--tg-ink,#15171b); padding:32px; display:flex;
+        <div style="background:#15171b; padding:32px; display:flex;
           flex-direction:column; align-items:center; gap:16px;">
           <div style="width:220px; height:220px; border:2px solid rgba(255,255,255,0.3);
             border-radius:20px; display:flex; align-items:center; justify-content:center;
@@ -36,7 +34,7 @@ export const ScannerPanel: Story = {
           <div style="font-size:14px; color:rgba(255,255,255,0.6);">
             Aim at the customer's QR code
           </div>
-          <button style="background:var(--tg-accent,#2d7df6); color:#fff; border:none;
+          <button style="background:var(--tg-button,#2970dd); color:#fff; border:none;
             border-radius:12px; padding:12px 32px; font-family:'Onest',system-ui,sans-serif;
             font-size:15px; font-weight:600; cursor:pointer;">
             Scan QR
@@ -57,17 +55,17 @@ export const ScannerPanel: Story = {
               <MTgStatusBadge :status="r.status" />
             </div>
             <div style="display:flex; align-items:center; justify-content:space-between;">
-              <span style="font-size:13px; color:var(--tg-muted,#6a6e76);">{{ r.reward }}</span>
-              <span style="font-size:13px; color:var(--tg-faint,#9a9da3);">{{ r.time }}</span>
+              <span style="font-size:13px; color:var(--tg-muted,#60646c);">{{ r.reward }}</span>
+              <span style="font-size:13px; color:var(--tg-muted,#60646c);">{{ r.time }}</span>
             </div>
             <div v-if="r.status === 'pending'"
               style="display:flex; gap:8px; margin-top:4px;">
-              <button style="flex:1; background:var(--tg-success,#1f9d57); color:#fff; border:none;
+              <button style="flex:1; background:color-mix(in srgb, var(--tg-success,#1f9d57) 70%, #000); color:#fff; border:none;
                 border-radius:10px; padding:10px; font-family:'Onest',system-ui,sans-serif;
                 font-size:14px; font-weight:600; cursor:pointer;">
                 Approve ({{ r.pts }} pts)
               </button>
-              <button style="background:var(--tg-surface-sub,#f3f2ec); color:var(--tg-danger,#d64545);
+              <button style="background:var(--tg-surface-sub,#f3f2ec); color:var(--tg-danger-text,#af3c3d);
                 border:none; border-radius:10px; padding:10px 16px;
                 font-family:'Onest',system-ui,sans-serif; font-size:14px; cursor:pointer;">
                 Reject
