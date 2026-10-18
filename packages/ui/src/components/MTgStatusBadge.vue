@@ -1,18 +1,19 @@
+<script lang="ts">
+export interface MTgStatusBadgeProps {
+  status:
+    | 'active'
+    | 'reserved'
+    | 'accepted'
+    | 'pending'
+    | 'completed'
+    | 'cancelled'
+    | 'rejected'
+    | 'expired';
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    status:
-      | 'active'
-      | 'reserved'
-      | 'accepted'
-      | 'pending'
-      | 'completed'
-      | 'cancelled'
-      | 'rejected'
-      | 'expired';
-  }>(),
-  {},
-);
+withDefaults(defineProps<MTgStatusBadgeProps>(), {});
 
 const labelMap: Record<string, string> = {
   active: 'Active',

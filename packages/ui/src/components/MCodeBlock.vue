@@ -1,14 +1,15 @@
+<script lang="ts">
+export interface MCodeBlockProps {
+  code: string;
+  /** Language hint shown in the caption, e.g. 'bash', 'json', 'go'. */
+  lang?: string;
+  /** Optional filename shown above the block. */
+  filename?: string;
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    code: string;
-    /** Language hint shown in the caption, e.g. 'bash', 'json', 'go'. */
-    lang?: string;
-    /** Optional filename shown above the block. */
-    filename?: string;
-  }>(),
-  { lang: '', filename: '' },
-);
+withDefaults(defineProps<MCodeBlockProps>(), { lang: '', filename: '' });
 </script>
 
 <template>

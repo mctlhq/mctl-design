@@ -1,31 +1,38 @@
-<script setup lang="ts">
-import { computed, useAttrs } from 'vue';
-import { useField } from '../composables/useField';
-
-interface Option {
+<script lang="ts">
+export interface MSelectOption {
   label: string;
   value: string;
 }
+
+export interface MSelectProps {
+  /** v-model value. */
+  modelValue?: string;
+  /** MSelectOption list — value strings or {label, value} objects. */
+  options: Array<string | MSelectOption>;
+  disabled?: boolean;
+  invalid?: boolean;
+  id?: string;
+  /** Shown while no value is chosen; not selectable again. */
+  placeholder?: string;
+}
+</script>
+
+<script setup lang="ts">
+import { computed, useAttrs } from 'vue';
+import { useField } from '../composables/useField';
 
 // inheritAttrs:false so fallthrough attrs (e.g. aria-describedby from MField)
 // reach the native <select>, not the wrapper div. Layout attrs (class/style)
 // stay on the wrapper.
 defineOptions({ inheritAttrs: false });
 
-const props = withDefaults(
-  defineProps<{
-    /** v-model value. */
-    modelValue?: string;
-    /** Option list — value strings or {label, value} objects. */
-    options: Array<string | Option>;
-    disabled?: boolean;
-    invalid?: boolean;
-    id?: string;
-    /** Shown while no value is chosen; not selectable again. */
-    placeholder?: string;
-  }>(),
-  { modelValue: '', disabled: false, invalid: false, id: undefined, placeholder: '' },
-);
+const props = withDefaults(defineProps<MSelectProps>(), {
+  modelValue: '',
+  disabled: false,
+  invalid: false,
+  id: undefined,
+  placeholder: '',
+});
 
 defineEmits<{ 'update:modelValue': [value: string] }>();
 
@@ -44,7 +51,7 @@ const controlAttrs = computed(() => {
   return rest;
 });
 
-function normalize(opt: string | Option): Option {
+function normalize(opt: string | MSelectOption): MSelectOption {
   return typeof opt === 'string' ? { label: opt, value: opt } : opt;
 }
 </script>

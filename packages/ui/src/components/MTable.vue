@@ -1,17 +1,18 @@
+<script lang="ts">
+export interface MTableProps {
+  /**
+   * Names the scrollable region, which is a tab stop; use the table's
+   * caption text. Defaults to a generic name so the stop is never unnamed.
+   */
+  label?: string;
+}
+</script>
+
 <script setup lang="ts">
 // Semantic wrapper that applies MCTL table styles via a scoped class on a
 // container div. The consumer writes plain <table>, <thead>, <tbody> etc.
 // inside the default slot — they inherit styles through the deep selector.
-withDefaults(
-  defineProps<{
-    /**
-     * Names the scrollable region, which is a tab stop; use the table's
-     * caption text. Defaults to a generic name so the stop is never unnamed.
-     */
-    label?: string;
-  }>(),
-  { label: 'Table' },
-);
+withDefaults(defineProps<MTableProps>(), { label: 'Table' });
 </script>
 
 <template>

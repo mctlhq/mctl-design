@@ -1,18 +1,26 @@
+<script lang="ts">
+export interface MTextareaProps {
+  /** v-model value. */
+  modelValue?: string;
+  placeholder?: string;
+  rows?: number;
+  disabled?: boolean;
+  invalid?: boolean;
+  id?: string;
+}
+</script>
+
 <script setup lang="ts">
 import { useField } from '../composables/useField';
 
-const props = withDefaults(
-  defineProps<{
-    /** v-model value. */
-    modelValue?: string;
-    placeholder?: string;
-    rows?: number;
-    disabled?: boolean;
-    invalid?: boolean;
-    id?: string;
-  }>(),
-  { modelValue: '', placeholder: '', rows: 4, disabled: false, invalid: false, id: undefined },
-);
+const props = withDefaults(defineProps<MTextareaProps>(), {
+  modelValue: '',
+  placeholder: '',
+  rows: 4,
+  disabled: false,
+  invalid: false,
+  id: undefined,
+});
 
 defineEmits<{ 'update:modelValue': [value: string] }>();
 

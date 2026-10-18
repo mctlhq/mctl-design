@@ -1,24 +1,31 @@
+<script lang="ts">
+export interface MFieldProps {
+  label?: string;
+  /**
+   * Id of the control the label names. Optional for MInput, MTextarea and
+   * MSelect, which wire themselves; a custom control takes `id` from the
+   * slot props instead.
+   */
+  for?: string;
+  /** Help text shown below the control. */
+  hint?: string;
+  /** Error message — replaces the hint and is announced to AT. */
+  error?: string;
+  required?: boolean;
+}
+</script>
+
 <script setup lang="ts">
 import { computed, provide, shallowRef, useId } from 'vue';
 import { fieldKey } from '../composables/useField';
 
-const props = withDefaults(
-  defineProps<{
-    label?: string;
-    /**
-     * Id of the control the label names. Optional for MInput, MTextarea and
-     * MSelect, which wire themselves; a custom control takes `id` from the
-     * slot props instead.
-     */
-    for?: string;
-    /** Help text shown below the control. */
-    hint?: string;
-    /** Error message — replaces the hint and is announced to AT. */
-    error?: string;
-    required?: boolean;
-  }>(),
-  { label: '', for: '', hint: '', error: '', required: false },
-);
+const props = withDefaults(defineProps<MFieldProps>(), {
+  label: '',
+  for: '',
+  hint: '',
+  error: '',
+  required: false,
+});
 
 // Without `for`, the field names its control itself: MInput, MTextarea and
 // MSelect in the slot pick up this id, aria-describedby, aria-invalid and

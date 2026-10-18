@@ -11,6 +11,14 @@ headings below and are all included in 0.8.0.
 
 ## Unreleased
 
+### Added
+
+- `@mctlhq/ui` exports each component's props type (`MButtonProps`,
+  `MModalProps`, … one `M<Name>Props` per component), plus the item types the
+  list props take: `MAccordionItem`, `MSelectOption` and `MTabsItem`, next to
+  the existing `MTgTab`. Type-only: the built JavaScript and CSS are
+  unchanged.
+
 ### Changed
 
 - **Breaking for Vue 3.4 consumers:** `@mctlhq/ui` needs Vue 3.5 (peer

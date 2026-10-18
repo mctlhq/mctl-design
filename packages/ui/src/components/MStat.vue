@@ -1,17 +1,18 @@
+<script lang="ts">
+export interface MStatProps {
+  /** The headline figure, e.g. "99.95%" or "39". */
+  value: string;
+  /** Marker label above the figure. */
+  label?: string;
+  /** Optional caption below the figure. */
+  caption?: string;
+  /** Optional trend indicator. */
+  trend?: 'up' | 'down' | 'flat';
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    /** The headline figure, e.g. "99.95%" or "39". */
-    value: string;
-    /** Marker label above the figure. */
-    label?: string;
-    /** Optional caption below the figure. */
-    caption?: string;
-    /** Optional trend indicator. */
-    trend?: 'up' | 'down' | 'flat';
-  }>(),
-  { label: '', caption: '', trend: undefined },
-);
+withDefaults(defineProps<MStatProps>(), { label: '', caption: '', trend: undefined });
 </script>
 
 <template>

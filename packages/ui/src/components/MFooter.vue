@@ -1,11 +1,12 @@
+<script lang="ts">
+export interface MFooterProps {
+  links?: Array<{ label: string; href: string }>;
+  copyright?: string;
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    links?: Array<{ label: string; href: string }>;
-    copyright?: string;
-  }>(),
-  { links: () => [], copyright: '' },
-);
+withDefaults(defineProps<MFooterProps>(), { links: () => [], copyright: '' });
 </script>
 
 <template>

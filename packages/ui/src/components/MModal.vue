@@ -1,19 +1,25 @@
+<script lang="ts">
+export interface MModalProps {
+  /** v-model:open — controls visibility. */
+  open?: boolean;
+  title?: string;
+  /** Accessible name when there is no visible title. Set it: the default is generic. */
+  ariaLabel?: string;
+  /** Hide the close affordance and disable backdrop/Esc dismissal. */
+  dismissible?: boolean;
+}
+</script>
+
 <script setup lang="ts">
 import { ref } from 'vue';
 import { nextDialogId, useDialog } from '../composables/useDialog';
 
-const props = withDefaults(
-  defineProps<{
-    /** v-model:open — controls visibility. */
-    open?: boolean;
-    title?: string;
-    /** Accessible name when there is no visible title. Set it: the default is generic. */
-    ariaLabel?: string;
-    /** Hide the close affordance and disable backdrop/Esc dismissal. */
-    dismissible?: boolean;
-  }>(),
-  { open: false, title: '', ariaLabel: 'Dialog', dismissible: true },
-);
+const props = withDefaults(defineProps<MModalProps>(), {
+  open: false,
+  title: '',
+  ariaLabel: 'Dialog',
+  dismissible: true,
+});
 
 const emit = defineEmits<{ 'update:open': [value: boolean] }>();
 

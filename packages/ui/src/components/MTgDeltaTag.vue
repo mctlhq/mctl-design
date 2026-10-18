@@ -1,15 +1,16 @@
+<script lang="ts">
+export interface MTgDeltaTagProps {
+  /** Percentage delta, e.g. 3.2 for +3.2%, -1.1 for -1.1%. */
+  delta: number;
+  /** Threshold below which the delta is shown as neutral. Default 0.1. */
+  threshold?: number;
+}
+</script>
+
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = withDefaults(
-  defineProps<{
-    /** Percentage delta, e.g. 3.2 for +3.2%, -1.1 for -1.1%. */
-    delta: number;
-    /** Threshold below which the delta is shown as neutral. Default 0.1. */
-    threshold?: number;
-  }>(),
-  { threshold: 0.1 },
-);
+const props = withDefaults(defineProps<MTgDeltaTagProps>(), { threshold: 0.1 });
 
 const abs = computed(() => Math.abs(props.delta));
 const isNeutral = computed(() => abs.value < props.threshold);

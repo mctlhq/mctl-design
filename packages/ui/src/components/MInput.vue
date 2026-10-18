@@ -1,19 +1,27 @@
+<script lang="ts">
+export interface MInputProps {
+  /** v-model value. */
+  modelValue?: string;
+  type?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  /** Mark the field as invalid (accent flips to the bad status colour). */
+  invalid?: boolean;
+  id?: string;
+}
+</script>
+
 <script setup lang="ts">
 import { useField } from '../composables/useField';
 
-const props = withDefaults(
-  defineProps<{
-    /** v-model value. */
-    modelValue?: string;
-    type?: string;
-    placeholder?: string;
-    disabled?: boolean;
-    /** Mark the field as invalid (accent flips to the bad status colour). */
-    invalid?: boolean;
-    id?: string;
-  }>(),
-  { modelValue: '', type: 'text', placeholder: '', disabled: false, invalid: false, id: undefined },
-);
+const props = withDefaults(defineProps<MInputProps>(), {
+  modelValue: '',
+  type: 'text',
+  placeholder: '',
+  disabled: false,
+  invalid: false,
+  id: undefined,
+});
 
 defineEmits<{ 'update:modelValue': [value: string] }>();
 

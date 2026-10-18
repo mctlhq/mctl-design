@@ -1,10 +1,11 @@
+<script lang="ts">
+export interface MPageLayoutProps {
+  maxWidth?: 'sm' | 'md' | 'lg' | 'full';
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    maxWidth?: 'sm' | 'md' | 'lg' | 'full';
-  }>(),
-  { maxWidth: 'md' },
-);
+withDefaults(defineProps<MPageLayoutProps>(), { maxWidth: 'md' });
 
 const widthMap = {
   sm: 'var(--mctl-layout-container-sm)',

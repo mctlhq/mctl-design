@@ -1,12 +1,13 @@
+<script lang="ts">
+export interface MNavProps {
+  items: Array<{ label: string; href: string; active?: boolean }>;
+  /** Names the landmark, so it stays distinct from other navs on the page. */
+  ariaLabel?: string;
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    items: Array<{ label: string; href: string; active?: boolean }>;
-    /** Names the landmark, so it stays distinct from other navs on the page. */
-    ariaLabel?: string;
-  }>(),
-  { ariaLabel: 'Main' },
-);
+withDefaults(defineProps<MNavProps>(), { ariaLabel: 'Main' });
 </script>
 
 <template>

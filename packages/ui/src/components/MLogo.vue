@@ -1,17 +1,18 @@
+<script lang="ts">
+export interface MLogoProps {
+  /** CSS size for width and height. A number is treated as px. */
+  size?: number | string;
+  /** Soft accent glow via color-mix of currentColor. */
+  glow?: boolean;
+  /** Accessible name. Pass an empty string for a decorative mark. */
+  label?: string;
+}
+</script>
+
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = withDefaults(
-  defineProps<{
-    /** CSS size for width and height. A number is treated as px. */
-    size?: number | string;
-    /** Soft accent glow via color-mix of currentColor. */
-    glow?: boolean;
-    /** Accessible name. Pass an empty string for a decorative mark. */
-    label?: string;
-  }>(),
-  { size: 180, glow: false, label: 'MCTL' },
-);
+const props = withDefaults(defineProps<MLogoProps>(), { size: 180, glow: false, label: 'MCTL' });
 
 const sizeCss = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size));
 </script>

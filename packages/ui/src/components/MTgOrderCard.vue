@@ -1,37 +1,44 @@
+<script lang="ts">
+export interface MTgOrderCardProps {
+  /** BUY or SELL. */
+  direction: 'BUY' | 'SELL';
+  /** e.g. "EUR / RUB" */
+  pair: string;
+  /** Human-readable rate, e.g. "93.50 RUB" */
+  rate: string;
+  /** Rate deviation from market, e.g. 2.1 for +2.1%. */
+  delta?: number;
+  /** Payment methods, e.g. ["SWIFT", "SEPA"] */
+  methods?: string[];
+  /** Volume, e.g. "500–5000 EUR" */
+  volume?: string;
+  /** Order status. */
+  status?:
+    | 'active'
+    | 'reserved'
+    | 'accepted'
+    | 'pending'
+    | 'completed'
+    | 'cancelled'
+    | 'rejected'
+    | 'expired';
+  /** Display name of the order creator. */
+  author?: string;
+}
+</script>
+
 <script setup lang="ts">
 import { ref } from 'vue';
 import MTgStatusBadge from './MTgStatusBadge.vue';
 import MTgDeltaTag from './MTgDeltaTag.vue';
 
-withDefaults(
-  defineProps<{
-    /** BUY or SELL. */
-    direction: 'BUY' | 'SELL';
-    /** e.g. "EUR / RUB" */
-    pair: string;
-    /** Human-readable rate, e.g. "93.50 RUB" */
-    rate: string;
-    /** Rate deviation from market, e.g. 2.1 for +2.1%. */
-    delta?: number;
-    /** Payment methods, e.g. ["SWIFT", "SEPA"] */
-    methods?: string[];
-    /** Volume, e.g. "500–5000 EUR" */
-    volume?: string;
-    /** Order status. */
-    status?:
-      | 'active'
-      | 'reserved'
-      | 'accepted'
-      | 'pending'
-      | 'completed'
-      | 'cancelled'
-      | 'rejected'
-      | 'expired';
-    /** Display name of the order creator. */
-    author?: string;
-  }>(),
-  { delta: 0, methods: () => [], volume: '', status: 'active', author: '' },
-);
+withDefaults(defineProps<MTgOrderCardProps>(), {
+  delta: 0,
+  methods: () => [],
+  volume: '',
+  status: 'active',
+  author: '',
+});
 
 const emit = defineEmits<{ click: [] }>();
 

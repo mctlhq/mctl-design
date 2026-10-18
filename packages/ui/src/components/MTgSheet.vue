@@ -1,20 +1,26 @@
+<script lang="ts">
+export interface MTgSheetProps {
+  /** Controls visibility — use with v-model. */
+  modelValue?: boolean;
+  /** Sheet title shown in the drag-indicator row. */
+  title?: string;
+  /** Accessible name when there is no visible title. */
+  ariaLabel?: string;
+  /** Apply safe-area-inset-bottom padding at the bottom. */
+  safeArea?: boolean;
+}
+</script>
+
 <script setup lang="ts">
 import { ref } from 'vue';
 import { nextDialogId, useDialog } from '../composables/useDialog';
 
-const props = withDefaults(
-  defineProps<{
-    /** Controls visibility — use with v-model. */
-    modelValue?: boolean;
-    /** Sheet title shown in the drag-indicator row. */
-    title?: string;
-    /** Accessible name when there is no visible title. */
-    ariaLabel?: string;
-    /** Apply safe-area-inset-bottom padding at the bottom. */
-    safeArea?: boolean;
-  }>(),
-  { modelValue: false, title: '', ariaLabel: 'Sheet', safeArea: true },
-);
+const props = withDefaults(defineProps<MTgSheetProps>(), {
+  modelValue: false,
+  title: '',
+  ariaLabel: 'Sheet',
+  safeArea: true,
+});
 
 const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>();
 

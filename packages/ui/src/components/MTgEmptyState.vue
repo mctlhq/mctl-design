@@ -1,15 +1,20 @@
+<script lang="ts">
+export interface MTgEmptyStateProps {
+  /** Visual variant. */
+  variant?: 'empty' | 'loading' | 'error';
+  /** Primary message. */
+  title?: string;
+  /** Secondary message. */
+  description?: string;
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    /** Visual variant. */
-    variant?: 'empty' | 'loading' | 'error';
-    /** Primary message. */
-    title?: string;
-    /** Secondary message. */
-    description?: string;
-  }>(),
-  { variant: 'empty', title: 'Nothing here yet', description: '' },
-);
+withDefaults(defineProps<MTgEmptyStateProps>(), {
+  variant: 'empty',
+  title: 'Nothing here yet',
+  description: '',
+});
 
 // Stroke icons rather than emoji: emoji render differently on every platform
 // and screen readers may announce them; these are decorative and hidden.

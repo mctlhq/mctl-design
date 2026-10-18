@@ -1,15 +1,19 @@
-<script setup lang="ts">
-import { computed, nextTick, useId } from 'vue';
-
-interface Tab {
+<script lang="ts">
+export interface MTabsItem {
   label: string;
   /** Unique within `tabs`: it is the v-model value. */
   value: string;
 }
 
-const props = defineProps<{
-  tabs: Tab[];
-}>();
+export interface MTabsProps {
+  tabs: MTabsItem[];
+}
+</script>
+
+<script setup lang="ts">
+import { computed, nextTick, useId } from 'vue';
+
+const props = defineProps<MTabsProps>();
 
 // v-model: the active tab value. Defaults to the first tab. Without a v-model
 // binding defineModel keeps the value locally, so the component also works
