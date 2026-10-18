@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import MYamlBlock from '../src/components/MYamlBlock.vue';
 
-// Each rendered line as [kind, text] pairs, in order.
+// Each rendered line as [kind, text] pairs, in order. The raw textContent,
+// not VTU's text(), which trims: indentation and the blank-line filler are
+// whitespace, and losing them is the regression worth catching.
 function tokens(code: string) {
   const wrapper = mount(MYamlBlock, { props: { code } });
   return wrapper.findAll('.m-yaml__line').map((line) =>
@@ -11,7 +13,7 @@ function tokens(code: string) {
         .classes()
         .find((c) => c.startsWith('m-yaml__t-'))!
         .slice('m-yaml__t-'.length);
-      return [kind, seg.text()];
+      return [kind, seg.element.textContent];
     }),
   );
 }
@@ -20,10 +22,10 @@ describe('MYamlBlock colorizer', () => {
   it('splits a key/value line into indent, key, colon and value', () => {
     expect(tokens('  name: api')).toEqual([
       [
-        ['plain', ''],
+        ['plain', '  '],
         ['key', 'name'],
         ['punct', ':'],
-        ['string', 'api'],
+        ['string', ' api'],
       ],
     ]);
   });
@@ -31,7 +33,7 @@ describe('MYamlBlock colorizer', () => {
   it('keeps a list-item key and treats a key with no value as plain', () => {
     expect(tokens('- port:\nmetadata: ')).toEqual([
       [
-        ['plain', '-'],
+        ['plain', '- '],
         ['key', 'port'],
         ['punct', ':'],
       ],
@@ -39,33 +41,47 @@ describe('MYamlBlock colorizer', () => {
         ['plain', ''],
         ['key', 'metadata'],
         ['punct', ':'],
-        ['plain', ''],
+        ['plain', ' '],
       ],
     ]);
   });
 
   it('colours a whole-line comment and an inline one', () => {
     expect(tokens('  # deployment\nreplicas: 3 # scale later')).toEqual([
-      [['comment', '# deployment']],
+      [['comment', '  # deployment']],
       [
         ['plain', ''],
         ['key', 'replicas'],
         ['punct', ':'],
-        ['string', '3'],
-        ['comment', '# scale later'],
+        ['string', ' 3'],
+        ['comment', ' # scale later'],
       ],
     ]);
   });
 
-  it('renders a line that is not key/value, and a blank line, as plain', () => {
+  it('treats any " #" as the start of a comment, even inside a value', () => {
+    // A known limit of a presentation-only colorizer, kept on purpose: it
+    // splits on the first " #" without knowing about quoting.
+    expect(tokens('title: Issue #42')).toEqual([
+      [
+        ['plain', ''],
+        ['key', 'title'],
+        ['punct', ':'],
+        ['string', ' Issue'],
+        ['comment', ' #42'],
+      ],
+    ]);
+  });
+
+  it('renders a non key/value line as plain, and a blank line as one space', () => {
     expect(tokens('- just text\n\nend: 1\n')).toEqual([
       [['plain', '- just text']],
-      [['plain', '']],
+      [['plain', ' ']],
       [
         ['plain', ''],
         ['key', 'end'],
         ['punct', ':'],
-        ['string', '1'],
+        ['string', ' 1'],
       ],
     ]);
   });

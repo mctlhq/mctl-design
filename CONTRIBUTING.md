@@ -145,9 +145,9 @@ filing an alert after merge.
 It gates at `low` because nothing is knowingly open. The last low advisory,
 esbuild `GHSA-g7r4-m6w7-qqqr` (`>=0.27.3 <0.28.1`), reached the tree only
 through `tsup@8` → `esbuild@0.27.x`; `tsup@9` depends on `esbuild@^0.28.2` and
-closed it. Storybook 10 dropped `esbuild-register` and Vite 8 bundles with
-Rolldown, so `esbuild@0.28.2` from `tsup` is now the only copy; still re-read
-`pnpm audit`'s paths before assuming where a future advisory enters. If an
+closed it. Storybook 10 dropped `esbuild-register`, so `esbuild@0.28.2` is the
+only copy left, shared by `tsup` and (as an optional peer) Vite 8: a future
+esbuild advisory prints both paths in `pnpm audit`. If an
 advisory has to stay open, lower the gate to one level above it and record the
 reason here rather than ignoring it.
 

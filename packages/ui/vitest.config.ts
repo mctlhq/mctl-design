@@ -17,8 +17,10 @@ export default defineConfig({
       // A per-file floor, so a source file that appears in no test fails on
       // its own whatever the size of the package (a pooled total lets a small
       // one slip through). It is a presence check, not proof of behaviour: a
-      // bare mount() in the a11y smoke test clears it. The bars sit a little
-      // under the weakest file today (MYamlBlock: 82 / 50 / 100 / 83).
+      // bare mount() in the a11y smoke test clears it. The bars sit at or a
+      // little under the weakest file per metric today: statements MTooltip
+      // 94, branches MTgStatusBadge and MLogo 50 (each has only two), lines
+      // useDialog 97.
       thresholds: {
         perFile: true,
         statements: 80,
