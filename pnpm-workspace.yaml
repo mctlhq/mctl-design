@@ -6,5 +6,5 @@ packages:
 # apps/storybook. Both consumed the same vite range and had to be edited in
 # lockstep by hand; a catalog makes the next major a one-line change.
 catalog:
-  vite: ^7.3.6
+  vite: ^8.3.4
   '@vitejs/plugin-vue': ^6.0.10
