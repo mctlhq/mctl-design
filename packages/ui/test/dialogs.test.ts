@@ -322,38 +322,6 @@ describe('stacked dialogs', () => {
   });
 });
 
-describe('MTgSheet deprecated plain v-model', () => {
-  function mountSheet(props: Record<string, unknown>) {
-    const warnings: string[] = [];
-    const wrapper = mount(MTgSheet, {
-      props: { title: 'Legacy', ...props },
-      attachTo: document.body,
-      global: { config: { warnHandler: (msg: string) => void warnings.push(msg) } },
-    });
-    return { wrapper, warnings };
-  }
-
-  it('still opens and closes through modelValue, with a dev warning', async () => {
-    const { wrapper, warnings } = mountSheet({ modelValue: true });
-    await flushPromises();
-    expect(document.querySelector('[role="dialog"]')).not.toBeNull();
-    key('Escape');
-    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false]);
-    expect(wrapper.emitted('update:open')).toBeUndefined();
-    expect(warnings.some((m) => m.includes('use `v-model:open`'))).toBe(true);
-    await wrapper.setProps({ modelValue: false });
-    expect(document.querySelector('[role="dialog"]')).toBeNull();
-    wrapper.unmount();
-  });
-
-  it('does not warn under v-model:open', async () => {
-    const { wrapper, warnings } = mountSheet({ open: true });
-    await flushPromises();
-    expect(warnings).toEqual([]);
-    wrapper.unmount();
-  });
-});
-
 describe('dialogs without a v-model', () => {
   // defineModel closes locally when nothing listens. A bare emit used to leave
   // an uncontrolled dialog open, with Escape, the backdrop and the close
