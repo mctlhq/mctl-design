@@ -18,7 +18,7 @@ RUN pnpm build && pnpm build:storybook
 # /tmp, so the container needs no capabilities and works with a read-only
 # root filesystem (base-service step-2 defaults). The numeric USER lets the
 # kubelet verify runAsNonRoot.
-FROM nginxinc/nginx-unprivileged:1.30-alpine@sha256:782bb89768cc87b7f95c18b95baa1af250e5d451f26794f59363540161147c01 AS runtime
+FROM nginxinc/nginx-unprivileged:1.31-alpine@sha256:378d0c32f6562f7fd9629170797f57d2b953aa09be983b3daaf4809bb039ca00 AS runtime
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY --from=builder /app/apps/storybook/storybook-static /usr/share/nginx/html
