@@ -190,18 +190,18 @@ describe('MTgSheet dialog behaviour', () => {
     trigger.focus();
 
     const wrapper = mount(MTgSheet, {
-      props: { modelValue: false, title: 'Confirm action' },
+      props: { open: false, title: 'Confirm action' },
       attachTo: document.body,
     });
-    await wrapper.setProps({ modelValue: true });
+    await wrapper.setProps({ open: true });
     await flushPromises();
     expect(document.activeElement).toBe(dialog());
     expect(document.body.style.overflow).toBe('hidden');
 
     key('Escape');
-    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false]);
+    expect(wrapper.emitted('update:open')?.[0]).toEqual([false]);
 
-    await wrapper.setProps({ modelValue: false });
+    await wrapper.setProps({ open: false });
     expect(document.activeElement).toBe(trigger);
     expect(document.body.style.overflow).toBe('');
     wrapper.unmount();
@@ -209,7 +209,7 @@ describe('MTgSheet dialog behaviour', () => {
 
   it('is named by its title and passes axe', async () => {
     const wrapper = mount(MTgSheet, {
-      props: { modelValue: true, title: 'Confirm action' },
+      props: { open: true, title: 'Confirm action' },
       slots: { default: () => h('p', 'Body') },
       attachTo: document.body,
     });
@@ -231,12 +231,12 @@ describe('stacked dialogs', () => {
     await flushPromises();
     dialog().querySelector('button')!.focus();
     // B and C open in the same tick, so both remember A's button.
-    const b = mount(MTgSheet, { props: { modelValue: true, title: 'B' }, attachTo: document.body });
+    const b = mount(MTgSheet, { props: { open: true, title: 'B' }, attachTo: document.body });
     const c = mount(MModal, { props: { open: true, title: 'C' }, attachTo: document.body });
     await flushPromises();
 
     await a.setProps({ open: false });
-    await b.setProps({ modelValue: false });
+    await b.setProps({ open: false });
     await c.setProps({ open: false });
     expect(document.activeElement).toBe(trigger);
     c.unmount();
@@ -254,7 +254,7 @@ describe('stacked dialogs', () => {
     const modal = modalWithButtons();
     await flushPromises();
     const sheet = mount(MTgSheet, {
-      props: { modelValue: true, title: 'Over the modal' },
+      props: { open: true, title: 'Over the modal' },
       attachTo: document.body,
     });
     await flushPromises();
@@ -268,7 +268,7 @@ describe('stacked dialogs', () => {
 
     // The sheet's own focus target lived in the closed modal; it inherits the
     // modal's, the button that opened the whole stack.
-    await sheet.setProps({ modelValue: false });
+    await sheet.setProps({ open: false });
     expect(app.hasAttribute('inert')).toBe(false);
     expect(document.activeElement).toBe(trigger);
     expect(document.body.style.overflow).toBe('');
@@ -284,7 +284,7 @@ describe('stacked dialogs', () => {
       const modal = modalWithButtons();
       await flushPromises();
       const sheet = mount(MTgSheet, {
-        props: { modelValue: true, title: 'Over the modal' },
+        props: { open: true, title: 'Over the modal' },
         attachTo: document.body,
       });
       await flushPromises();
@@ -301,16 +301,16 @@ describe('stacked dialogs', () => {
     const modal = modalWithButtons();
     await flushPromises();
     const sheet = mount(MTgSheet, {
-      props: { modelValue: true, title: 'Over the modal' },
+      props: { open: true, title: 'Over the modal' },
       attachTo: document.body,
     });
     await flushPromises();
 
     key('Escape');
-    expect(sheet.emitted('update:modelValue')?.[0]).toEqual([false]);
+    expect(sheet.emitted('update:open')?.[0]).toEqual([false]);
     expect(modal.emitted('update:open')).toBeUndefined();
 
-    await sheet.setProps({ modelValue: false });
+    await sheet.setProps({ open: false });
     expect(document.body.style.overflow).toBe('hidden');
 
     key('Escape');
@@ -319,6 +319,38 @@ describe('stacked dialogs', () => {
     expect(document.body.style.overflow).toBe('');
     sheet.unmount();
     modal.unmount();
+  });
+});
+
+describe('MTgSheet deprecated plain v-model', () => {
+  function mountSheet(props: Record<string, unknown>) {
+    const warnings: string[] = [];
+    const wrapper = mount(MTgSheet, {
+      props: { title: 'Legacy', ...props },
+      attachTo: document.body,
+      global: { config: { warnHandler: (msg: string) => void warnings.push(msg) } },
+    });
+    return { wrapper, warnings };
+  }
+
+  it('still opens and closes through modelValue, with a dev warning', async () => {
+    const { wrapper, warnings } = mountSheet({ modelValue: true });
+    await flushPromises();
+    expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+    key('Escape');
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false]);
+    expect(wrapper.emitted('update:open')).toBeUndefined();
+    expect(warnings.some((m) => m.includes('use `v-model:open`'))).toBe(true);
+    await wrapper.setProps({ modelValue: false });
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    wrapper.unmount();
+  });
+
+  it('does not warn under v-model:open', async () => {
+    const { wrapper, warnings } = mountSheet({ open: true });
+    await flushPromises();
+    expect(warnings).toEqual([]);
+    wrapper.unmount();
   });
 });
 
@@ -339,7 +371,7 @@ describe('dialogs without a v-model', () => {
 
   it('MTgSheet closes itself', async () => {
     const wrapper = mount(MTgSheet, {
-      props: { modelValue: true, title: 'Filters' },
+      props: { open: true, title: 'Filters' },
       attachTo: document.body,
     });
     await flushPromises();
@@ -348,7 +380,7 @@ describe('dialogs without a v-model', () => {
     document.querySelector<HTMLElement>('.m-tg-sheet__close')!.click();
     await flushPromises();
     expect(document.querySelector('[role="dialog"]')).toBeNull();
-    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false]);
+    expect(wrapper.emitted('update:open')?.[0]).toEqual([false]);
     wrapper.unmount();
   });
 });
