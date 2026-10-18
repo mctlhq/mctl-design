@@ -31,8 +31,11 @@ export function useScrollFocus(el: Ref<HTMLElement | null>) {
     measure();
   });
   // A changed prop or slot (a wider line, another row) re-renders the
-  // component; measure the new content then.
-  onUpdated(measure);
+  // component; measure the new content then. Only with an observer: one
+  // measurement it never refreshes could drop the stop for good.
+  onUpdated(() => {
+    if (observer) measure();
+  });
   onBeforeUnmount(() => observer?.disconnect());
 
   return focusable;

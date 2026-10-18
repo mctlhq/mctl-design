@@ -77,4 +77,16 @@ describe('scroll containers', () => {
     expect(pre.attributes('tabindex')).toBe('0');
     wrapper.unmount();
   });
+
+  it('stays a tab stop without ResizeObserver, re-renders included', async () => {
+    // jsdom has none: nothing could ever restore the stop once dropped.
+    const wrapper = mount(MCodeBlock, { props: { code: 'x' }, attachTo: document.body });
+    const pre = wrapper.find('pre');
+    await nextTick();
+    expect(pre.attributes('tabindex')).toBe('0');
+    await wrapper.setProps({ code: 'y' });
+    await nextTick();
+    expect(pre.attributes('tabindex')).toBe('0');
+    wrapper.unmount();
+  });
 });
