@@ -60,3 +60,6 @@ const sheet: InstanceType<typeof MTgSheet>['$props'] = {
   'onUpdate:open': (value: boolean) => void value,
 };
 void sheet;
+// @ts-expect-error The plain v-model (modelValue) was removed in 0.14.0.
+const legacySheet: InstanceType<typeof MTgSheet>['$props'] = { modelValue: true };
+void legacySheet;
