@@ -11,7 +11,7 @@ jobs:
     # Pinned to a commit like claude-review.yml, not @main: this job holds
     # pull-requests: write, and a moving ref would let any push to the org
     # repo change what runs here. Dependabot (github-actions) bumps the pin.
-    uses: mctlhq/.github/.github/workflows/agy-review.yml@04a281616fc658ad2c71ec3028f0b53eef2c252c
+    uses: mctlhq/.github/.github/workflows/agy-review.yml@6f35424f140a15557c3405ebed6d08851eb496b2
     permissions:
       contents: read
       pull-requests: write
