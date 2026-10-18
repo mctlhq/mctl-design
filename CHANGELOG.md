@@ -52,6 +52,12 @@ colour contrast included, in both themes.
   server and before hydration, and stay focusable where `ResizeObserver` is
   missing.
 
+### Removed
+
+- **Breaking:** `MTgSheet`'s plain `v-model` (`modelValue`), deprecated in
+  0.13.0. Bind visibility with `v-model:open` (or `:open` /
+  `@update:open`), as `MModal` does.
+
 ## 0.13.0 — 2026-10-18
 
 ### Added
