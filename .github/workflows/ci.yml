@@ -175,6 +175,8 @@ jobs:
         # Last on purpose: it is the slowest step, and every cheaper check
         # above should report first.
         run: scripts/browser-tests-docker.sh
+        # A hung Chromium should cost minutes, not the 6-hour job default.
+        timeout-minutes: 30
 
       - name: Upload screenshot diffs
         if: failure()

@@ -18,6 +18,7 @@ const SHEETS: Array<[pkg: string, files: string[]]> = [
 ];
 
 const FONT_HOST = 'https://fonts.test';
+const PACKAGES = new Set(SHEETS.map(([pkg]) => pkg));
 
 const css = SHEETS.flatMap(([pkg, files]) =>
   files.map((f) =>
@@ -36,6 +37,10 @@ export async function serveLocalFonts(page: Page) {
   await page.route(`${FONT_HOST}/**`, (route) => {
     const path = new URL(route.request().url()).pathname.slice(1);
     const [scope, name, ...rest] = path.split('/');
+    // Only the font files of the packages above, so a typo fails loudly.
+    if (!PACKAGES.has(`${scope}/${name}`) || rest[0] !== 'files' || rest.some((s) => s === '..')) {
+      return route.abort();
+    }
     const file = join(pkgDir(`${scope}/${name}`), ...rest);
     const type = file.endsWith('.woff2') ? 'font/woff2' : 'font/woff';
     return route.fulfill({ contentType: type, body: readFileSync(file) });

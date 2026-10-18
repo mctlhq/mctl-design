@@ -61,16 +61,17 @@ pnpm check:token-version   # a token or generator change needs a version bump,
 ```bash
 pnpm test:browser:docker   # what CI runs: every story in Chromium, both themes
 pnpm test:visual:update    # rewrite the screenshot baselines after a visual change
-pnpm test:browser          # the same on this machine (after pnpm build and
-                           # pnpm build:storybook; `pnpm --filter
+pnpm test:browser          # the same on this machine; builds the packages and
+                           # Storybook first (needs `pnpm --filter
                            # @mctlhq/storybook exec playwright install chromium`)
 ```
 
 Each story renders in both themes. Its play function runs and axe must pass
 (`pnpm --filter @mctlhq/storybook test:a11y`). Then a full-page screenshot must
 match its baseline in `apps/storybook/visual/__screenshots__`
-(`test:visual`). The tests serve the fonts from `@fontsource` instead of
-Google Fonts, so they need no network and stay byte-stable.
+(`test:visual`). The screenshot run serves the fonts from `@fontsource`
+instead of Google Fonts, so it needs no font network and stays byte-stable.
+The a11y run still loads them from Google Fonts.
 
 Font rendering differs between machines, so baselines only come from the
 pinned Playwright image (`scripts/browser-tests-docker.sh`). Docker is the one

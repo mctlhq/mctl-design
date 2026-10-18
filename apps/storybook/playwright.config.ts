@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 // Screenshots of every story in both themes, compared against the baselines
 // committed under visual/__screenshots__. Font rendering differs between
 // machines, so baselines are only valid from the pinned Playwright image:
-// generate them with `pnpm test:visual:update` (scripts/visual-docker.sh),
+// generate them with `pnpm test:visual:update` (scripts/browser-tests-docker.sh),
 // which is what CI runs too.
 export default defineConfig({
   testDir: './visual',

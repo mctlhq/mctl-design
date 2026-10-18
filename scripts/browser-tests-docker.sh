@@ -23,14 +23,16 @@ if [ "${1:-}" = "--update" ]; then update=1; fi
 # remote daemons) and never touches the host's node_modules, which may be
 # built for another OS. Tracked and new files only, so nothing ignored
 # (node_modules, dist, storybook-static) is copied.
-cid=$(docker create -i --ipc=host -e CI -e UPDATE="$update" "$IMAGE" bash -euo pipefail -c '
+cid=$(docker create -i --ipc=host -e CI -e UPDATE="$update" -e SHOTS="$shots" "$IMAGE" bash -euo pipefail -c '
   mkdir /work && tar -C /work -xf - && cd /work
   corepack enable
   CI=1 pnpm install --frozen-lockfile
   pnpm build
   pnpm build:storybook
   if [ -n "$UPDATE" ]; then
-    # Baselines only: the a11y run has nothing to update.
+    # Baselines only: the a11y run has nothing to update. Start from none,
+    # so a renamed or deleted story leaves no orphan PNG behind.
+    rm -rf "$SHOTS"
     pnpm --filter @mctlhq/storybook exec playwright test --update-snapshots=all
   else
     pnpm --filter @mctlhq/storybook test:browser

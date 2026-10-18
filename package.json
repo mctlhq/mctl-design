@@ -23,7 +23,7 @@
     "format:check": "prettier --check .",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "test:browser": "pnpm --filter @mctlhq/storybook test:browser",
+    "test:browser": "turbo run test:browser --filter @mctlhq/storybook",
     "test:browser:docker": "scripts/browser-tests-docker.sh",
     "test:visual:update": "scripts/browser-tests-docker.sh --update",
     "check:versions": "node scripts/check-versions.mjs",
