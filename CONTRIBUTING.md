@@ -100,7 +100,10 @@ npm consumers fall behind the CDN.
 3. Build any id with `useId()`, never the instance uid or a module counter, so
    the server render and hydration agree, and add the component to
    `packages/ui/test/ssr-ids.test.ts`.
-4. Export it from `packages/ui/src/index.ts`.
+4. Declare its props as `export interface M<Name>Props` in a plain
+   `<script lang="ts">` block (as the existing components do), pass it to
+   `defineProps<M<Name>Props>()`, and export the component and that type from
+   `packages/ui/src/index.ts`.
 5. Test it in `packages/ui/test/`. Anything with behaviour (`v-model`,
    keyboard, events, focus) gets its own test file. A component that no other
    test runs axe against goes into the case list in `a11y-smoke.test.ts`.

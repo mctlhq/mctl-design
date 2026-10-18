@@ -1,7 +1,5 @@
-<script setup lang="ts">
-import { useId } from 'vue';
-
-interface Item {
+<script lang="ts">
+export interface MAccordionItem {
   /** Stable id, also used as the slot name for rich content. */
   id: string;
   title: string;
@@ -9,14 +7,17 @@ interface Item {
   body?: string;
 }
 
-withDefaults(
-  defineProps<{
-    items: Item[];
-    /** Allow several panels open at once. Single-open (exclusive) by default. */
-    multiple?: boolean;
-  }>(),
-  { multiple: false },
-);
+export interface MAccordionProps {
+  items: MAccordionItem[];
+  /** Allow several panels open at once. Single-open (exclusive) by default. */
+  multiple?: boolean;
+}
+</script>
+
+<script setup lang="ts">
+import { useId } from 'vue';
+
+withDefaults(defineProps<MAccordionProps>(), { multiple: false });
 
 // Per-instance <details name> so exclusivity is scoped to this accordion —
 // otherwise two accordions on a page would form one shared exclusive group.

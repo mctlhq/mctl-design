@@ -1,12 +1,13 @@
+<script lang="ts">
+export interface MBadgeProps {
+  tone?: 'neutral' | 'accent' | 'ok' | 'warn' | 'bad';
+  /** Show a leading status dot. */
+  dot?: boolean;
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    tone?: 'neutral' | 'accent' | 'ok' | 'warn' | 'bad';
-    /** Show a leading status dot. */
-    dot?: boolean;
-  }>(),
-  { tone: 'neutral', dot: false },
-);
+withDefaults(defineProps<MBadgeProps>(), { tone: 'neutral', dot: false });
 </script>
 
 <template>

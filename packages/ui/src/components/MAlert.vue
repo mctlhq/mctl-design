@@ -1,18 +1,19 @@
+<script lang="ts">
+export interface MAlertProps {
+  tone?: 'info' | 'warn' | 'bad';
+  /**
+   * Live-region role. Defaults to `alert` (assertive) for `bad` and
+   * `status` (polite) otherwise; `none` for a static notice that should
+   * not be announced.
+   */
+  live?: 'alert' | 'status' | 'none';
+}
+</script>
+
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = withDefaults(
-  defineProps<{
-    tone?: 'info' | 'warn' | 'bad';
-    /**
-     * Live-region role. Defaults to `alert` (assertive) for `bad` and
-     * `status` (polite) otherwise; `none` for a static notice that should
-     * not be announced.
-     */
-    live?: 'alert' | 'status' | 'none';
-  }>(),
-  { tone: 'info', live: undefined },
-);
+const props = withDefaults(defineProps<MAlertProps>(), { tone: 'info', live: undefined });
 
 const role = computed(() => {
   const live = props.live ?? (props.tone === 'bad' ? 'alert' : 'status');

@@ -1,11 +1,12 @@
+<script lang="ts">
+export interface MPillProps {
+  tone?: 'neutral' | 'accent' | 'ok' | 'warn' | 'bad';
+  variant?: 'filled' | 'outline';
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    tone?: 'neutral' | 'accent' | 'ok' | 'warn' | 'bad';
-    variant?: 'filled' | 'outline';
-  }>(),
-  { tone: 'neutral', variant: 'filled' },
-);
+withDefaults(defineProps<MPillProps>(), { tone: 'neutral', variant: 'filled' });
 </script>
 
 <template>

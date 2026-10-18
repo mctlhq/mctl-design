@@ -1,16 +1,17 @@
+<script lang="ts">
+export interface MSpecCardProps {
+  /** Spec counter, e.g. "01". */
+  index: string;
+  /** Total count, e.g. "06". */
+  total?: string;
+  name: string;
+  /** Code-tagged subtitle. */
+  tag?: string;
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    /** Spec counter, e.g. "01". */
-    index: string;
-    /** Total count, e.g. "06". */
-    total?: string;
-    name: string;
-    /** Code-tagged subtitle. */
-    tag?: string;
-  }>(),
-  { total: '', tag: '' },
-);
+withDefaults(defineProps<MSpecCardProps>(), { total: '', tag: '' });
 </script>
 
 <template>

@@ -1,20 +1,27 @@
+<script lang="ts">
+export interface MButtonProps {
+  variant?: 'primary' | 'ghost';
+  size?: 'sm' | 'md';
+  /** Render as a different element or component, e.g. 'a' or RouterLink. */
+  as?: string | Component;
+  /** Native button type. Defaults to "button" so it never submits a form by accident. */
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+}
+</script>
+
 <script setup lang="ts">
 import { computed, useAttrs, type Component } from 'vue';
 
 defineOptions({ inheritAttrs: false });
 
-const props = withDefaults(
-  defineProps<{
-    variant?: 'primary' | 'ghost';
-    size?: 'sm' | 'md';
-    /** Render as a different element or component, e.g. 'a' or RouterLink. */
-    as?: string | Component;
-    /** Native button type. Defaults to "button" so it never submits a form by accident. */
-    type?: 'button' | 'submit' | 'reset';
-    disabled?: boolean;
-  }>(),
-  { variant: 'primary', size: 'md', as: 'button', type: 'button', disabled: false },
-);
+const props = withDefaults(defineProps<MButtonProps>(), {
+  variant: 'primary',
+  size: 'md',
+  as: 'button',
+  type: 'button',
+  disabled: false,
+});
 
 const attrs = useAttrs();
 const isNative = computed(() => props.as === 'button');

@@ -1,11 +1,12 @@
+<script lang="ts">
+export interface MCardProps {
+  /** Use the elevated surface token instead of card. */
+  elevated?: boolean;
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    /** Use the elevated surface token instead of card. */
-    elevated?: boolean;
-  }>(),
-  { elevated: false },
-);
+withDefaults(defineProps<MCardProps>(), { elevated: false });
 </script>
 
 <template>

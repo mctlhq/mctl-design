@@ -1,15 +1,16 @@
+<script lang="ts">
+export interface MYamlBlockProps {
+  /** Raw YAML source. */
+  code: string;
+  /** Optional file label shown above the block. */
+  filename?: string;
+}
+</script>
+
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = withDefaults(
-  defineProps<{
-    /** Raw YAML source. */
-    code: string;
-    /** Optional file label shown above the block. */
-    filename?: string;
-  }>(),
-  { filename: '' },
-);
+const props = withDefaults(defineProps<MYamlBlockProps>(), { filename: '' });
 
 type Kind = 'plain' | 'key' | 'string' | 'comment' | 'punct';
 interface Segment {

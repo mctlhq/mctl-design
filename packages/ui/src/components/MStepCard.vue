@@ -1,14 +1,15 @@
+<script lang="ts">
+export interface MStepCardProps {
+  /** Large step numeral, e.g. "01". */
+  step: string;
+  title: string;
+  /** Optional command line shown under the prose. */
+  code?: string;
+}
+</script>
+
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    /** Large step numeral, e.g. "01". */
-    step: string;
-    title: string;
-    /** Optional command line shown under the prose. */
-    code?: string;
-  }>(),
-  { code: '' },
-);
+withDefaults(defineProps<MStepCardProps>(), { code: '' });
 </script>
 
 <template>

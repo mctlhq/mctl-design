@@ -1,14 +1,15 @@
+<script lang="ts">
+export interface MTooltipProps {
+  /** Tooltip text. */
+  text: string;
+  placement?: 'top' | 'bottom';
+}
+</script>
+
 <script setup lang="ts">
 import { onBeforeUnmount, ref, useId, watch } from 'vue';
 
-withDefaults(
-  defineProps<{
-    /** Tooltip text. */
-    text: string;
-    placement?: 'top' | 'bottom';
-  }>(),
-  { placement: 'top' },
-);
+withDefaults(defineProps<MTooltipProps>(), { placement: 'top' });
 
 // Per-instance id from useId, so server and client render agree. Lets the
 // bubble be referenced by id without adding a separate tab stop.
