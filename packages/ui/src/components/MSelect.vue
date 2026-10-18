@@ -5,7 +5,7 @@ export interface MSelectOption {
 }
 
 export interface MSelectProps {
-  /** v-model value. */
+  /** v-model value. Without a v-model the field keeps its own value. */
   modelValue?: string;
   /** Option list — value strings or {label, value} objects. */
   options: Array<string | MSelectOption>;
@@ -26,15 +26,14 @@ import { useField } from '../composables/useField';
 // stay on the wrapper.
 defineOptions({ inheritAttrs: false });
 
-const props = withDefaults(defineProps<MSelectProps>(), {
-  modelValue: '',
+const props = withDefaults(defineProps<Omit<MSelectProps, 'modelValue'>>(), {
   disabled: false,
   invalid: false,
   id: undefined,
   placeholder: '',
 });
 
-defineEmits<{ 'update:modelValue': [value: string] }>();
+const model = defineModel<string>({ default: '' });
 
 // Inside MField: its id and message wiring, unless set explicitly.
 const field = useField(() => props.id);
@@ -65,13 +64,13 @@ function normalize(opt: string | MSelectOption): MSelectOption {
     <select
       :id="props.id ?? field?.id.value"
       class="m-select__control"
-      :value="modelValue"
+      :value="model"
       :disabled="disabled"
       :aria-invalid="isInvalid || undefined"
       :aria-describedby="field?.describedBy.value"
       :aria-required="field?.required.value || undefined"
       v-bind="controlAttrs"
-      @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
+      @change="model = ($event.target as HTMLSelectElement).value"
     >
       <option v-if="placeholder" value="" disabled>{{ placeholder }}</option>
       <option v-for="opt in options.map(normalize)" :key="opt.value" :value="opt.value">

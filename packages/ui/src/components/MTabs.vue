@@ -6,6 +6,8 @@ export interface MTabsItem {
 }
 
 export interface MTabsProps {
+  /** v-model: the active tab's `value`. Defaults to the first tab. */
+  modelValue?: string;
   tabs: MTabsItem[];
 }
 
@@ -21,7 +23,7 @@ export interface MTabsSlots {
 <script setup lang="ts">
 import { computed, nextTick, useId } from 'vue';
 
-const props = defineProps<MTabsProps>();
+const props = defineProps<Omit<MTabsProps, 'modelValue'>>();
 defineSlots<MTabsSlots>();
 
 // v-model: the active tab value. Defaults to the first tab. Without a v-model

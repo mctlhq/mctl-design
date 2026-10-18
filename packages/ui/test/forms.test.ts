@@ -193,3 +193,28 @@ describe('MSelect placeholder', () => {
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['prod']);
   });
 });
+
+describe('fields without a v-model', () => {
+  // defineModel keeps the value locally when nothing is bound. A plain
+  // `:value` bound to an unchanging prop let any re-render write the stale
+  // prop back over what the user typed or picked.
+  it.each([
+    ['MInput', MInput, 'input'],
+    ['MTextarea', MTextarea, 'textarea'],
+  ] as const)('%s keeps typed text across a re-render', async (_name, component, tag) => {
+    const wrapper = mount(component as typeof MInput);
+    const el = wrapper.find(tag);
+    await el.setValue('typed');
+    await wrapper.setProps({ placeholder: 'Changed' });
+    expect((el.element as HTMLInputElement).value).toBe('typed');
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['typed']);
+  });
+
+  it('MSelect keeps its choice when the options change', async () => {
+    const wrapper = mount(MSelect, { props: { options: ['a', 'b'], placeholder: 'Pick' } });
+    const select = wrapper.find('select');
+    await select.setValue('b');
+    await wrapper.setProps({ options: ['a', 'b', 'c'] });
+    expect((select.element as HTMLSelectElement).value).toBe('b');
+  });
+});

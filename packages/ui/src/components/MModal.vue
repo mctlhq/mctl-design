@@ -1,6 +1,6 @@
 <script lang="ts">
 export interface MModalProps {
-  /** v-model:open — controls visibility. */
+  /** v-model:open — controls visibility. Without a v-model the modal keeps its own state. */
   open?: boolean;
   title?: string;
   /** Accessible name when there is no visible title. Set it: the default is generic. */
@@ -21,28 +21,27 @@ export interface MModalSlots {
 import { ref } from 'vue';
 import { nextDialogId, useDialog } from '../composables/useDialog';
 
-const props = withDefaults(defineProps<MModalProps>(), {
-  open: false,
+const props = withDefaults(defineProps<Omit<MModalProps, 'open'>>(), {
   title: '',
   ariaLabel: 'Dialog',
   dismissible: true,
 });
 defineSlots<MModalSlots>();
 
-const emit = defineEmits<{ 'update:open': [value: boolean] }>();
+const open = defineModel<boolean>('open', { default: false });
 
 const overlayRef = ref<HTMLElement | null>(null);
 const dialogRef = ref<HTMLElement | null>(null);
 const titleId = nextDialogId('m-modal-title');
 
 function close() {
-  if (props.dismissible) emit('update:open', false);
+  if (props.dismissible) open.value = false;
 }
 
 const { backdropHandlers } = useDialog({
   dialog: dialogRef,
   overlay: overlayRef,
-  open: () => props.open,
+  open: () => open.value,
   onDismiss: close,
   dismissible: () => props.dismissible,
 });
