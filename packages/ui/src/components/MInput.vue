@@ -1,6 +1,6 @@
 <script lang="ts">
 export interface MInputProps {
-  /** v-model value. */
+  /** v-model value. Without a v-model the field keeps its own value. */
   modelValue?: string;
   type?: string;
   placeholder?: string;
@@ -14,8 +14,7 @@ export interface MInputProps {
 <script setup lang="ts">
 import { useField } from '../composables/useField';
 
-const props = withDefaults(defineProps<MInputProps>(), {
-  modelValue: '',
+const props = withDefaults(defineProps<Omit<MInputProps, 'modelValue'>>(), {
   type: 'text',
   placeholder: '',
   disabled: false,
@@ -23,7 +22,7 @@ const props = withDefaults(defineProps<MInputProps>(), {
   id: undefined,
 });
 
-defineEmits<{ 'update:modelValue': [value: string] }>();
+const model = defineModel<string>({ default: '' });
 
 // Inside MField: its id and message wiring, unless set explicitly.
 const field = useField(() => props.id);
@@ -35,13 +34,13 @@ const field = useField(() => props.id);
     class="m-input"
     :class="{ 'm-input--invalid': invalid || field?.invalid.value }"
     :type="type"
-    :value="modelValue"
+    :value="model"
     :placeholder="placeholder"
     :disabled="disabled"
     :aria-invalid="invalid || field?.invalid.value || undefined"
     :aria-describedby="field?.describedBy.value"
     :aria-required="field?.required.value || undefined"
-    @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+    @input="model = ($event.target as HTMLInputElement).value"
   />
 </template>
 

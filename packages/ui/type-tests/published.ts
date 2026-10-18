@@ -1,12 +1,14 @@
 import {
   MButton,
   MInput,
+  MModal,
   MTabs,
   type MButtonProps,
   type MFieldSlots,
   type MModalProps,
   type MSelectOption,
   type MTabsItem,
+  type MTabsProps,
   type MTgTab,
 } from '../dist/index.js';
 
@@ -37,3 +39,13 @@ const renderTabs = (slots: TabsSlots) => slots.default?.({ active: 'overview' })
 // @ts-expect-error MTabs passes `active`, nothing else.
 const badRenderTabs = (slots: TabsSlots) => slots.default?.({ selected: 'overview' });
 void [fieldSlot, badFieldSlot, renderTabs, badRenderTabs];
+
+// The v-model prop is part of the exported props type and of the component.
+const tabsProps: MTabsProps = { modelValue: 'overview', tabs: [tabsItem] };
+const modal: InstanceType<typeof MModal>['$props'] = {
+  open: true,
+  'onUpdate:open': (value: boolean) => void value,
+};
+// @ts-expect-error `open` is a boolean.
+const badModal: InstanceType<typeof MModal>['$props'] = { open: 'yes' };
+void [tabsProps, modal, badModal];
