@@ -7,7 +7,7 @@ export interface MSelectOption {
 export interface MSelectProps {
   /** v-model value. */
   modelValue?: string;
-  /** MSelectOption list — value strings or {label, value} objects. */
+  /** Option list — value strings or {label, value} objects. */
   options: Array<string | MSelectOption>;
   disabled?: boolean;
   invalid?: boolean;
