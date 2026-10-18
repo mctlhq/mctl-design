@@ -24,7 +24,8 @@ const HEX = /^#[0-9a-f]{6}$/i;
 const DIMENSION = /^(-?\d*\.?\d+)(px|rem)$/;
 const DURATION = /^(\d*\.?\d+)ms$/;
 const BEZIER = /^cubic-bezier\(([^)]+)\)$/;
-const SHADOW = /^(-?\d+)(?:px)? (-?\d+)(?:px)? (\d+)(?:px)?(?: (-?\d+)(?:px)?)? (rgba?\([^)]+\)|#[0-9a-f]{6})$/i;
+const SHADOW =
+  /^(-?\d+)(?:px)? (-?\d+)(?:px)? (\d+)(?:px)?(?: (-?\d+)(?:px)?)? (rgba?\([^)]+\)|#[0-9a-f]{6})$/i;
 
 const round = (n) => Math.round(n * 10000) / 10000;
 
@@ -35,7 +36,10 @@ function colorValue(hex) {
 }
 
 function rgbaValue(css) {
-  const [r, g, b, a = '1'] = css.replace(/rgba?\(|\)/g, '').split(',').map((s) => s.trim());
+  const [r, g, b, a = '1'] = css
+    .replace(/rgba?\(|\)/g, '')
+    .split(',')
+    .map((s) => s.trim());
   return {
     colorSpace: 'srgb',
     components: [r, g, b].map((c) => round(Number(c) / 255)),
@@ -61,8 +65,10 @@ function leaf(path, value, aliases) {
   }
   if (v === '0') return { $type: 'dimension', $value: px(0) };
   let m;
-  if ((m = DIMENSION.exec(v))) return { $type: 'dimension', $value: { value: Number(m[1]), unit: m[2] } };
-  if ((m = DURATION.exec(v))) return { $type: 'duration', $value: { value: Number(m[1]), unit: 'ms' } };
+  if ((m = DIMENSION.exec(v)))
+    return { $type: 'dimension', $value: { value: Number(m[1]), unit: m[2] } };
+  if ((m = DURATION.exec(v)))
+    return { $type: 'duration', $value: { value: Number(m[1]), unit: 'ms' } };
   if ((m = BEZIER.exec(v))) return { $type: 'cubicBezier', $value: m[1].split(',').map(Number) };
   if ((m = SHADOW.exec(v))) {
     return {
@@ -98,7 +104,10 @@ export function toDtcg(tokens) {
     const out = {};
     for (const [key, value] of Object.entries(obj)) {
       const next = [...path, key];
-      out[key] = value !== null && typeof value === 'object' ? walk(value, next) : leaf(next, value, aliases);
+      out[key] =
+        value !== null && typeof value === 'object'
+          ? walk(value, next)
+          : leaf(next, value, aliases);
     }
     return out;
   };

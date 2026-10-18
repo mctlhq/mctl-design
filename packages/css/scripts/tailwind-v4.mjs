@@ -27,10 +27,14 @@
 // compiles every preset key against this sheet and fails on one that neither
 // works nor is a documented difference in the README.
 
-const kebab = (s) => String(s).replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+const kebab = (s) =>
+  String(s)
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .toLowerCase();
 
 export function tailwindV4Css(t, version) {
-  const { color, hue, space, layout, radius, breakpoint, icon, control, motion, opacity, border } = t;
+  const { color, hue, space, layout, radius, breakpoint, icon, control, motion, opacity, border } =
+    t;
   const { fontWeight, fontSize, lineHeight, letterSpacing } = t.typography;
 
   const stat = [];
@@ -60,7 +64,16 @@ export function tailwindV4Css(t, version) {
   }
 
   // Theme-aware colours, resolved by theme.css at runtime.
-  for (const k of ['bg', 'elevated', 'card', 'line', 'line-strong', 'fg', 'fg-muted', 'fg-subtle']) {
+  for (const k of [
+    'bg',
+    'elevated',
+    'card',
+    'line',
+    'line-strong',
+    'fg',
+    'fg-muted',
+    'fg-subtle',
+  ]) {
     r(`color-surface-${k}`, `var(--surface-${k})`);
   }
   r('color-accent', 'var(--accent)');
@@ -167,13 +180,19 @@ export function tailwindV4Css(t, version) {
     // invisible border.
     for (const [side, prop] of Object.entries(SIDES)) {
       const style = prop.replace('-width', '-style');
-      u(`border${side && `-${side}`}-${k}`, `${style}: var(--tw-border-style, solid);\n  ${prop}: ${v}`);
+      u(
+        `border${side && `-${side}`}-${k}`,
+        `${style}: var(--tw-border-style, solid);\n  ${prop}: ${v}`,
+      );
     }
   }
   // outline-style starts at `none` and preflight does not reset it, so width
   // alone draws nothing. Same fallback as the borders, as Tailwind's
   // outline-<n> does, so outline-dashed still composes.
-  u('outline-focus', 'outline-style: var(--tw-outline-style, solid);\n  outline-width: var(--focus-ring-width)');
+  u(
+    'outline-focus',
+    'outline-style: var(--tw-outline-style, solid);\n  outline-width: var(--focus-ring-width)',
+  );
   u('outline-offset-focus', 'outline-offset: var(--focus-ring-offset)');
 
   return `/* @mctlhq/css ${version} — Tailwind v4 theme. Import after "tailwindcss" and theme.css. */

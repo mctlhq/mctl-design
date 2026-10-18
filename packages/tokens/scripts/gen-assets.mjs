@@ -36,4 +36,6 @@ writeFileSync(join(dist, 'tokens.css'), `:root {\n${lines.join('\n')}\n}\n`);
 
 writeFileSync(join(dist, 'tokens.dtcg.json'), JSON.stringify(toDtcg(tokens), null, 2) + '\n');
 
-console.log(`tokens: wrote tokens.json, tokens.dtcg.json and tokens.css (${lines.length} custom properties)`);
+console.log(
+  `tokens: wrote tokens.json, tokens.dtcg.json and tokens.css (${lines.length} custom properties)`,
+);
