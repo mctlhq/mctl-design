@@ -2,14 +2,6 @@
 pnpm-lock.yaml
 apps/storybook/public/
 
-# Any edit here requires a version bump (check:token-version), and
-# reformatting telegram.css would change published CSS bytes. Format these
-# together with the next change that bumps the version, then drop the lines.
-packages/tokens/src/
-packages/tokens/scripts/
-packages/css/src/
-packages/css/scripts/
-
 # The reviewer only runs when this file matches main byte for byte, so a
 # formatting-only edit would stop it reviewing the PR that makes it.
 .github/workflows/claude-review.yml

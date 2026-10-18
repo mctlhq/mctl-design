@@ -92,7 +92,10 @@ const preset = {
         extrabold: String(fontWeight.extrabold),
       },
       fontSize: {
-        marker: [fontSize.marker, { lineHeight: lineHeight.tight, letterSpacing: letterSpacing.marker }],
+        marker: [
+          fontSize.marker,
+          { lineHeight: lineHeight.tight, letterSpacing: letterSpacing.marker },
+        ],
         body: [fontSize.body, { lineHeight: lineHeight.body }],
         lede: [fontSize.lede, { lineHeight: lineHeight.lede }],
         stat: [fontSize.stat, { lineHeight: lineHeight.none }],
@@ -159,7 +162,10 @@ const preset = {
       // theme zeroes these under prefers-reduced-motion, and duration-base
       // has to follow it like the components do.
       transitionDuration: Object.fromEntries(
-        Object.entries(motion.duration).map(([k, v]) => [k, `var(--mctl-motion-duration-${k}, ${v})`]),
+        Object.entries(motion.duration).map(([k, v]) => [
+          k,
+          `var(--mctl-motion-duration-${k}, ${v})`,
+        ]),
       ),
       transitionTimingFunction: { ...motion.easing },
     },

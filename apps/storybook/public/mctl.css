@@ -1,4 +1,4 @@
-/* @mctlhq/css 0.12.1 — raw tokens + semantic theme layer. */
+/* @mctlhq/css 0.13.0 — raw tokens + semantic theme layer. */
 :root {
   --mctl-color-ink: #0a0b0d;
   --mctl-color-ink2: #0f1114;
@@ -659,25 +659,18 @@
 :root,
 [data-theme],
 [data-accent] {
-  --accent:
-    var(--_pick-terracotta, var(--_accent-terracotta-primary))
-    var(--_pick-cyan, var(--_accent-cyan-primary))
-    var(--_pick-lime, var(--_accent-lime-primary))
+  --accent: var(--_pick-terracotta, var(--_accent-terracotta-primary))
+    var(--_pick-cyan, var(--_accent-cyan-primary)) var(--_pick-lime, var(--_accent-lime-primary))
     var(--_pick-lilac, var(--_accent-lilac-primary));
-  --accent-highlight:
-    var(--_pick-terracotta, var(--_accent-terracotta-highlight))
+  --accent-highlight: var(--_pick-terracotta, var(--_accent-terracotta-highlight))
     var(--_pick-cyan, var(--_accent-cyan-highlight))
     var(--_pick-lime, var(--_accent-lime-highlight))
     var(--_pick-lilac, var(--_accent-lilac-highlight));
-  --accent-fg:
-    var(--_pick-terracotta, var(--_accent-terracotta-fg))
-    var(--_pick-cyan, var(--_accent-cyan-fg))
-    var(--_pick-lime, var(--_accent-lime-fg))
+  --accent-fg: var(--_pick-terracotta, var(--_accent-terracotta-fg))
+    var(--_pick-cyan, var(--_accent-cyan-fg)) var(--_pick-lime, var(--_accent-lime-fg))
     var(--_pick-lilac, var(--_accent-lilac-fg));
-  --accent-soft:
-    var(--_pick-terracotta, var(--_accent-terracotta-soft))
-    var(--_pick-cyan, var(--_accent-cyan-soft))
-    var(--_pick-lime, var(--_accent-lime-soft))
+  --accent-soft: var(--_pick-terracotta, var(--_accent-terracotta-soft))
+    var(--_pick-cyan, var(--_accent-cyan-soft)) var(--_pick-lime, var(--_accent-lime-soft))
     var(--_pick-lilac, var(--_accent-lilac-soft));
   --focus-ring: var(--accent);
   --control-bg: var(--surface-bg);
