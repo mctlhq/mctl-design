@@ -321,3 +321,34 @@ describe('stacked dialogs', () => {
     modal.unmount();
   });
 });
+
+describe('dialogs without a v-model', () => {
+  // defineModel closes locally when nothing listens. A bare emit used to leave
+  // an uncontrolled dialog open, with Escape, the backdrop and the close
+  // button all doing nothing.
+  it('MModal closes itself', async () => {
+    const wrapper = modalWithButtons();
+    await flushPromises();
+    expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+    key('Escape');
+    await flushPromises();
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(wrapper.emitted('update:open')?.[0]).toEqual([false]);
+    wrapper.unmount();
+  });
+
+  it('MTgSheet closes itself', async () => {
+    const wrapper = mount(MTgSheet, {
+      props: { modelValue: true, title: 'Filters' },
+      attachTo: document.body,
+    });
+    await flushPromises();
+    expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+    // Teleported to <body>, so outside the wrapper.
+    document.querySelector<HTMLElement>('.m-tg-sheet__close')!.click();
+    await flushPromises();
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false]);
+    wrapper.unmount();
+  });
+});

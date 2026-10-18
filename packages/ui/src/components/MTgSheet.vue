@@ -1,6 +1,6 @@
 <script lang="ts">
 export interface MTgSheetProps {
-  /** Controls visibility — use with v-model. */
+  /** Controls visibility — use with v-model. Without one the sheet keeps its own state. */
   modelValue?: boolean;
   /** Sheet title shown in the drag-indicator row. */
   title?: string;
@@ -20,31 +20,30 @@ export interface MTgSheetSlots {
 import { ref } from 'vue';
 import { nextDialogId, useDialog } from '../composables/useDialog';
 
-const props = withDefaults(defineProps<MTgSheetProps>(), {
-  modelValue: false,
+withDefaults(defineProps<Omit<MTgSheetProps, 'modelValue'>>(), {
   title: '',
   ariaLabel: 'Sheet',
   safeArea: true,
 });
 defineSlots<MTgSheetSlots>();
 
-const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>();
+const model = defineModel<boolean>({ default: false });
 
 const rootRef = ref<HTMLElement | null>(null);
 const sheetRef = ref<HTMLElement | null>(null);
 const titleId = nextDialogId('m-tg-sheet-title');
 
 function close() {
-  emit('update:modelValue', false);
+  model.value = false;
 }
 
-useDialog({ dialog: sheetRef, overlay: rootRef, open: () => props.modelValue, onDismiss: close });
+useDialog({ dialog: sheetRef, overlay: rootRef, open: () => model.value, onDismiss: close });
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="m-tg-sheet">
-      <div v-if="modelValue" ref="rootRef" class="m-tg-sheet-root">
+      <div v-if="model" ref="rootRef" class="m-tg-sheet-root">
         <div class="m-tg-sheet-scrim" aria-hidden="true" @click="close" />
         <div
           ref="sheetRef"

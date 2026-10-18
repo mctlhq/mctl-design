@@ -1,6 +1,6 @@
 <script lang="ts">
 export interface MTextareaProps {
-  /** v-model value. */
+  /** v-model value. Without a v-model the field keeps its own value. */
   modelValue?: string;
   placeholder?: string;
   rows?: number;
@@ -13,8 +13,7 @@ export interface MTextareaProps {
 <script setup lang="ts">
 import { useField } from '../composables/useField';
 
-const props = withDefaults(defineProps<MTextareaProps>(), {
-  modelValue: '',
+const props = withDefaults(defineProps<Omit<MTextareaProps, 'modelValue'>>(), {
   placeholder: '',
   rows: 4,
   disabled: false,
@@ -22,7 +21,7 @@ const props = withDefaults(defineProps<MTextareaProps>(), {
   id: undefined,
 });
 
-defineEmits<{ 'update:modelValue': [value: string] }>();
+const model = defineModel<string>({ default: '' });
 
 // Inside MField: its id and message wiring, unless set explicitly.
 const field = useField(() => props.id);
@@ -33,14 +32,14 @@ const field = useField(() => props.id);
     :id="id ?? field?.id.value"
     class="m-textarea"
     :class="{ 'm-textarea--invalid': invalid || field?.invalid.value }"
-    :value="modelValue"
+    :value="model"
     :placeholder="placeholder"
     :rows="rows"
     :disabled="disabled"
     :aria-invalid="invalid || field?.invalid.value || undefined"
     :aria-describedby="field?.describedBy.value"
     :aria-required="field?.required.value || undefined"
-    @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
+    @input="model = ($event.target as HTMLTextAreaElement).value"
   />
 </template>
 

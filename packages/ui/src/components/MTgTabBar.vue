@@ -8,6 +8,8 @@ export interface MTgTab {
 }
 
 export interface MTgTabBarProps {
+  /** v-model: the active tab's `key`. */
+  modelValue?: string;
   tabs: MTgTab[];
   /** Apply safe-area-inset-bottom padding below the bar. */
   safeArea?: boolean;
@@ -20,7 +22,10 @@ export interface MTgTabBarProps {
 </script>
 
 <script setup lang="ts">
-withDefaults(defineProps<MTgTabBarProps>(), { safeArea: true, ariaLabel: 'Sections' });
+withDefaults(defineProps<Omit<MTgTabBarProps, 'modelValue'>>(), {
+  safeArea: true,
+  ariaLabel: 'Sections',
+});
 
 // v-model: the active tab key. Kept locally when no v-model is bound, so the
 // bar also switches when used uncontrolled.
