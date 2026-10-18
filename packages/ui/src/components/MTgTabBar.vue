@@ -81,7 +81,7 @@ const model = defineModel<string>({ default: '' });
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--tg-muted, #6a6e76);
+  color: var(--tg-muted, #60646c);
   transition: color var(--mctl-motion-duration-fast, 120ms) var(--mctl-motion-easing-standard, ease);
   -webkit-tap-highlight-color: transparent;
 }
@@ -91,7 +91,7 @@ const model = defineModel<string>({ default: '' });
 }
 
 .m-tg-tabbar__tab--active {
-  color: var(--tg-accent, #2d7df6);
+  color: var(--tg-accent-text, #2869ca);
 }
 
 .m-tg-tabbar__icon {

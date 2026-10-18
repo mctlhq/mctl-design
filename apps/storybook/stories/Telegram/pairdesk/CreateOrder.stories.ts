@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref } from 'vue';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/PairDesk/CreateOrder',
 };
 
@@ -32,13 +30,13 @@ export const Form: Story = {
 
           <!-- Direction -->
           <div style="margin-bottom:16px;">
-            <div style="font-size:13px; font-weight:500; color:var(--tg-muted,#6a6e76); margin-bottom:8px;">
+            <div style="font-size:13px; font-weight:500; color:var(--tg-muted,#60646c); margin-bottom:8px;">
               Direction
             </div>
             <div style="display:flex; gap:8px;">
               <button v-for="d in ['BUY','SELL']" :key="d" @click="direction = d"
                 :style="{
-                  background: direction === d ? 'var(--tg-accent,#2d7df6)' : 'var(--tg-surface-sub,#f3f2ec)',
+                  background: direction === d ? 'var(--tg-button,#2970dd)' : 'var(--tg-surface-sub,#f3f2ec)',
                   color: direction === d ? '#fff' : 'var(--tg-muted,#6a6e76)',
                 }"
                 style="flex:1; border:none; border-radius:10px; padding:12px;
@@ -50,7 +48,7 @@ export const Form: Story = {
 
           <!-- Pair -->
           <div style="margin-bottom:16px;">
-            <label for="create-order-pair" style="display:block; font-size:13px; font-weight:500; color:var(--tg-muted,#6a6e76); margin-bottom:8px;">
+            <label for="create-order-pair" style="display:block; font-size:13px; font-weight:500; color:var(--tg-muted,#60646c); margin-bottom:8px;">
               Currency pair
             </label>
             <select id="create-order-pair" v-model="pair" style="width:100%; background:var(--tg-surface,#fff);
@@ -63,7 +61,7 @@ export const Form: Story = {
 
           <!-- Rate -->
           <div style="margin-bottom:16px;">
-            <label for="create-order-rate" style="display:block; font-size:13px; font-weight:500; color:var(--tg-muted,#6a6e76); margin-bottom:8px;">
+            <label for="create-order-rate" style="display:block; font-size:13px; font-weight:500; color:var(--tg-muted,#60646c); margin-bottom:8px;">
               Rate (RUB per unit)
             </label>
             <input id="create-order-rate" v-model="rate" type="number" step="0.01"
@@ -74,7 +72,7 @@ export const Form: Story = {
 
           <!-- Volume range -->
           <div style="margin-bottom:20px;">
-            <div style="font-size:13px; font-weight:500; color:var(--tg-muted,#6a6e76); margin-bottom:8px;">
+            <div style="font-size:13px; font-weight:500; color:var(--tg-muted,#60646c); margin-bottom:8px;">
               Volume range
             </div>
             <div style="display:flex; gap:10px; align-items:center;">
@@ -82,7 +80,7 @@ export const Form: Story = {
                 style="flex:1; background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
                   border-radius:12px; padding:13px 16px; font-family:'Onest',system-ui,sans-serif;
                   font-size:15px; color:var(--tg-ink,#15171b);" />
-              <span style="color:var(--tg-faint,#9a9da3);">–</span>
+              <span style="color:var(--tg-muted,#60646c);">–</span>
               <input v-model="maxVol" type="number" placeholder="Max" aria-label="Maximum volume"
                 style="flex:1; background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
                   border-radius:12px; padding:13px 16px; font-family:'Onest',system-ui,sans-serif;
@@ -90,7 +88,7 @@ export const Form: Story = {
             </div>
           </div>
 
-          <button style="width:100%; background:var(--tg-accent,#2d7df6); color:#fff; border:none;
+          <button style="width:100%; background:var(--tg-button,#2970dd); color:#fff; border:none;
             border-radius:14px; padding:16px; font-family:'Onest',system-ui,sans-serif;
             font-size:16px; font-weight:700; cursor:pointer; margin-bottom:20px;">
             Post order

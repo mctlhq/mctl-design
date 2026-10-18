@@ -43,22 +43,22 @@ defineSlots<MPillSlots>();
 
 .m-pill--filled.m-pill--accent {
   background: color-mix(in srgb, var(--accent) 15%, transparent);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .m-pill--filled.m-pill--ok {
   background: color-mix(in srgb, var(--status-ok) 15%, transparent);
-  color: var(--status-ok);
+  color: var(--status-ok-text);
 }
 
 .m-pill--filled.m-pill--warn {
   background: color-mix(in srgb, var(--status-warn) 15%, transparent);
-  color: var(--status-warn);
+  color: var(--status-warn-text);
 }
 
 .m-pill--filled.m-pill--bad {
   background: color-mix(in srgb, var(--status-bad) 15%, transparent);
-  color: var(--status-bad);
+  color: var(--status-bad-text);
 }
 
 /* outline variants */

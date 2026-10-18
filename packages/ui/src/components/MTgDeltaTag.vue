@@ -49,17 +49,17 @@ const label = computed(() =>
 }
 
 .m-tg-delta-tag--positive {
-  color: var(--tg-success, #1f9d57);
+  color: var(--tg-success-text, #1c6e42);
   background: color-mix(in srgb, var(--tg-success, #1f9d57) 12%, transparent);
 }
 
 .m-tg-delta-tag--negative {
-  color: var(--tg-danger, #d64545);
+  color: var(--tg-danger-text, #af3c3d);
   background: color-mix(in srgb, var(--tg-danger, #d64545) 10%, transparent);
 }
 
 .m-tg-delta-tag--neutral {
-  color: var(--tg-muted, #6a6e76);
-  background: color-mix(in srgb, var(--tg-muted, #6a6e76) 10%, transparent);
+  color: var(--tg-muted, #60646c);
+  background: color-mix(in srgb, var(--tg-muted, #60646c) 10%, transparent);
 }
 </style>

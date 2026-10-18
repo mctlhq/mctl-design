@@ -134,12 +134,12 @@ function onSpaceUp() {
 }
 
 .m-tg-order-card__direction--buy {
-  color: var(--tg-success, #1f9d57);
+  color: var(--tg-success-text, #1c6e42);
   background: color-mix(in srgb, var(--tg-success, #1f9d57) 12%, transparent);
 }
 
 .m-tg-order-card__direction--sell {
-  color: var(--tg-danger, #d64545);
+  color: var(--tg-danger-text, #af3c3d);
   background: color-mix(in srgb, var(--tg-danger, #d64545) 10%, transparent);
 }
 
@@ -174,13 +174,13 @@ function onSpaceUp() {
 .m-tg-order-card__meta-item {
   font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 13px;
-  color: var(--tg-muted, #6a6e76);
+  color: var(--tg-muted, #60646c);
 }
 
 .m-tg-order-card__method {
   font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 12px;
-  color: var(--tg-muted, #6a6e76);
+  color: var(--tg-muted, #60646c);
   background: var(--tg-surface-sub, #f3f2ec);
   border-radius: 6px;
   padding: 2px 8px;
@@ -197,11 +197,11 @@ function onSpaceUp() {
 .m-tg-order-card__author {
   font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 13px;
-  color: var(--tg-muted, #6a6e76);
+  color: var(--tg-muted, #60646c);
 }
 
 .m-tg-order-card__arrow {
   font-size: 18px;
-  color: var(--tg-faint, #9a9da3);
+  color: var(--tg-faint, #878a90);
 }
 </style>

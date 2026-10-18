@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref } from 'vue';
 import { MTgSheet } from '@mctlhq/ui';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta<typeof MTgSheet> = {
   title: 'Telegram/Components/MTgSheet',
@@ -14,7 +13,6 @@ const meta: Meta<typeof MTgSheet> = {
   },
   args: { title: 'Sheet Title', safeArea: false },
   parameters: {
-    a11y: contrastDebt,
     docs: {
       description: {
         component:
@@ -38,7 +36,7 @@ export const Interactive: Story = {
       <div style="font-family:'Onest',system-ui,sans-serif; padding:20px;">
         <button
           @click="open = true"
-          style="background:var(--tg-accent,#2d7df6); color:#fff; border:none;
+          style="background:var(--tg-button,#2970dd); color:#fff; border:none;
             border-radius:12px; padding:12px 24px; font-family:'Onest',system-ui,sans-serif;
             font-size:15px; font-weight:600; cursor:pointer;">
           Open sheet
@@ -50,13 +48,13 @@ export const Interactive: Story = {
           </p>
           <div style="display:flex; flex-direction:column; gap:10px;">
             <button @click="open = false"
-              style="background:var(--tg-accent,#2d7df6); color:#fff; border:none;
+              style="background:var(--tg-button,#2970dd); color:#fff; border:none;
                 border-radius:12px; padding:14px; font-family:'Onest',system-ui,sans-serif;
                 font-size:15px; font-weight:600; cursor:pointer; width:100%;">
               Confirm (800 pts)
             </button>
             <button @click="open = false"
-              style="background:var(--tg-surface-sub,#f3f2ec); color:var(--tg-muted,#6a6e76);
+              style="background:var(--tg-surface-sub,#f3f2ec); color:var(--tg-muted,#60646c);
                 border:none; border-radius:12px; padding:14px;
                 font-family:'Onest',system-ui,sans-serif; font-size:15px; cursor:pointer; width:100%;">
               Cancel
@@ -78,7 +76,7 @@ export const WithLongContent: Story = {
     template: `
       <div style="font-family:'Onest',system-ui,sans-serif; padding:20px;">
         <button @click="open = true"
-          style="background:var(--tg-accent,#2d7df6); color:#fff; border:none;
+          style="background:var(--tg-button,#2970dd); color:#fff; border:none;
             border-radius:12px; padding:12px 24px; font-family:'Onest',system-ui,sans-serif;
             font-size:15px; font-weight:600; cursor:pointer;">
           Order details
@@ -95,10 +93,10 @@ export const WithLongContent: Story = {
             ]" :key="row[0]"
               style="display:flex; justify-content:space-between; align-items:center;
               padding:12px 0; border-bottom:1px solid var(--tg-line,#e7e6e1);">
-              <span style="font-size:13px; color:var(--tg-muted,#6a6e76);">{{ row[0] }}</span>
+              <span style="font-size:13px; color:var(--tg-muted,#60646c);">{{ row[0] }}</span>
               <span style="font-size:14px; font-weight:500; color:var(--tg-ink,#15171b);">{{ row[1] }}</span>
             </div>
-            <button style="background:var(--tg-accent,#2d7df6); color:#fff; border:none;
+            <button style="background:var(--tg-button,#2970dd); color:#fff; border:none;
               border-radius:12px; padding:14px; font-family:'Onest',system-ui,sans-serif;
               font-size:15px; font-weight:600; cursor:pointer; width:100%; margin-top:4px;">
               Respond to order

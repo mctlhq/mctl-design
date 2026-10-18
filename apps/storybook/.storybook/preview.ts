@@ -110,6 +110,11 @@ const preview: Preview = {
       accentName.value = String(context.globals.accent ?? DEFAULT_ACCENT);
       applyAccent(accentName.value);
       const pinned = context.globals.theme;
+      // Mini App stories sit on the --tg-* surface they ship on, not on the
+      // desktop paper/ink, so their contrast is judged where it applies.
+      const surface = context.title.startsWith('Telegram/')
+        ? 'background: var(--tg-bg); color: var(--tg-ink);'
+        : 'background: var(--surface-bg); color: var(--surface-fg);';
       return {
         components: { story },
         setup() {
@@ -121,9 +126,7 @@ const preview: Preview = {
             applyAccent(accentName.value);
           });
         },
-        template:
-          '<div style="background: var(--surface-bg); color: var(--surface-fg); ' +
-          'padding: 32px; min-height: 100vh;"><story /></div>',
+        template: `<div style="${surface} padding: 32px; min-height: 100vh;"><story /></div>`,
       };
     },
   ],

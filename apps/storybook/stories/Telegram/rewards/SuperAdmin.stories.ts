@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Rewards/SuperAdmin',
 };
 
@@ -37,7 +35,7 @@ export const GlobalView: Story = {
             style="background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
               border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:4px;">
             <div style="font-size:22px; font-weight:700; color:var(--tg-ink,#15171b);">{{ stat.value }}</div>
-            <div style="font-size:12px; color:var(--tg-muted,#6a6e76);">{{ stat.label }}</div>
+            <div style="font-size:12px; color:var(--tg-muted,#60646c);">{{ stat.label }}</div>
           </div>
         </div>
 
@@ -52,15 +50,15 @@ export const GlobalView: Story = {
               display:flex; align-items:center; justify-content:space-between;">
             <div>
               <div style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b);">{{ m.name }}</div>
-              <div style="font-size:12px; color:var(--tg-muted,#6a6e76); margin-top:2px;">
+              <div style="font-size:12px; color:var(--tg-muted,#60646c); margin-top:2px;">
                 {{ m.rules }} rules · {{ m.staff }} staff
               </div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:14px; font-weight:600; color:var(--tg-accent,#2d7df6);">
+              <div style="font-size:14px; font-weight:600; color:var(--tg-accent-text,#2869ca);">
                 {{ m.total }}
               </div>
-              <div style="font-size:11px; color:var(--tg-faint,#9a9da3);">issued</div>
+              <div style="font-size:11px; color:var(--tg-muted,#60646c);">issued</div>
             </div>
           </div>
         </div>

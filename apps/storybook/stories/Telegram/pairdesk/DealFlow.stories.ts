@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { MTgStatusBadge } from '@mctlhq/ui';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/PairDesk/DealFlow',
 };
 
@@ -34,10 +32,10 @@ export const Lifecycle: Story = {
           <div style="display:flex; flex-direction:column; align-items:center; gap:0;">
             <div :style="{
               width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0,
-              background: step.done ? 'var(--tg-success,#1f9d57)' : 'var(--tg-surface-sub,#f3f2ec)',
+              background: step.done ? 'color-mix(in srgb, var(--tg-success,#1f9d57) 70%, #000)' : 'var(--tg-surface-sub,#f3f2ec)',
               border: step.done ? 'none' : '2px solid var(--tg-line,#e7e6e1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: step.done ? '#fff' : 'var(--tg-faint,#9a9da3)',
+              color: step.done ? '#fff' : 'var(--tg-muted,#60646c)',
               fontSize: step.done ? '16px' : '14px', fontWeight: '700',
             }">{{ step.done ? '✓' : i + 1 }}</div>
             <div v-if="i < steps.length - 1"
@@ -50,7 +48,7 @@ export const Lifecycle: Story = {
               :style="{ color: step.done ? 'var(--tg-ink,#15171b)' : 'var(--tg-muted,#6a6e76)' }">
               {{ step.label }}
             </div>
-            <div style="font-size:13px; color:var(--tg-muted,#6a6e76); margin-top:3px; line-height:1.4;">
+            <div style="font-size:13px; color:var(--tg-muted,#60646c); margin-top:3px; line-height:1.4;">
               {{ step.desc }}
             </div>
           </div>
@@ -73,7 +71,7 @@ export const Lifecycle: Story = {
           ]" :key="row[0]"
             style="display:flex; align-items:center; gap:10px;">
             <MTgStatusBadge :status="row[0]" />
-            <span style="font-size:12px; color:var(--tg-muted,#6a6e76);">{{ row[1] }}</span>
+            <span style="font-size:12px; color:var(--tg-muted,#60646c);">{{ row[1] }}</span>
           </div>
         </div>
       </div>

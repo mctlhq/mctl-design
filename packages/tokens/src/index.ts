@@ -2,7 +2,7 @@ export { color } from './color';
 export { hue } from './hue';
 export { surface } from './surface';
 export { accent, defaultAccent } from './accent';
-export { status } from './status';
+export { status, statusText } from './status';
 export { syntax } from './syntax';
 export {
   typography,
@@ -25,7 +25,12 @@ export { icon } from './icon';
 export { opacity } from './opacity';
 export { focus } from './focus';
 export { control } from './control';
-export { telegramPalette, telegramThemeParamsMap } from './telegram';
+export {
+  telegramPalette,
+  telegramThemeParamsMap,
+  telegramTextMix,
+  telegramButtonMix,
+} from './telegram';
 
 export type { Color } from './color';
 export type { Hue, HueName } from './hue';
@@ -51,7 +56,7 @@ import { color } from './color';
 import { hue } from './hue';
 import { surface } from './surface';
 import { accent } from './accent';
-import { status } from './status';
+import { status, statusText } from './status';
 import { syntax } from './syntax';
 import { typography } from './typography';
 import { space, layout } from './space';
@@ -74,6 +79,7 @@ export const tokens = {
   surface,
   accent,
   status,
+  statusText,
   syntax,
   typography,
   space,

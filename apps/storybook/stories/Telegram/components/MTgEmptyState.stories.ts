@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { MTgEmptyState } from '@mctlhq/ui';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta<typeof MTgEmptyState> = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Components/MTgEmptyState',
   component: MTgEmptyState,
   tags: ['autodocs'],
@@ -46,7 +44,7 @@ export const WithAction: Story = {
           title="No active orders"
           description="Post your first exchange request and connect with other traders."
         >
-          <button style="background:var(--tg-accent,#2d7df6); color:#fff; border:none;
+          <button style="background:var(--tg-button,#2970dd); color:#fff; border:none;
             border-radius:12px; padding:12px 24px; font-family:'Onest',system-ui,sans-serif;
             font-size:15px; font-weight:600; cursor:pointer;">
             Create order

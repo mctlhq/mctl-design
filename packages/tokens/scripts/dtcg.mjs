@@ -17,7 +17,7 @@
 // their CSS text in $value with no $type, and are marked under $extensions so
 // a tool can skip them deliberately rather than choke.
 
-const ALIASED_GROUPS = new Set(['surface', 'accent', 'status', 'syntax']);
+const ALIASED_GROUPS = new Set(['surface', 'accent', 'status', 'statusText', 'syntax']);
 const EXT = 'ai.mctl';
 
 const HEX = /^#[0-9a-f]{6}$/i;

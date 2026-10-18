@@ -74,7 +74,7 @@ const roles = { empty: undefined, loading: 'status', error: 'alert' } as const;
   width: 40px;
   height: 40px;
   margin-bottom: 4px;
-  color: var(--tg-muted, #6a6e76);
+  color: var(--tg-muted, #60646c);
 }
 
 .m-tg-empty--loading .m-tg-empty__icon {
@@ -109,7 +109,7 @@ const roles = { empty: undefined, loading: 'status', error: 'alert' } as const;
   margin: 0;
   font-family: var(--tg-font, 'Onest', system-ui, -apple-system, sans-serif);
   font-size: 14px;
-  color: var(--tg-muted, #6a6e76);
+  color: var(--tg-muted, #60646c);
   max-width: 260px;
   line-height: 1.5;
 }

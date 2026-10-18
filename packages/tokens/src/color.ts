@@ -20,6 +20,10 @@ export const color = {
   paperFg: '#3a3f47',
   paperLine: '#d8d2c4',
   paperLineStrong: '#c4bcae',
+  // A field's border is its only edge: 3:1 against every surface (WCAG
+  // 1.4.11), unlike the hairline lines above.
+  controlBorderDark: '#5e6670',
+  controlBorderLight: '#8e8679',
   // Subtle text on paper. fg3 is tuned for ink and is 4.3:1 here.
   paperFgSubtle: '#656a73',
 
@@ -28,6 +32,9 @@ export const color = {
   terracottaHighlight: '#ff8a6a',
   terracottaDeep: '#b83d28',
   terracottaDeeper: '#9a3220',
+  // Accent text on its own tint: deeper on paper, lighter on ink.
+  terracottaText: '#ab301b',
+  terracottaTextDark: '#ec6345',
   terracottaSoft: '#f6e4dc',
   terracottaSoftDark: '#241512',
   terracottaFgLight: '#fff8f3',
@@ -37,6 +44,7 @@ export const color = {
   cyanHighlight: '#5ed4e0',
   cyanDeep: '#017585',
   cyanDeeper: '#0a5c68',
+  cyanText: '#006676',
   cyanSoft: '#d4f4f7',
   cyanSoftDark: '#0c1f23',
 
@@ -45,6 +53,7 @@ export const color = {
   limeHighlight: '#dcff8c',
   limeDeep: '#527400',
   limeDeeper: '#3e5e00',
+  limeText: '#466700',
   limeSoft: '#f0f8d4',
   limeSoftDark: '#202714',
   limeFgLight: '#f7fce8',
@@ -70,6 +79,11 @@ export const color = {
   okDeep: '#2a7846',
   warnDeep: '#ae4e00',
   badDeep: '#c23b3b',
+  // Text on a tint of its own colour (pills, badges): one step deeper on
+  // paper, where the *Deep shades clear 4.5:1 on the plain surface only.
+  okText: '#1a6b3a',
+  warnText: '#9e3f00',
+  badText: '#af272b',
 
   // Syntax — independent of brand accent so code does not recolor with Tweaks.
   syntaxKey: '#7ec8c8',
@@ -81,7 +95,7 @@ export const color = {
   // Syntax on the light card — the same hues taken down in OKLCH lightness
   // until each clears 4.5:1 on paper, the darkest light surface. Punctuation
   // and comments reuse paperFgSubtle.
-  syntaxKeyDeep: '#287576',
+  syntaxKeyDeep: '#1f6e6f',
   syntaxStringDeep: '#856515',
   syntaxNumberDeep: '#a45521',
   syntaxKeywordDeep: '#6e60a8',

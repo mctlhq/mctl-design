@@ -80,10 +80,12 @@ for looking at, not for committing. When a change moves pixels on purpose, run
 `pnpm test:visual:update` and commit the rewritten PNGs with it. The diff
 images from a failing CI run are uploaded as the `visual-diffs` artifact.
 
-A story file whose only axe failures are recorded palette debt sets
-`parameters: { a11y: contrastDebt }` (`apps/storybook/.storybook/a11y.ts`,
-which lists that debt). This switches off only the colour-contrast rule. Fix
-anything else.
+Every story passes axe in full, colour contrast included, in both themes.
+Telegram stories render on `--tg-bg` with `--tg-ink`, so they take the
+`--tg-*` text roles: `--tg-muted` for secondary text (`--tg-faint` is for
+icons and dividers only), `--tg-accent-text` / `--tg-success-text` /
+`--tg-danger-text` / `--tg-warn-text` for coloured text, and `--tg-button`
+behind white text. Never switch the colour-contrast rule off; fix the colour.
 
 ## Branch strategy
 

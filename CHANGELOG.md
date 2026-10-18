@@ -9,9 +9,42 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
-## Unreleased
+## 0.14.0 — 2026-10-18
+
+Every colour pair the system ships now meets WCAG AA: `pnpm check:contrast`
+passes all 300 pairs with an empty `KNOWN` list, and every story passes axe,
+colour contrast included, in both themes.
+
+### Added
+
+- Text shades for colours that were too light to read as text:
+  `--accent-text` (per accent and per theme), `--status-ok-text`,
+  `--status-warn-text` and `--status-bad-text`. The tint and fill colours are
+  unchanged; use the `-text` role when the colour is the text itself. Tokens:
+  `statusText`, and a `text` role on each `accent` / theme entry.
+- `--surface-control-border`, the border of a form field, at 3:1 against the
+  surface as WCAG 1.4.11 asks of a control's boundary. Token:
+  `surface.<theme>.controlBorder`.
+- Telegram: `--tg-accent-text`, `--tg-success-text`, `--tg-danger-text` and
+  `--tg-warn-text`, mixed from the client's colour and `--tg-ink` so they follow
+  the Telegram theme, and `--tg-button` / `--tg-button-text` for filled
+  buttons, darker than `--tg-accent` so white text reads on it in both themes.
+  Tokens: `telegramTextMix`, `telegramButtonMix`.
 
 ### Changed
+
+- `--control-border` (`MInput`, `MSelect`, `MTextarea`) resolves to
+  `--surface-control-border` instead of `--surface-line-strong`, which stays
+  as it was for dividers and cards.
+- `MPill`'s filled variants, `MTgDeltaTag`, `MTgOrderCard`, `MTgStatusBadge` and
+  `MTgTabBar`'s active tab use the new text shades.
+- Telegram `--tg-muted` is darker in light (`#60646c`) and lighter in dark
+  (`#9fa4ae`), so secondary text passes AA. `--tg-faint` is for icons and
+  dividers only, at 3:1; text that used it moves to `--tg-muted`.
+- The light `syntax.key` colour is `#1f6e6f` (was `#287576`), so it reads on
+  `MTable`'s highlighted row.
+- Storybook renders Telegram stories on `--tg-bg` with `--tg-ink`, the surface
+  the components are built for, and the `contrastDebt` opt-out is gone.
 
 - `MTable`, `MCodeBlock` and `MYamlBlock` are a tab stop only while their
   content overflows, measured with a `ResizeObserver`; one that fits no longer

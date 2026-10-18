@@ -137,7 +137,7 @@ useDialog({ dialog: sheetRef, overlay: rootRef, open: () => open.value, onDismis
   justify-content: center;
   font-size: 12px;
   cursor: pointer;
-  color: var(--tg-muted, #6a6e76);
+  color: var(--tg-muted, #60646c);
 }
 
 .m-tg-sheet__body {

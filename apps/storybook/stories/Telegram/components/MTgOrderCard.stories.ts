@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { MTgOrderCard } from '@mctlhq/ui';
-import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta<typeof MTgOrderCard> = {
-  parameters: { a11y: contrastDebt },
   title: 'Telegram/Components/MTgOrderCard',
   component: MTgOrderCard,
   tags: ['autodocs'],
