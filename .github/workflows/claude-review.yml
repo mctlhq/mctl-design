@@ -19,12 +19,17 @@ permissions: {}
 
 jobs:
   claude-review:
-    uses: mctlhq/.github/.github/workflows/claude-review.yml@b0fc8003261139d919fdb91a565a60571e57d7c1
+    uses: mctlhq/.github/.github/workflows/claude-review.yml@6f35424f140a15557c3405ebed6d08851eb496b2
     permissions:
       contents: read
       pull-requests: write
       issues: write
       id-token: write
+      # The reviewer job reads the PR's check runs (GET actions/runs) and
+      # declares actions: read itself; a caller's block caps a called job, so
+      # without this the nested job asks for more than it may have and the
+      # run fails before it starts.
+      actions: read
     with:
       # mctl-agents is the App the DevLoop implementer runs under; without the
       # slug claude-code-action hard-fails with "Workflow initiated by
