@@ -15,15 +15,11 @@
   --mctl-color-paper-fg: #3a3f47;
   --mctl-color-paper-line: #d8d2c4;
   --mctl-color-paper-line-strong: #c4bcae;
-  --mctl-color-control-border-dark: #5e6670;
-  --mctl-color-control-border-light: #8e8679;
   --mctl-color-paper-fg-subtle: #656a73;
   --mctl-color-terracotta: #e25a3c;
   --mctl-color-terracotta-highlight: #ff8a6a;
   --mctl-color-terracotta-deep: #b83d28;
   --mctl-color-terracotta-deeper: #9a3220;
-  --mctl-color-terracotta-text: #ab301b;
-  --mctl-color-terracotta-text-dark: #ec6345;
   --mctl-color-terracotta-soft: #f6e4dc;
   --mctl-color-terracotta-soft-dark: #241512;
   --mctl-color-terracotta-fg-light: #fff8f3;
@@ -31,14 +27,12 @@
   --mctl-color-cyan-highlight: #5ed4e0;
   --mctl-color-cyan-deep: #017585;
   --mctl-color-cyan-deeper: #0a5c68;
-  --mctl-color-cyan-text: #006676;
   --mctl-color-cyan-soft: #d4f4f7;
   --mctl-color-cyan-soft-dark: #0c1f23;
   --mctl-color-lime: #bdf24a;
   --mctl-color-lime-highlight: #dcff8c;
   --mctl-color-lime-deep: #527400;
   --mctl-color-lime-deeper: #3e5e00;
-  --mctl-color-lime-text: #466700;
   --mctl-color-lime-soft: #f0f8d4;
   --mctl-color-lime-soft-dark: #202714;
   --mctl-color-lime-fg-light: #f7fce8;
@@ -57,15 +51,12 @@
   --mctl-color-ok-deep: #2a7846;
   --mctl-color-warn-deep: #ae4e00;
   --mctl-color-bad-deep: #c23b3b;
-  --mctl-color-ok-text: #1a6b3a;
-  --mctl-color-warn-text: #9e3f00;
-  --mctl-color-bad-text: #af272b;
   --mctl-color-syntax-key: #7ec8c8;
   --mctl-color-syntax-string: #c4a35a;
   --mctl-color-syntax-number: #e08b5a;
   --mctl-color-syntax-keyword: #8b7ec8;
   --mctl-color-syntax-punctuation: #7d828b;
-  --mctl-color-syntax-key-deep: #1f6e6f;
+  --mctl-color-syntax-key-deep: #287576;
   --mctl-color-syntax-string-deep: #856515;
   --mctl-color-syntax-number-deep: #a45521;
   --mctl-color-syntax-keyword-deep: #6e60a8;
@@ -114,7 +105,6 @@
   --mctl-surface-dark-card: #15181d;
   --mctl-surface-dark-line: #1f242b;
   --mctl-surface-dark-line-strong: #2a313a;
-  --mctl-surface-dark-control-border: #5e6670;
   --mctl-surface-dark-fg: #e6e7e9;
   --mctl-surface-dark-fg-muted: #a4a8ae;
   --mctl-surface-dark-fg-subtle: #7d828b;
@@ -123,7 +113,6 @@
   --mctl-surface-light-card: #fffdf8;
   --mctl-surface-light-line: #d8d2c4;
   --mctl-surface-light-line-strong: #c4bcae;
-  --mctl-surface-light-control-border: #8e8679;
   --mctl-surface-light-fg: #15181d;
   --mctl-surface-light-fg-muted: #3a3f47;
   --mctl-surface-light-fg-subtle: #656a73;
@@ -131,71 +120,55 @@
   --mctl-accent-terracotta-dark-highlight: #ff8a6a;
   --mctl-accent-terracotta-dark-fg: #0a0b0d;
   --mctl-accent-terracotta-dark-soft: #241512;
-  --mctl-accent-terracotta-dark-text: #ec6345;
   --mctl-accent-terracotta-light-primary: #b83d28;
   --mctl-accent-terracotta-light-highlight: #9a3220;
   --mctl-accent-terracotta-light-fg: #fff8f3;
   --mctl-accent-terracotta-light-soft: #f6e4dc;
-  --mctl-accent-terracotta-light-text: #ab301b;
   --mctl-accent-vermilion-dark-primary: #e25a3c;
   --mctl-accent-vermilion-dark-highlight: #ff8a6a;
   --mctl-accent-vermilion-dark-fg: #0a0b0d;
   --mctl-accent-vermilion-dark-soft: #241512;
-  --mctl-accent-vermilion-dark-text: #ec6345;
   --mctl-accent-vermilion-light-primary: #b83d28;
   --mctl-accent-vermilion-light-highlight: #9a3220;
   --mctl-accent-vermilion-light-fg: #fff8f3;
   --mctl-accent-vermilion-light-soft: #f6e4dc;
-  --mctl-accent-vermilion-light-text: #ab301b;
   --mctl-accent-cyan-dark-primary: #1ab3c7;
   --mctl-accent-cyan-dark-highlight: #5ed4e0;
   --mctl-accent-cyan-dark-fg: #0a0b0d;
   --mctl-accent-cyan-dark-soft: #0c1f23;
-  --mctl-accent-cyan-dark-text: #1ab3c7;
   --mctl-accent-cyan-light-primary: #017585;
   --mctl-accent-cyan-light-highlight: #0a5c68;
   --mctl-accent-cyan-light-fg: #f1ede4;
   --mctl-accent-cyan-light-soft: #d4f4f7;
-  --mctl-accent-cyan-light-text: #006676;
   --mctl-accent-lime-dark-primary: #bdf24a;
   --mctl-accent-lime-dark-highlight: #dcff8c;
   --mctl-accent-lime-dark-fg: #0a0b0d;
   --mctl-accent-lime-dark-soft: #202714;
-  --mctl-accent-lime-dark-text: #bdf24a;
   --mctl-accent-lime-light-primary: #527400;
   --mctl-accent-lime-light-highlight: #3e5e00;
   --mctl-accent-lime-light-fg: #f7fce8;
   --mctl-accent-lime-light-soft: #f0f8d4;
-  --mctl-accent-lime-light-text: #466700;
   --mctl-accent-lilac-dark-primary: #b07aff;
   --mctl-accent-lilac-dark-highlight: #d6b3ff;
   --mctl-accent-lilac-dark-fg: #0a0b0d;
   --mctl-accent-lilac-dark-soft: #1e192a;
-  --mctl-accent-lilac-dark-text: #b07aff;
   --mctl-accent-lilac-light-primary: #6b3cc4;
   --mctl-accent-lilac-light-highlight: #552e9e;
   --mctl-accent-lilac-light-fg: #f8f4ff;
   --mctl-accent-lilac-light-soft: #efe4ff;
-  --mctl-accent-lilac-light-text: #6b3cc4;
   --mctl-status-dark-ok: #7cf2a4;
   --mctl-status-dark-warn: #f5a524;
   --mctl-status-dark-bad: #ff6b6b;
   --mctl-status-light-ok: #2a7846;
   --mctl-status-light-warn: #ae4e00;
   --mctl-status-light-bad: #c23b3b;
-  --mctl-status-text-dark-ok: #7cf2a4;
-  --mctl-status-text-dark-warn: #f5a524;
-  --mctl-status-text-dark-bad: #ff6b6b;
-  --mctl-status-text-light-ok: #1a6b3a;
-  --mctl-status-text-light-warn: #9e3f00;
-  --mctl-status-text-light-bad: #af272b;
   --mctl-syntax-dark-key: #7ec8c8;
   --mctl-syntax-dark-string: #c4a35a;
   --mctl-syntax-dark-number: #e08b5a;
   --mctl-syntax-dark-keyword: #8b7ec8;
   --mctl-syntax-dark-punctuation: #7d828b;
   --mctl-syntax-dark-comment: #7d828b;
-  --mctl-syntax-light-key: #1f6e6f;
+  --mctl-syntax-light-key: #287576;
   --mctl-syntax-light-string: #856515;
   --mctl-syntax-light-number: #a45521;
   --mctl-syntax-light-keyword: #6e60a8;
@@ -451,7 +424,6 @@
   --surface-card: var(--mctl-surface-dark-card);
   --surface-line: var(--mctl-surface-dark-line);
   --surface-line-strong: var(--mctl-surface-dark-line-strong);
-  --surface-control-border: var(--mctl-surface-dark-control-border);
   --surface-fg: var(--mctl-surface-dark-fg);
   --surface-fg-muted: var(--mctl-surface-dark-fg-muted);
   --surface-fg-subtle: var(--mctl-surface-dark-fg-subtle);
@@ -462,22 +434,18 @@
   --_accent-terracotta-highlight: var(--mctl-accent-terracotta-dark-highlight);
   --_accent-terracotta-fg: var(--mctl-accent-terracotta-dark-fg);
   --_accent-terracotta-soft: var(--mctl-accent-terracotta-dark-soft);
-  --_accent-terracotta-text: var(--mctl-accent-terracotta-dark-text);
   --_accent-cyan-primary: var(--mctl-accent-cyan-dark-primary);
   --_accent-cyan-highlight: var(--mctl-accent-cyan-dark-highlight);
   --_accent-cyan-fg: var(--mctl-accent-cyan-dark-fg);
   --_accent-cyan-soft: var(--mctl-accent-cyan-dark-soft);
-  --_accent-cyan-text: var(--mctl-accent-cyan-dark-text);
   --_accent-lime-primary: var(--mctl-accent-lime-dark-primary);
   --_accent-lime-highlight: var(--mctl-accent-lime-dark-highlight);
   --_accent-lime-fg: var(--mctl-accent-lime-dark-fg);
   --_accent-lime-soft: var(--mctl-accent-lime-dark-soft);
-  --_accent-lime-text: var(--mctl-accent-lime-dark-text);
   --_accent-lilac-primary: var(--mctl-accent-lilac-dark-primary);
   --_accent-lilac-highlight: var(--mctl-accent-lilac-dark-highlight);
   --_accent-lilac-fg: var(--mctl-accent-lilac-dark-fg);
   --_accent-lilac-soft: var(--mctl-accent-lilac-dark-soft);
-  --_accent-lilac-text: var(--mctl-accent-lilac-dark-text);
 
   /* Named accent primaries for Tailwind swatches (bg-accent-cyan, etc.). */
   --accent-terracotta: var(--mctl-accent-terracotta-dark-primary);
@@ -489,10 +457,6 @@
   --status-ok: var(--mctl-status-dark-ok);
   --status-warn: var(--mctl-status-dark-warn);
   --status-bad: var(--mctl-status-dark-bad);
-  /* Status as text on a tint of itself (filled pills). */
-  --status-ok-text: var(--mctl-status-text-dark-ok);
-  --status-warn-text: var(--mctl-status-text-dark-warn);
-  --status-bad-text: var(--mctl-status-text-dark-bad);
 
   /* Syntax. */
   --syntax-key: var(--mctl-syntax-dark-key);
@@ -537,7 +501,6 @@
   --surface-card: var(--mctl-surface-light-card);
   --surface-line: var(--mctl-surface-light-line);
   --surface-line-strong: var(--mctl-surface-light-line-strong);
-  --surface-control-border: var(--mctl-surface-light-control-border);
   --surface-fg: var(--mctl-surface-light-fg);
   --surface-fg-muted: var(--mctl-surface-light-fg-muted);
   --surface-fg-subtle: var(--mctl-surface-light-fg-subtle);
@@ -546,22 +509,18 @@
   --_accent-terracotta-highlight: var(--mctl-accent-terracotta-light-highlight);
   --_accent-terracotta-fg: var(--mctl-accent-terracotta-light-fg);
   --_accent-terracotta-soft: var(--mctl-accent-terracotta-light-soft);
-  --_accent-terracotta-text: var(--mctl-accent-terracotta-light-text);
   --_accent-cyan-primary: var(--mctl-accent-cyan-light-primary);
   --_accent-cyan-highlight: var(--mctl-accent-cyan-light-highlight);
   --_accent-cyan-fg: var(--mctl-accent-cyan-light-fg);
   --_accent-cyan-soft: var(--mctl-accent-cyan-light-soft);
-  --_accent-cyan-text: var(--mctl-accent-cyan-light-text);
   --_accent-lime-primary: var(--mctl-accent-lime-light-primary);
   --_accent-lime-highlight: var(--mctl-accent-lime-light-highlight);
   --_accent-lime-fg: var(--mctl-accent-lime-light-fg);
   --_accent-lime-soft: var(--mctl-accent-lime-light-soft);
-  --_accent-lime-text: var(--mctl-accent-lime-light-text);
   --_accent-lilac-primary: var(--mctl-accent-lilac-light-primary);
   --_accent-lilac-highlight: var(--mctl-accent-lilac-light-highlight);
   --_accent-lilac-fg: var(--mctl-accent-lilac-light-fg);
   --_accent-lilac-soft: var(--mctl-accent-lilac-light-soft);
-  --_accent-lilac-text: var(--mctl-accent-lilac-light-text);
 
   --accent-terracotta: var(--mctl-accent-terracotta-light-primary);
   --accent-cyan: var(--mctl-accent-cyan-light-primary);
@@ -571,10 +530,6 @@
   --status-ok: var(--mctl-status-light-ok);
   --status-warn: var(--mctl-status-light-warn);
   --status-bad: var(--mctl-status-light-bad);
-  /* Status as text on a tint of itself (filled pills). */
-  --status-ok-text: var(--mctl-status-text-light-ok);
-  --status-warn-text: var(--mctl-status-text-light-warn);
-  --status-bad-text: var(--mctl-status-text-light-bad);
 
   --syntax-key: var(--mctl-syntax-light-key);
   --syntax-string: var(--mctl-syntax-light-string);
@@ -717,14 +672,10 @@
   --accent-soft: var(--_pick-terracotta, var(--_accent-terracotta-soft))
     var(--_pick-cyan, var(--_accent-cyan-soft)) var(--_pick-lime, var(--_accent-lime-soft))
     var(--_pick-lilac, var(--_accent-lilac-soft));
-  /* The accent as text on a tint of itself (filled pills). */
-  --accent-text: var(--_pick-terracotta, var(--_accent-terracotta-text))
-    var(--_pick-cyan, var(--_accent-cyan-text)) var(--_pick-lime, var(--_accent-lime-text))
-    var(--_pick-lilac, var(--_accent-lilac-text));
   --focus-ring: var(--accent);
   --control-bg: var(--surface-bg);
   --control-disabled-bg: var(--surface-elevated);
-  --control-border: var(--surface-control-border);
+  --control-border: var(--surface-line-strong);
   --control-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
   --control-focus-shadow-invalid: 0 0 0 3px color-mix(in srgb, var(--status-bad) 20%, transparent);
   --status-ok-soft: color-mix(in srgb, var(--status-ok) 10%, transparent);

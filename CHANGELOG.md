@@ -9,7 +9,7 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
-## Unreleased
+## 0.14.0 — 2026-10-18
 
 Every colour pair the system ships now meets WCAG AA: `pnpm check:contrast`
 passes all 300 pairs with an empty `KNOWN` list, and every story passes axe,

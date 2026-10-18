@@ -1,6 +1,6 @@
 {
   "name": "@mctlhq/css",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "MCTL CSS — theme variables, global styles, prose styles, Tailwind preset",
   "license": "Apache-2.0",
   "type": "module",
