@@ -20,6 +20,7 @@
 - [ ] Root version is `X.Y.Z`, optionally `-prerelease`, with no build metadata — nginx serves no other shape
 - [ ] Generated CSS under `apps/storybook/public` is committed, including the new `<version>/` directory
 - [ ] Storybook stories added/updated for any component change
+- [ ] `pnpm test:browser:docker` passes (story a11y and play functions in both themes; screenshots match, or were regenerated with `pnpm test:visual:update` and committed)
 
 ## Notes
 

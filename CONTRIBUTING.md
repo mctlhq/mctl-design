@@ -56,6 +56,34 @@ pnpm check:token-version   # a token or generator change needs a version bump,
                            # and the root version must be X.Y.Z(-prerelease)
 ```
 
+### Story tests in a browser
+
+```bash
+pnpm test:browser:docker   # what CI runs: every story in Chromium, both themes
+pnpm test:visual:update    # rewrite the screenshot baselines after a visual change
+pnpm test:browser          # the same on this machine (after pnpm build and
+                           # pnpm build:storybook; `pnpm --filter
+                           # @mctlhq/storybook exec playwright install chromium`)
+```
+
+Each story renders in both themes. Its play function runs and axe must pass
+(`pnpm --filter @mctlhq/storybook test:a11y`). Then a full-page screenshot must
+match its baseline in `apps/storybook/visual/__screenshots__`
+(`test:visual`). The tests serve the fonts from `@fontsource` instead of
+Google Fonts, so they need no network and stay byte-stable.
+
+Font rendering differs between machines, so baselines only come from the
+pinned Playwright image (`scripts/browser-tests-docker.sh`). Docker is the one
+requirement, and no host directory is mounted. A screenshot taken locally is
+for looking at, not for committing. When a change moves pixels on purpose, run
+`pnpm test:visual:update` and commit the rewritten PNGs with it. The diff
+images from a failing CI run are uploaded as the `visual-diffs` artifact.
+
+A story file whose only axe failures are recorded palette debt sets
+`parameters: { a11y: contrastDebt }` (`apps/storybook/.storybook/a11y.ts`,
+which lists that debt). This switches off only the colour-contrast rule. Fix
+anything else.
+
 ## Branch strategy
 
 - `main` is always deployable.
@@ -110,7 +138,8 @@ npm consumers fall behind the CDN.
    test runs axe against goes into the case list in `a11y-smoke.test.ts`.
    `pnpm test` fails a source file under the per-file coverage floor, so a
    component that appears in no test does not merge.
-6. Add a story under `apps/storybook/stories/` (`Telegram/` for `MTg*`).
+6. Add a story under `apps/storybook/stories/` (`Telegram/` for `MTg*`), and
+   commit its screenshot baselines (`pnpm test:visual:update`).
 7. List it under **Components** in `README.md`, and describe it under
    `## Unreleased` in `CHANGELOG.md`.
 

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
+import { contrastDebt } from '../../.storybook/a11y';
 
-const meta: Meta = { title: 'Foundations/Public Sites' };
+const meta: Meta = { title: 'Foundations/Public Sites', parameters: { a11y: contrastDebt } };
 export default meta;
 type Story = StoryObj;
 

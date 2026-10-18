@@ -58,6 +58,10 @@ applyAccent(DEFAULT_ACCENT);
 const preview: Preview = {
   parameters: {
     controls: { expanded: true },
+    // Fail the story tests (pnpm test:a11y) on any axe violation, not just
+    // list it in the panel. A story with a known, explained exception sets
+    // its own a11y parameter.
+    a11y: { test: 'error' },
     options: {
       storySort: {
         order: [
@@ -83,6 +87,10 @@ const preview: Preview = {
   // sticks when the key is declared here.
   initialGlobals: {
     accent: DEFAULT_ACCENT,
+    // '' follows the dark-mode toggle. 'light' / 'dark' pin the canvas theme,
+    // so a story can be opened (?globals=theme:light) or tested in either one
+    // without the manager UI: the story tests and screenshots rely on it.
+    theme: '',
   },
   globalTypes: {
     accent: {
@@ -101,10 +109,13 @@ const preview: Preview = {
       // styles <body> — resolves the same surface as the story canvas.
       accentName.value = String(context.globals.accent ?? DEFAULT_ACCENT);
       applyAccent(accentName.value);
+      const pinned = context.globals.theme;
       return {
         components: { story },
         setup() {
-          const theme = computed(() => (isDark.value ? 'dark' : 'light'));
+          const theme = computed(() =>
+            pinned === 'light' || pinned === 'dark' ? pinned : isDark.value ? 'dark' : 'light',
+          );
           watchEffect(() => {
             document.documentElement.setAttribute('data-theme', theme.value);
             applyAccent(accentName.value);

@@ -25,7 +25,7 @@ const meta: Meta<typeof MSelect> = {
       return { args, value, options };
     },
     template:
-      '<MSelect v-bind="args" v-model="value" :options="options" style="max-width:320px" />',
+      '<MSelect v-bind="args" v-model="value" :options="options" aria-label="Database" style="max-width:320px" />',
   }),
 };
 
@@ -45,6 +45,6 @@ export const Placeholder: Story = {
       return { args, value, options };
     },
     template:
-      '<MSelect v-bind="args" v-model="value" :options="options" style="max-width:320px" />',
+      '<MSelect v-bind="args" v-model="value" :options="options" aria-label="Database" style="max-width:320px" />',
   }),
 };

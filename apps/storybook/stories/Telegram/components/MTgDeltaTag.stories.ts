@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { MTgDeltaTag } from '@mctlhq/ui';
+import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta<typeof MTgDeltaTag> = {
+  parameters: { a11y: contrastDebt },
   title: 'Telegram/Components/MTgDeltaTag',
   component: MTgDeltaTag,
   tags: ['autodocs'],

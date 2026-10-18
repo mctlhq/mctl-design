@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref } from 'vue';
+import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta = {
+  parameters: { a11y: contrastDebt },
   title: 'Telegram/PairDesk/CreateOrder',
 };
 
@@ -48,10 +50,10 @@ export const Form: Story = {
 
           <!-- Pair -->
           <div style="margin-bottom:16px;">
-            <div style="font-size:13px; font-weight:500; color:var(--tg-muted,#6a6e76); margin-bottom:8px;">
+            <label for="create-order-pair" style="display:block; font-size:13px; font-weight:500; color:var(--tg-muted,#6a6e76); margin-bottom:8px;">
               Currency pair
-            </div>
-            <select v-model="pair" style="width:100%; background:var(--tg-surface,#fff);
+            </label>
+            <select id="create-order-pair" v-model="pair" style="width:100%; background:var(--tg-surface,#fff);
               border:1px solid var(--tg-line,#e7e6e1); border-radius:12px; padding:13px 16px;
               font-family:'Onest',system-ui,sans-serif; font-size:15px; color:var(--tg-ink,#15171b);
               appearance:none; cursor:pointer;">
@@ -61,10 +63,10 @@ export const Form: Story = {
 
           <!-- Rate -->
           <div style="margin-bottom:16px;">
-            <div style="font-size:13px; font-weight:500; color:var(--tg-muted,#6a6e76); margin-bottom:8px;">
+            <label for="create-order-rate" style="display:block; font-size:13px; font-weight:500; color:var(--tg-muted,#6a6e76); margin-bottom:8px;">
               Rate (RUB per unit)
-            </div>
-            <input v-model="rate" type="number" step="0.01"
+            </label>
+            <input id="create-order-rate" v-model="rate" type="number" step="0.01"
               style="width:100%; background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
                 border-radius:12px; padding:13px 16px; font-family:'Onest',system-ui,sans-serif;
                 font-size:15px; color:var(--tg-ink,#15171b); box-sizing:border-box;" />
@@ -76,12 +78,12 @@ export const Form: Story = {
               Volume range
             </div>
             <div style="display:flex; gap:10px; align-items:center;">
-              <input v-model="minVol" type="number" placeholder="Min"
+              <input v-model="minVol" type="number" placeholder="Min" aria-label="Minimum volume"
                 style="flex:1; background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
                   border-radius:12px; padding:13px 16px; font-family:'Onest',system-ui,sans-serif;
                   font-size:15px; color:var(--tg-ink,#15171b);" />
               <span style="color:var(--tg-faint,#9a9da3);">–</span>
-              <input v-model="maxVol" type="number" placeholder="Max"
+              <input v-model="maxVol" type="number" placeholder="Max" aria-label="Maximum volume"
                 style="flex:1; background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
                   border-radius:12px; padding:13px 16px; font-family:'Onest',system-ui,sans-serif;
                   font-size:15px; color:var(--tg-ink,#15171b);" />

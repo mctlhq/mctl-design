@@ -8,3 +8,7 @@ storybook-static/
 .env
 .env.*
 coverage/
+
+# Playwright output (apps/storybook)
+test-results/
+playwright-report/
