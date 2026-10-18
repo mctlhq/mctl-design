@@ -43,6 +43,10 @@ headings below and are all included in 0.8.0.
 - `MInput`, `MTextarea` and `MSelect` used without a `v-model` lost what the
   user typed or picked on the next re-render: the stale prop was written back
   over it. They keep it now.
+- `MModal` and `MTgSheet` opened without a `v-model` (say `:open="true"` with no
+  `@update:open` listener) could not be dismissed: Escape, the backdrop and
+  the close button only emitted an event nothing heard. They close themselves
+  now.
 - `MTabs`, `MField`, `MTooltip` and `MAccordion` built their ids from the
   component instance uid, a process-wide counter, so a server render and the
   client numbered them differently and every `aria-*` / `for` reference broke
