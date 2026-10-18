@@ -2,10 +2,16 @@
 export interface MPageLayoutProps {
   maxWidth?: 'sm' | 'md' | 'lg' | 'full';
 }
+
+export interface MPageLayoutSlots {
+  /** The page content. */
+  default?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
 withDefaults(defineProps<MPageLayoutProps>(), { maxWidth: 'md' });
+defineSlots<MPageLayoutSlots>();
 
 const widthMap = {
   sm: 'var(--mctl-layout-container-sm)',

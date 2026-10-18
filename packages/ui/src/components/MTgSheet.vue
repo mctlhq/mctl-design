@@ -9,6 +9,11 @@ export interface MTgSheetProps {
   /** Apply safe-area-inset-bottom padding at the bottom. */
   safeArea?: boolean;
 }
+
+export interface MTgSheetSlots {
+  /** The sheet's content. */
+  default?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
@@ -21,6 +26,7 @@ const props = withDefaults(defineProps<MTgSheetProps>(), {
   ariaLabel: 'Sheet',
   safeArea: true,
 });
+defineSlots<MTgSheetSlots>();
 
 const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>();
 

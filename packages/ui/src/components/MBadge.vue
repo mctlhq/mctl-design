@@ -4,10 +4,16 @@ export interface MBadgeProps {
   /** Show a leading status dot. */
   dot?: boolean;
 }
+
+export interface MBadgeSlots {
+  /** The label. */
+  default?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
 withDefaults(defineProps<MBadgeProps>(), { tone: 'neutral', dot: false });
+defineSlots<MBadgeSlots>();
 </script>
 
 <template>

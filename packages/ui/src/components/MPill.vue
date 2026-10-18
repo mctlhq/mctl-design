@@ -3,10 +3,16 @@ export interface MPillProps {
   tone?: 'neutral' | 'accent' | 'ok' | 'warn' | 'bad';
   variant?: 'filled' | 'outline';
 }
+
+export interface MPillSlots {
+  /** The label. */
+  default?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
 withDefaults(defineProps<MPillProps>(), { tone: 'neutral', variant: 'filled' });
+defineSlots<MPillSlots>();
 </script>
 
 <template>

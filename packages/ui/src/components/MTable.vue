@@ -6,6 +6,11 @@ export interface MTableProps {
    */
   label?: string;
 }
+
+export interface MTableSlots {
+  /** The table's `<thead>`, `<tbody>` and rows. */
+  default?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
@@ -13,6 +18,7 @@ export interface MTableProps {
 // container div. The consumer writes plain <table>, <thead>, <tbody> etc.
 // inside the default slot — they inherit styles through the deep selector.
 withDefaults(defineProps<MTableProps>(), { label: 'Table' });
+defineSlots<MTableSlots>();
 </script>
 
 <template>

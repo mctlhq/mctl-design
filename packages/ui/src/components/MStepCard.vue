@@ -6,10 +6,16 @@ export interface MStepCardProps {
   /** Optional command line shown under the prose. */
   code?: string;
 }
+
+export interface MStepCardSlots {
+  /** The step's description. */
+  default?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
 withDefaults(defineProps<MStepCardProps>(), { code: '' });
+defineSlots<MStepCardSlots>();
 </script>
 
 <template>

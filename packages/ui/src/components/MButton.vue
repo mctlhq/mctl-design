@@ -8,6 +8,11 @@ export interface MButtonProps {
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
 }
+
+export interface MButtonSlots {
+  /** The label. */
+  default?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
@@ -22,6 +27,7 @@ const props = withDefaults(defineProps<MButtonProps>(), {
   type: 'button',
   disabled: false,
 });
+defineSlots<MButtonSlots>();
 
 const attrs = useAttrs();
 const isNative = computed(() => props.as === 'button');

@@ -4,12 +4,21 @@ export interface MTooltipProps {
   text: string;
   placement?: 'top' | 'bottom';
 }
+
+export interface MTooltipSlots {
+  /** The trigger. Put `tipId` in its `aria-describedby`. */
+  default?(props: {
+    /** Id of the tooltip element. */
+    tipId: string;
+  }): unknown;
+}
 </script>
 
 <script setup lang="ts">
 import { onBeforeUnmount, ref, useId, watch } from 'vue';
 
 withDefaults(defineProps<MTooltipProps>(), { placement: 'top' });
+defineSlots<MTooltipSlots>();
 
 // Per-instance id from useId, so server and client render agree. Lets the
 // bubble be referenced by id without adding a separate tab stop.

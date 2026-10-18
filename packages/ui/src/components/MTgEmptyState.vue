@@ -7,6 +7,11 @@ export interface MTgEmptyStateProps {
   /** Secondary message. */
   description?: string;
 }
+
+export interface MTgEmptyStateSlots {
+  /** An action below the message, rendered only when given. */
+  default?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
@@ -15,6 +20,7 @@ withDefaults(defineProps<MTgEmptyStateProps>(), {
   title: 'Nothing here yet',
   description: '',
 });
+defineSlots<MTgEmptyStateSlots>();
 
 // Stroke icons rather than emoji: emoji render differently on every platform
 // and screen readers may announce them; these are decorative and hidden.

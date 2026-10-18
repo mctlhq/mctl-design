@@ -8,6 +8,13 @@ export interface MModalProps {
   /** Hide the close affordance and disable backdrop/Esc dismissal. */
   dismissible?: boolean;
 }
+
+export interface MModalSlots {
+  /** The dialog body. */
+  default?(): unknown;
+  /** Actions row, rendered only when given. */
+  footer?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
@@ -20,6 +27,7 @@ const props = withDefaults(defineProps<MModalProps>(), {
   ariaLabel: 'Dialog',
   dismissible: true,
 });
+defineSlots<MModalSlots>();
 
 const emit = defineEmits<{ 'update:open': [value: boolean] }>();
 
