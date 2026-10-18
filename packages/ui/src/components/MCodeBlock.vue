@@ -9,7 +9,13 @@ export interface MCodeBlockProps {
 </script>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+import { useScrollFocus } from '../composables/useScrollFocus';
+
 withDefaults(defineProps<MCodeBlockProps>(), { lang: '', filename: '' });
+
+const preRef = ref<HTMLElement | null>(null);
+const focusable = useScrollFocus(preRef);
 </script>
 
 <template>
@@ -18,10 +24,11 @@ withDefaults(defineProps<MCodeBlockProps>(), { lang: '', filename: '' });
       <span v-if="filename" class="m-code-block__filename">{{ filename }}</span>
       <span v-if="lang" class="m-code-block__lang">{{ lang }}</span>
     </figcaption>
-    <!-- tabindex: long lines scroll sideways, and the keyboard has to reach them. -->
+    <!-- A tab stop while long lines scroll sideways: the keyboard has to reach them. -->
     <pre
+      ref="preRef"
       class="m-code-block__pre"
-      tabindex="0"
+      :tabindex="focusable ? 0 : undefined"
     ><code class="m-code-block__code">{{ code }}</code></pre>
   </figure>
 </template>

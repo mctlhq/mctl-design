@@ -1,7 +1,7 @@
 <script lang="ts">
 export interface MTableProps {
   /**
-   * Names the scrollable region, which is a tab stop; use the table's
+   * Names the scrollable region, a tab stop while the table overflows; use the table's
    * caption text. Defaults to a generic name so the stop is never unnamed.
    */
   label?: string;
@@ -17,13 +17,25 @@ export interface MTableSlots {
 // Semantic wrapper that applies MCTL table styles via a scoped class on a
 // container div. The consumer writes plain <table>, <thead>, <tbody> etc.
 // inside the default slot — they inherit styles through the deep selector.
+import { ref } from 'vue';
+import { useScrollFocus } from '../composables/useScrollFocus';
+
 withDefaults(defineProps<MTableProps>(), { label: 'Table' });
 defineSlots<MTableSlots>();
+
+const wrapRef = ref<HTMLElement | null>(null);
+const focusable = useScrollFocus(wrapRef);
 </script>
 
 <template>
-  <!-- A wide table scrolls sideways; tabindex lets the keyboard reach it. -->
-  <div class="m-table-wrap" tabindex="0" role="region" :aria-label="label">
+  <!-- A wide table scrolls sideways; while it does, it is a tab stop. -->
+  <div
+    ref="wrapRef"
+    class="m-table-wrap"
+    :tabindex="focusable ? 0 : undefined"
+    role="region"
+    :aria-label="label"
+  >
     <table class="m-table">
       <slot />
     </table>

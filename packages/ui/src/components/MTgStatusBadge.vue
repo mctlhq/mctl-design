@@ -13,9 +13,12 @@ export interface MTgStatusBadgeProps {
 </script>
 
 <script setup lang="ts">
-withDefaults(defineProps<MTgStatusBadgeProps>(), {});
+defineProps<MTgStatusBadgeProps>();
 
-const labelMap: Record<string, string> = {
+// Keyed by every status, so adding one to the union without a label fails
+// the typecheck. The template still falls back to the raw value for a status
+// a plain-JS consumer passes from a newer backend.
+const labelMap: Record<MTgStatusBadgeProps['status'], string> = {
   active: 'Active',
   reserved: 'Reserved',
   accepted: 'Accepted',

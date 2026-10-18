@@ -3,8 +3,9 @@
 // root, README.md must link to it from a License section, and every
 // non-private workspace package.json must declare the same license id as
 // the root package.json, and each published package must carry a copy of
-// LICENSE identical to the root one plus its own README.md. Run in CI so a rename/removal of LICENSE or a
-// drifted SPDX id is caught instead of silently shipping a broken reference.
+// LICENSE identical to the root one plus its own README.md. Run in CI so a
+// rename/removal of LICENSE or a drifted SPDX id is caught instead of
+// silently shipping a broken reference.
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';

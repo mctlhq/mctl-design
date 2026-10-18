@@ -2,6 +2,7 @@ import {
   MButton,
   MInput,
   MModal,
+  MTgSheet,
   MTabs,
   type MButtonProps,
   type MFieldSlots,
@@ -52,3 +53,10 @@ const badModal: InstanceType<typeof MModal>['$props'] = { open: 'yes' };
 void [tabsProps, modal, badModal];
 const sheetProps: MTgSheetProps = { open: true, title: 'Filters' };
 void sheetProps;
+
+// MTgSheet's v-model:open reaches the component's own props, not only the type.
+const sheet: InstanceType<typeof MTgSheet>['$props'] = {
+  open: true,
+  'onUpdate:open': (value: boolean) => void value,
+};
+void sheet;

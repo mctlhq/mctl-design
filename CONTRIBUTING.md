@@ -158,14 +158,13 @@ vulnerable one. Each key exists to close a specific advisory and should be
 with `pnpm why <package>` and drop the key if `pnpm install` still resolves at
 or above the floor.
 
-| Override                      | Closes                                |
-| ----------------------------- | ------------------------------------- |
-| `brace-expansion@1` `@2` `@5` | ReDoS, GHSA lines on all three majors |
-| `fast-uri@3`                  | ReDoS in URI parsing                  |
-| `js-yaml@4`                   | prototype pollution / DoS             |
-| `nanoid@3`                    | predictable IDs on non-integer input  |
-| `postcss@8`                   | parsing DoS                           |
-| `ws@8`                        | DoS on excessive headers              |
+| Override                 | Closes                               |
+| ------------------------ | ------------------------------------ |
+| `brace-expansion@1` `@5` | ReDoS, GHSA lines on both majors     |
+| `js-yaml@4`              | prototype pollution / DoS            |
+| `nanoid@3`               | predictable IDs on non-integer input |
+| `postcss@8`              | parsing DoS                          |
+| `ws@8`                   | DoS on excessive headers             |
 
 Every selector is scoped to a major (`pkg@N`). Do not add an unscoped or
 open-ended key: an override applies to _every_ version line that matches, so
