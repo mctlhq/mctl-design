@@ -15,7 +15,8 @@ updates:
       prefix: 'deps'
     # The repo targets Node 22 LTS (.nvmrc, CI, the image). Its types move
     # with that line, not with the newest Node: a major here is a deliberate
-    # runtime change made together with .nvmrc, ci.yml and the Dockerfile.
+    # runtime change made together with .nvmrc, ci.yml, the Dockerfile and
+    # the @types/node entry in pnpm-workspace.yaml's catalog.
     ignore:
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']

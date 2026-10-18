@@ -8,9 +8,13 @@ export interface MYamlBlockProps {
 </script>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { useScrollFocus } from '../composables/useScrollFocus';
 
 const props = withDefaults(defineProps<MYamlBlockProps>(), { filename: '' });
+
+const preRef = ref<HTMLElement | null>(null);
+const focusable = useScrollFocus(preRef);
 
 type Kind = 'plain' | 'key' | 'string' | 'comment' | 'punct';
 interface Segment {
@@ -22,7 +26,8 @@ interface Segment {
 // not a full parser. Renders via text interpolation, never v-html.
 function parseLine(line: string): Segment[] {
   if (line.trimStart().startsWith('#')) {
-    return [{ text: line || ' ', kind: 'comment' }];
+    // Never empty: it starts with '#'.
+    return [{ text: line, kind: 'comment' }];
   }
 
   let main = line;
@@ -57,10 +62,11 @@ const lines = computed<Segment[][]>(() => props.code.replace(/\n$/, '').split('\
 <template>
   <figure class="m-yaml">
     <figcaption v-if="filename" class="m-yaml__caption">{{ filename }}</figcaption>
-    <!-- tabindex: long lines scroll sideways, and the keyboard has to reach them. -->
+    <!-- A tab stop while long lines scroll sideways: the keyboard has to reach them. -->
     <pre
+      ref="preRef"
       class="m-yaml__pre"
-      tabindex="0"
+      :tabindex="focusable ? 0 : undefined"
     ><code><span v-for="(line, i) in lines" :key="i" class="m-yaml__line"><span v-for="(seg, j) in line" :key="j" :class="`m-yaml__t-${seg.kind}`">{{ seg.text }}</span></span></code></pre>
   </figure>
 </template>

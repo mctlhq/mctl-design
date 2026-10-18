@@ -9,6 +9,16 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## Unreleased
+
+### Changed
+
+- `MTable`, `MCodeBlock` and `MYamlBlock` are a tab stop only while their
+  content overflows, measured with a `ResizeObserver`; one that fits no longer
+  leaves an empty stop in the tab order. They still render focusable on the
+  server and before hydration, and stay focusable where `ResizeObserver` is
+  missing.
+
 ## 0.13.0 — 2026-10-18
 
 ### Added
@@ -37,7 +47,6 @@ headings below and are all included in 0.8.0.
 - Ids now number per Vue app (`useId()`), where they used to be unique across
   the runtime. A page mounting several Vue apps should set a distinct
   `app.config.idPrefix` on each; the Storybook preview does.
-
 - The token and CSS sources are now Prettier-formatted like the rest of the
   repo. The published CSS differs from 0.12.1 only in whitespace (a few
   multi-line custom property values reflow).
