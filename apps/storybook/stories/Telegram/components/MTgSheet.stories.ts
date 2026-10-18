@@ -43,7 +43,7 @@ export const Interactive: Story = {
             font-size:15px; font-weight:600; cursor:pointer;">
           Open sheet
         </button>
-        <MTgSheet v-model="open" title="Confirm action" :safe-area="false">
+        <MTgSheet v-model:open="open" title="Confirm action" :safe-area="false">
           <p style="font-size:15px; color:var(--tg-ink,#15171b); margin:0 0 16px; line-height:1.5;">
             Are you sure you want to claim this reward? You have 1,240 points
             and this costs 800 points.
@@ -83,7 +83,7 @@ export const WithLongContent: Story = {
             font-size:15px; font-weight:600; cursor:pointer;">
           Order details
         </button>
-        <MTgSheet v-model="open" title="Order #a7f2c1" :safe-area="false">
+        <MTgSheet v-model:open="open" title="Order #a7f2c1" :safe-area="false">
           <div style="display:flex; flex-direction:column; gap:12px;">
             <div v-for="row in [
               ['Direction', 'BUY EUR'],

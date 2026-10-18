@@ -30,13 +30,21 @@ headings below and are all included in 0.8.0.
   v-model with `defineModel`, as `MTabs` and `MTgTabBar` already did. With a
   `v-model` nothing changes. Without one they now keep their own value, so an
   uncontrolled field works on its own. The v-model prop (`modelValue`, or
-  `open` for `MModal`) is now part of each component's exported props type,
+  `open` for `MModal` and `MTgSheet`) is now part of each component's exported props type,
   `MTabsProps` and `MTgTabBarProps` included.
 - **Breaking for Vue 3.4 consumers:** `@mctlhq/ui` needs Vue 3.5 (peer
   `^3.5.0`, was `^3.4.0 || ^3.5.0`), so the release carrying this is a minor.
 - Ids now number per Vue app (`useId()`), where they used to be unique across
   the runtime. A page mounting several Vue apps should set a distinct
   `app.config.idPrefix` on each; the Storybook preview does.
+
+### Deprecated
+
+- `MTgSheet`'s plain `v-model` (`modelValue`): use `v-model:open`, the name
+  `MModal` already uses, so both overlays bind the same way. The old binding
+  keeps working in this release, with a dev-only warning, and is removed in
+  the next minor. To migrate, replace `v-model="x"` with `v-model:open="x"`
+  (or `:model-value` / `@update:model-value` with `:open` / `@update:open`).
 
 ### Fixed
 

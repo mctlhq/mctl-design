@@ -9,6 +9,7 @@ import {
   type MSelectOption,
   type MTabsItem,
   type MTabsProps,
+  type MTgSheetProps,
   type MTgTab,
 } from '../dist/index.js';
 
@@ -49,3 +50,5 @@ const modal: InstanceType<typeof MModal>['$props'] = {
 // @ts-expect-error `open` is a boolean.
 const badModal: InstanceType<typeof MModal>['$props'] = { open: 'yes' };
 void [tabsProps, modal, badModal];
+const sheetProps: MTgSheetProps = { open: true, title: 'Filters' };
+void sheetProps;

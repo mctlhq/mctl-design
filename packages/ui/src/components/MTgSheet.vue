@@ -1,6 +1,11 @@
 <script lang="ts">
 export interface MTgSheetProps {
-  /** Controls visibility — use with v-model. Without one the sheet keeps its own state. */
+  /** v-model:open — controls visibility. Without a v-model the sheet keeps its own state. */
+  open?: boolean;
+  /**
+   * @deprecated Use `v-model:open`, as MModal does. Plain `v-model` still
+   * works, with a dev warning, and is removed in the next minor release.
+   */
   modelValue?: boolean;
   /** Sheet title shown in the drag-indicator row. */
   title?: string;
@@ -17,33 +22,45 @@ export interface MTgSheetSlots {
 </script>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, getCurrentInstance, ref, warn } from 'vue';
 import { nextDialogId, useDialog } from '../composables/useDialog';
 
-withDefaults(defineProps<Omit<MTgSheetProps, 'modelValue'>>(), {
+withDefaults(defineProps<Omit<MTgSheetProps, 'open' | 'modelValue'>>(), {
   title: '',
   ariaLabel: 'Sheet',
   safeArea: true,
 });
 defineSlots<MTgSheetSlots>();
 
-const model = defineModel<boolean>({ default: false });
+const open = defineModel<boolean>('open', { default: false });
+
+// The plain v-model of 0.12 and earlier. A bound modelValue (or its listener) drives the
+// sheet as before, so existing callers keep working through one release.
+const legacyModel = defineModel<boolean>('modelValue', { default: false });
+const bound = getCurrentInstance()?.vnode.props ?? {};
+const legacy = ['modelValue', 'model-value', 'onUpdate:modelValue'].some((key) => key in bound);
+if (legacy) {
+  // vue's warn is a no-op in production builds.
+  warn('MTgSheet: `v-model` is deprecated, use `v-model:open`. It is removed in the next minor.');
+}
+const visible = computed(() => (legacy ? legacyModel.value : open.value));
 
 const rootRef = ref<HTMLElement | null>(null);
 const sheetRef = ref<HTMLElement | null>(null);
 const titleId = nextDialogId('m-tg-sheet-title');
 
 function close() {
-  model.value = false;
+  if (legacy) legacyModel.value = false;
+  else open.value = false;
 }
 
-useDialog({ dialog: sheetRef, overlay: rootRef, open: () => model.value, onDismiss: close });
+useDialog({ dialog: sheetRef, overlay: rootRef, open: () => visible.value, onDismiss: close });
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="m-tg-sheet">
-      <div v-if="model" ref="rootRef" class="m-tg-sheet-root">
+      <div v-if="visible" ref="rootRef" class="m-tg-sheet-root">
         <div class="m-tg-sheet-scrim" aria-hidden="true" @click="close" />
         <div
           ref="sheetRef"
