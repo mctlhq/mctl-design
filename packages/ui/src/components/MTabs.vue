@@ -8,12 +8,21 @@ export interface MTabsItem {
 export interface MTabsProps {
   tabs: MTabsItem[];
 }
+
+export interface MTabsSlots {
+  /** The active panel's content. */
+  default?(props: {
+    /** The active tab's `value`. */
+    active: string;
+  }): unknown;
+}
 </script>
 
 <script setup lang="ts">
 import { computed, nextTick, useId } from 'vue';
 
 const props = defineProps<MTabsProps>();
+defineSlots<MTabsSlots>();
 
 // v-model: the active tab value. Defaults to the first tab. Without a v-model
 // binding defineModel keeps the value locally, so the component also works

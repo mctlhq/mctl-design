@@ -102,8 +102,9 @@ npm consumers fall behind the CDN.
    `packages/ui/test/ssr-ids.test.ts`.
 4. Declare its props as `export interface M<Name>Props` in a plain
    `<script lang="ts">` block (as the existing components do), pass it to
-   `defineProps<M<Name>Props>()`, and export the component and that type from
-   `packages/ui/src/index.ts`.
+   `defineProps<M<Name>Props>()`. If it takes slots, declare them the same way
+   as `export interface M<Name>Slots` and pass that to `defineSlots`. Export the
+   component and its types from `packages/ui/src/index.ts`.
 5. Test it in `packages/ui/test/`. Anything with behaviour (`v-model`,
    keyboard, events, focus) gets its own test file. A component that no other
    test runs axe against goes into the case list in `a11y-smoke.test.ts`.

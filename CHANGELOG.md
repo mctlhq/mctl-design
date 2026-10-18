@@ -18,6 +18,11 @@ headings below and are all included in 0.8.0.
   list props take: `MAccordionItem`, `MSelectOption` and `MTabsItem`, next to
   the existing `MTgTab`. Type-only: the built JavaScript and CSS are
   unchanged.
+- `@mctlhq/ui` types its slots: the 16 components that take slots declare them
+  with `defineSlots` and export the type as `M<Name>Slots` (`MFieldSlots`,
+  `MTabsSlots`, …), so an IDE completes slot names and slot props (`MField`'s
+  `id` / `describedBy` / `required`, `MTabs`' `active`, `MTooltip`'s `tipId`).
+  Type-only.
 
 ### Changed
 

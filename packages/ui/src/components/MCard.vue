@@ -3,10 +3,20 @@ export interface MCardProps {
   /** Use the elevated surface token instead of card. */
   elevated?: boolean;
 }
+
+export interface MCardSlots {
+  /** Rendered above the body, only when given. */
+  header?(): unknown;
+  /** The body. */
+  default?(): unknown;
+  /** Rendered below the body, only when given. */
+  footer?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
 withDefaults(defineProps<MCardProps>(), { elevated: false });
+defineSlots<MCardSlots>();
 </script>
 
 <template>

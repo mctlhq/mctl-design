@@ -12,12 +12,18 @@ export interface MAccordionProps {
   /** Allow several panels open at once. Single-open (exclusive) by default. */
   multiple?: boolean;
 }
+
+export interface MAccordionSlots {
+  /** Rich content for one panel, named by its item's `id`; replaces `body`. */
+  [itemId: string]: (() => unknown) | undefined;
+}
 </script>
 
 <script setup lang="ts">
 import { useId } from 'vue';
 
 withDefaults(defineProps<MAccordionProps>(), { multiple: false });
+defineSlots<MAccordionSlots>();
 
 // Per-instance <details name> so exclusivity is scoped to this accordion —
 // otherwise two accordions on a page would form one shared exclusive group.

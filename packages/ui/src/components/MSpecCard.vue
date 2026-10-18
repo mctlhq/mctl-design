@@ -8,10 +8,20 @@ export interface MSpecCardProps {
   /** Code-tagged subtitle. */
   tag?: string;
 }
+
+export interface MSpecCardSlots {
+  /** Icon in the header, opposite the counter; rendered only when given. */
+  glyph?(): unknown;
+  /** The body. */
+  default?(): unknown;
+  /** Chips row at the bottom, rendered only when given. */
+  chips?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
 withDefaults(defineProps<MSpecCardProps>(), { total: '', tag: '' });
+defineSlots<MSpecCardSlots>();
 </script>
 
 <template>

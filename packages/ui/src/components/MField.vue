@@ -13,6 +13,20 @@ export interface MFieldProps {
   error?: string;
   required?: boolean;
 }
+
+export interface MFieldSlots {
+  /**
+   * The control. MInput, MTextarea and MSelect wire themselves; any other
+   * control binds these props.
+   */
+  default?(props: {
+    /** Id the label points at. */
+    id: string;
+    /** Id of the hint or error, for `aria-describedby`; unset when neither shows. */
+    describedBy: string | undefined;
+    required: true | undefined;
+  }): unknown;
+}
 </script>
 
 <script setup lang="ts">
@@ -26,6 +40,7 @@ const props = withDefaults(defineProps<MFieldProps>(), {
   error: '',
   required: false,
 });
+defineSlots<MFieldSlots>();
 
 // Without `for`, the field names its control itself: MInput, MTextarea and
 // MSelect in the slot pick up this id, aria-describedby, aria-invalid and

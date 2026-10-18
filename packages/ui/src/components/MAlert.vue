@@ -8,12 +8,18 @@ export interface MAlertProps {
    */
   live?: 'alert' | 'status' | 'none';
 }
+
+export interface MAlertSlots {
+  /** The message. */
+  default?(): unknown;
+}
 </script>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 
 const props = withDefaults(defineProps<MAlertProps>(), { tone: 'info', live: undefined });
+defineSlots<MAlertSlots>();
 
 const role = computed(() => {
   const live = props.live ?? (props.tone === 'bad' ? 'alert' : 'status');
