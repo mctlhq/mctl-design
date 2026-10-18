@@ -55,4 +55,26 @@ describe('scroll containers', () => {
     expect(el.attributes('tabindex')).toBeUndefined();
     wrapper.unmount();
   });
+
+  it.each([
+    ['MCodeBlock', MCodeBlock],
+    ['MYamlBlock', MYamlBlock],
+  ] as const)('%s re-measures when its code changes', async (_n, component) => {
+    // The inner <code> is inline, so a wider line resizes nothing the observer
+    // sees: only the re-render can notice it.
+    vi.stubGlobal('ResizeObserver', FakeResizeObserver);
+    const wrapper = mount(component as typeof MCodeBlock, {
+      props: { code: 'a: 1' },
+      attachTo: document.body,
+    });
+    const pre = wrapper.find('pre');
+    await nextTick();
+    expect(pre.attributes('tabindex')).toBeUndefined();
+
+    size(pre.element, 900, 200);
+    await wrapper.setProps({ code: 'a: a much longer line than the block can hold' });
+    await nextTick();
+    expect(pre.attributes('tabindex')).toBe('0');
+    wrapper.unmount();
+  });
 });
