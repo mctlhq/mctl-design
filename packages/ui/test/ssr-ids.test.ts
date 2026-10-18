@@ -28,7 +28,7 @@ const Page = {
       h(MTabs, { tabs: [{ label: 'Three', value: 'three' }] }),
       // Rendered open, so their title ids reach the (teleported) markup.
       h(MModal, { open: true, title: 'Consent' }),
-      h(MTgSheet, { modelValue: true, title: 'Filters' }),
+      h(MTgSheet, { open: true, title: 'Filters' }),
     ]),
 };
 

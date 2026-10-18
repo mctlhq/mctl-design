@@ -145,7 +145,7 @@ describe('axe over the remaining components', () => {
 
   it('MTgSheet, open and teleported, has no violations', async () => {
     const wrapper = mount(MTgSheet, {
-      props: { modelValue: true, title: 'Filters' },
+      props: { open: true, title: 'Filters' },
       slots: { default: () => h('p', 'Sheet body') },
       attachTo: document.body,
     });
