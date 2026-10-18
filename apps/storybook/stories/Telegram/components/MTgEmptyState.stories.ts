@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { MTgEmptyState } from '@mctlhq/ui';
+import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta<typeof MTgEmptyState> = {
+  parameters: { a11y: contrastDebt },
   title: 'Telegram/Components/MTgEmptyState',
   component: MTgEmptyState,
   tags: ['autodocs'],

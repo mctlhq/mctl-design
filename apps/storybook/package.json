@@ -8,8 +8,11 @@
   "scripts": {
     "dev": "storybook dev -p 6006 --no-open",
     "build:storybook": "storybook build -o storybook-static",
+    "test:a11y": "vitest run",
+    "test:visual": "playwright test",
+    "test:browser": "vitest run && playwright test",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint stories .storybook --max-warnings 0",
+    "lint": "eslint stories .storybook visual playwright.config.ts vitest.config.ts --max-warnings 0",
     "clean": "rm -rf storybook-static .turbo"
   },
   "dependencies": {
@@ -18,12 +21,22 @@
     "@mctlhq/ui": "workspace:*"
   },
   "devDependencies": {
+    "@fontsource/instrument-serif": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/onest": "^5.3.1",
+    "@playwright/test": "1.64.1",
     "@storybook/addon-a11y": "^10.6.2",
+    "@storybook/addon-vitest": "^10.6.2",
     "@storybook/vue3-vite": "^10.6.2",
+    "@types/node": "^22",
     "@vitejs/plugin-vue": "catalog:",
+    "@vitest/browser": "^5.0.5",
+    "@vitest/browser-playwright": "^5.0.5",
     "@vueless/storybook-dark-mode": "^10.0.8",
+    "playwright": "1.64.1",
     "storybook": "^10.6.2",
     "vite": "catalog:",
+    "vitest": "^5.0.5",
     "vue": "^3.5.44"
   }
 }

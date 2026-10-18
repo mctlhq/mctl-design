@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
+import { contrastDebt } from '../../.storybook/a11y';
 
 const meta: Meta = {
+  parameters: { a11y: contrastDebt },
   title: 'Telegram/Introduction',
 };
 
@@ -23,7 +25,7 @@ export const Overview: Story = {
           <div style="background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
             border-radius:18px; padding:20px;">
             <div style="font-size:24px; margin-bottom:8px;">🎨</div>
-            <h3 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Foundations</h3>
+            <h2 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Foundations</h2>
             <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0; line-height:1.5;">
               Direction C palette, Onest typography, safe area insets, Telegram theme sync.
             </p>
@@ -31,7 +33,7 @@ export const Overview: Story = {
           <div style="background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
             border-radius:18px; padding:20px;">
             <div style="font-size:24px; margin-bottom:8px;">🧩</div>
-            <h3 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Components</h3>
+            <h2 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Components</h2>
             <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0; line-height:1.5;">
               MTgTabBar, MTgSheet, MTgStatusBadge, MTgDeltaTag, MTgEmptyState, MTgOrderCard.
             </p>
@@ -39,7 +41,7 @@ export const Overview: Story = {
           <div style="background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
             border-radius:18px; padding:20px;">
             <div style="font-size:24px; margin-bottom:8px;">📐</div>
-            <h3 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Patterns</h3>
+            <h2 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Patterns</h2>
             <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0; line-height:1.5;">
               Outside Telegram state, theme sync, role-based navigation.
             </p>
@@ -47,7 +49,7 @@ export const Overview: Story = {
           <div style="background:var(--tg-surface,#fff); border:1px solid var(--tg-line,#e7e6e1);
             border-radius:18px; padding:20px;">
             <div style="font-size:24px; margin-bottom:8px;">📱</div>
-            <h3 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Screens</h3>
+            <h2 style="font-size:15px; font-weight:600; color:var(--tg-ink,#15171b); margin:0 0 6px;">Screens</h2>
             <p style="font-size:13px; color:var(--tg-muted,#6a6e76); margin:0; line-height:1.5;">
               Reference screens for MCTL Rewards and PairDesk Mini Apps.
             </p>

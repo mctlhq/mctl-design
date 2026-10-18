@@ -47,6 +47,11 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/tsconfig.base.json"]
     },
+    // Compares against storybook-static, so it must never run on a stale build.
+    "test:browser": {
+      "dependsOn": ["^build", "build:storybook"],
+      "cache": false
+    },
     "clean": {
       "cache": false
     }

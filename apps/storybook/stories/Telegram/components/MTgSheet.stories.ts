@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { ref } from 'vue';
 import { MTgSheet } from '@mctlhq/ui';
+import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta<typeof MTgSheet> = {
   title: 'Telegram/Components/MTgSheet',
@@ -13,6 +14,7 @@ const meta: Meta<typeof MTgSheet> = {
   },
   args: { title: 'Sheet Title', safeArea: false },
   parameters: {
+    a11y: contrastDebt,
     docs: {
       description: {
         component:

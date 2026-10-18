@@ -2,7 +2,7 @@ import type { StorybookConfig } from '@storybook/vue3-vite';
 
 const config: StorybookConfig = {
   stories: ['../stories/**/*.stories.@(ts|tsx)'],
-  addons: ['@vueless/storybook-dark-mode', '@storybook/addon-a11y'],
+  addons: ['@vueless/storybook-dark-mode', '@storybook/addon-a11y', '@storybook/addon-vitest'],
   staticDirs: ['../public'],
   // builder-vite roots Vite at apps/storybook, so Vite's default publicDir is
   // this same public/ -- and the preview build copies it into storybook-static

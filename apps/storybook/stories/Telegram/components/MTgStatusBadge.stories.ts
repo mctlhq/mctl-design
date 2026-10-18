@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { MTgStatusBadge } from '@mctlhq/ui';
+import { contrastDebt } from '../../../.storybook/a11y';
 
 const meta: Meta<typeof MTgStatusBadge> = {
+  parameters: { a11y: contrastDebt },
   title: 'Telegram/Components/MTgStatusBadge',
   component: MTgStatusBadge,
   tags: ['autodocs'],

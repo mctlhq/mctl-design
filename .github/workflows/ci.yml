@@ -163,3 +163,28 @@ jobs:
             echo "$DIRTY"
             exit 1
           fi
+
+      - name: Story tests in a browser (a11y, play, visual)
+        # Every story in real Chromium, in both themes: its play function runs
+        # and axe must pass (story a11y), then a full-page screenshot must
+        # match the baseline under apps/storybook/visual/__screenshots__.
+        # Runs in the pinned Playwright image on a fresh install, because
+        # baselines are only stable from that image; regenerate them with
+        # `pnpm test:visual:update` (same script, same image).
+        #
+        # Last on purpose: it is the slowest step, and every cheaper check
+        # above should report first.
+        run: scripts/browser-tests-docker.sh
+        # A hung Chromium should cost minutes, not the 6-hour job default.
+        timeout-minutes: 30
+
+      - name: Upload screenshot diffs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-diffs
+          path: |
+            apps/storybook/test-results
+            apps/storybook/playwright-report
+          if-no-files-found: ignore
+          retention-days: 14
