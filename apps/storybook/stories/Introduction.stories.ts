@@ -85,7 +85,7 @@ export const Overview: Story = {
             Letter badges (<code>favicon-docs.svg</code> D,
             <code>favicon-web.svg</code> W,
             <code>favicon-academy.svg</code> A,
-            <code>favicon-telegram.svg</code> T,
+            <code>favicon-telegram.svg</code> M,
             <code>favicon-portal.svg</code> P) &mdash; same hex, for
             <code>&lt;link rel="icon"&gt;</code> so tabs are distinguishable.
             Use the plain hex in-app.
