@@ -45,7 +45,7 @@ const favicons = [
   { file: 'favicon-docs.svg', label: 'docs (D)' },
   { file: 'favicon-web.svg', label: 'web (W)' },
   { file: 'favicon-academy.svg', label: 'academy (A)' },
-  { file: 'favicon-telegram.svg', label: 'telegram (T)' },
+  { file: 'favicon-telegram.svg', label: 'telegram (M)' },
   { file: 'favicon-portal.svg', label: 'portal (P)' },
 ];
 
