@@ -126,7 +126,7 @@ one change here updates every product after the SHA deploy.
 | `https://ui.mctl.ai/brand/favicon-docs.svg`     | Docs tab (D)                                  |
 | `https://ui.mctl.ai/brand/favicon-web.svg`      | Landing tab (W)                               |
 | `https://ui.mctl.ai/brand/favicon-academy.svg`  | Academy tab (A)                               |
-| `https://ui.mctl.ai/brand/favicon-telegram.svg` | MCTL connector tab (M), tg.mctl.ai             |
+| `https://ui.mctl.ai/brand/favicon-telegram.svg` | MCTL connector tab (M), tg.mctl.ai            |
 | `https://ui.mctl.ai/brand/favicon-portal.svg`   | Portal tab (P)                                |
 
 Favicons cannot use CSS `currentColor`; the `/brand/favicon*.svg` files bake
