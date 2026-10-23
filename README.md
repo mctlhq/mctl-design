@@ -68,11 +68,11 @@ lands without one.
 There are three supported ways to consume the CSS, and they differ only in what
 moves under you.
 
-| Path                                                | Moves when            | Use for                                              |
-| --------------------------------------------------- | --------------------- | ---------------------------------------------------- |
-| `https://ui.mctl.ai/0.14.0/{mctl,global,prose}.css` | never                 | anything shipped to users                            |
-| `https://ui.mctl.ai/{mctl,global,prose}.css`        | every merge to `main` | previews, internal tools, seeing a token change land |
-| `@mctlhq/css` on GitHub Packages                    | on a semver tag       | builds that already have a Packages token            |
+| Path                                                     | Moves when            | Use for                                              |
+| -------------------------------------------------------- | --------------------- | ---------------------------------------------------- |
+| `https://ui.mctl.ai/0.15.0/{mctl,global,prose,site}.css` | never                 | anything shipped to users                            |
+| `https://ui.mctl.ai/{mctl,global,prose,site}.css`        | every merge to `main` | previews, internal tools, seeing a token change land |
+| `@mctlhq/css` on GitHub Packages                         | on a semver tag       | builds that already have a Packages token            |
 
 `mctl.css` sets `color-scheme` (dark unless `data-theme="light"`), so from
 0.10.0 importing it also turns the page canvas, default text colour and
@@ -82,7 +82,7 @@ All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.
 
-Each sheet names its own version on line 1 (`/* @mctlhq/css 0.14.0 … */`), so a
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.15.0 … */`), so a
 vendored copy records what it was taken from and a mismatch shows up in a diff.
 
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
@@ -94,10 +94,21 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
 />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.14.0/mctl.css" />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.14.0/global.css" />
-<!-- docs / markdown only: https://ui.mctl.ai/0.14.0/prose.css -->
+<link rel="stylesheet" href="https://ui.mctl.ai/0.15.0/mctl.css" />
+<link rel="stylesheet" href="https://ui.mctl.ai/0.15.0/global.css" />
+<!-- docs / markdown only: https://ui.mctl.ai/0.15.0/prose.css -->
+<!-- public sites (mctl.ai, docs, tg): https://ui.mctl.ai/0.15.0/site.css -->
 ```
+
+`site.css` (from 0.15.0) is the shared public-site shell: `.mctl-site-container`
+(content width plus both gutters), `.mctl-site-header` / `__inner`,
+`.mctl-site-brand`, `.mctl-site-nav`, a left-aligned two-column
+`.mctl-site-hero`, `.mctl-site-section` / `__title`, `.mctl-site-grid`,
+`.mctl-site-prose` (720px reading column) and a full-bleed centred
+`.mctl-site-footer`. It only assembles tokens `mctl.css` already defines, so it
+needs `mctl.css` and nothing else; every class is `mctl-site-` prefixed and
+sets only what it owns, so it sits next to Nuxt or VitePress styles. The
+"Foundations/Public Sites/Site Shell" story shows the full page.
 
 Bumping to a new version is then a one-line edit made on purpose, not something
 that happens to a product page four hours after an unrelated merge. The

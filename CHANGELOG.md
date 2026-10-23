@@ -9,6 +9,36 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.15.0 — 2026-10-23
+
+### Added
+
+- `site.css`, the shared public-site shell for mctl.ai, docs.mctl.ai and
+  tg.mctl.ai, served at `ui.mctl.ai/0.15.0/site.css` and exported as
+  `@mctlhq/css/site.css`. The three sites had the same tokens but each built
+  its own header, hero, sections and footer from them, and drifted: tg's
+  content column was 872px against 1400px elsewhere, its brand sat one gutter
+  in, and the hero was centred on one site and left-aligned on another.
+  Classes, all `mctl-site-` prefixed so they sit next to Nuxt or VitePress
+  styles:
+  - `.mctl-site-container`: `--site-content-width` plus both gutters, centred,
+    so the content box stays 1400px under `box-sizing: border-box`;
+  - `.mctl-site-header` / `__inner`, `.mctl-site-brand` / `__accent`,
+    `.mctl-site-nav`;
+  - `.mctl-site-hero` with `__text`, `__title`, `__lede`, `__actions` and
+    `__visual`: text left, visual right, one column below 960px;
+  - `.mctl-site-section` / `__title` / `__lede`, left-aligned;
+  - `.mctl-site-grid`: three columns, two below 960px, one below 640px;
+  - `.mctl-site-prose`: the 720px reading column for long-form pages;
+  - `.mctl-site-footer` / `__inner` / `__links` / `__copy`: full-bleed and
+    centred.
+- Storybook "Foundations/Public Sites/Site Shell", whose play function fails
+  when the brand, hero title, section title, first card and reading column do
+  not share one left edge.
+
+No token or theme value changed; `mctl.css`, `global.css` and `prose.css` are
+identical to 0.14.0 apart from the version line.
+
 ## 0.14.0 — 2026-10-18
 
 Every colour pair the system ships now meets WCAG AA: `pnpm check:contrast`
