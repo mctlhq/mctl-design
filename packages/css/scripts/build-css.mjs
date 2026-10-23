@@ -32,7 +32,7 @@ writeFileSync(join(dist, 'theme.css'), themeCss);
 // telegram.css is here too even though nothing copies it to the CDN: it is a
 // public export and mctl-telegram vendors it by hand, so it is the sheet where
 // "taken from which version" is asked soonest.
-for (const name of ['global.css', 'prose.css', 'telegram.css']) {
+for (const name of ['global.css', 'prose.css', 'site.css', 'telegram.css']) {
   writeFileSync(
     join(dist, name),
     `/* @mctlhq/css ${version} — ${name}. */\n${readFileSync(join(src, name), 'utf8')}`,
@@ -41,7 +41,7 @@ for (const name of ['global.css', 'prose.css', 'telegram.css']) {
 
 writeFileSync(join(dist, 'tailwind.css'), tailwindV4Css(tokens, version));
 
-console.log('css: wrote theme.css, global.css, prose.css, telegram.css, tailwind.css');
+console.log('css: wrote theme.css, global.css, prose.css, site.css, telegram.css, tailwind.css');
 
 // Copy mctl.css bundle into the Storybook public dir so it's served at
 // https://ui.mctl.ai/mctl.css for CDN consumers (e.g. mctl-telegram).
@@ -58,7 +58,8 @@ if (existsSync(storybookPublic)) {
   copyFileSync(join(dist, 'theme.css'), join(storybookPublic, 'mctl.css'));
   copyFileSync(join(dist, 'global.css'), join(storybookPublic, 'global.css'));
   copyFileSync(join(dist, 'prose.css'), join(storybookPublic, 'prose.css'));
-  console.log('css: copied mctl.css, global.css, prose.css to storybook/public');
+  copyFileSync(join(dist, 'site.css'), join(storybookPublic, 'site.css'));
+  console.log('css: copied mctl.css, global.css, prose.css, site.css to storybook/public');
 
   // Second copy under the version, served immutable so a consumer can pin it
   // (#75). /mctl.css keeps floating with main; this one does not move, which
@@ -77,5 +78,10 @@ if (existsSync(storybookPublic)) {
   copyFileSync(join(dist, 'theme.css'), join(versioned, 'mctl.css'));
   copyFileSync(join(dist, 'global.css'), join(versioned, 'global.css'));
   copyFileSync(join(dist, 'prose.css'), join(versioned, 'prose.css'));
-  console.log(`css: copied mctl.css, global.css, prose.css to storybook/public/${version}/`);
+  // site.css from 0.15.0 on: the shared public-site shell (header, hero,
+  // section, footer). Older version directories simply do not have it.
+  copyFileSync(join(dist, 'site.css'), join(versioned, 'site.css'));
+  console.log(
+    `css: copied mctl.css, global.css, prose.css, site.css to storybook/public/${version}/`,
+  );
 }

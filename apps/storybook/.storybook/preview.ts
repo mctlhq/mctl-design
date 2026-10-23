@@ -7,6 +7,7 @@ import { computed, ref, watchEffect } from 'vue';
 import '@mctlhq/css/theme.css';
 import '@mctlhq/css/global.css';
 import '@mctlhq/css/prose.css';
+import '@mctlhq/css/site.css';
 import '@mctlhq/css/telegram.css';
 import '@mctlhq/ui/style.css';
 
@@ -115,6 +116,9 @@ const preview: Preview = {
       const surface = context.title.startsWith('Telegram/')
         ? 'background: var(--tg-bg); color: var(--tg-ink);'
         : 'background: var(--surface-bg); color: var(--surface-fg);';
+      // A fullscreen story (the public-site shell) draws its own gutters and
+      // full-bleed header and footer, so the canvas adds no padding of its own.
+      const padding = context.parameters.layout === 'fullscreen' ? '0' : '32px';
       return {
         components: { story },
         setup() {
@@ -126,7 +130,7 @@ const preview: Preview = {
             applyAccent(accentName.value);
           });
         },
-        template: `<div style="${surface} padding: 32px; min-height: 100vh;"><story /></div>`,
+        template: `<div style="${surface} padding: ${padding}; min-height: 100vh;"><story /></div>`,
       };
     },
   ],
