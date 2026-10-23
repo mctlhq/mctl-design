@@ -108,7 +108,7 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
 `.mctl-site-footer`. It only assembles tokens `mctl.css` already defines, so it
 needs `mctl.css` and nothing else; every class is `mctl-site-` prefixed and
 sets only what it owns, so it sits next to Nuxt or VitePress styles. The
-"Foundations/Site shell" story shows the full page.
+"Foundations/Public Sites/Site Shell" story shows the full page.
 
 Bumping to a new version is then a one-line edit made on purpose, not something
 that happens to a product page four hours after an unrelated merge. The
