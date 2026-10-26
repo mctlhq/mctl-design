@@ -1,4 +1,4 @@
-/* @mctlhq/css 0.16.0 — site.css. */
+/* @mctlhq/css 0.17.0 — site.css. */
 /*
  * Public-site layout: the one shell mctl.ai, docs.mctl.ai and tg.mctl.ai
  * share. theme.css already carries the tokens (page width, gutter, header,
@@ -19,7 +19,9 @@
  *     max-width (the bug tg.mctl.ai had before 0.15.0: brand one gutter in);
  *   - the header brand, the hero, every section title and the card grid all
  *     start on the content box's left edge;
- *   - hero: text left, optional visual right; one column below 960px;
+ *   - hero: text left, optional visual right; one column below 960px. The
+ *     --stacked variant keeps one centred column at every width: text, then
+ *     the visual under it;
  *   - a section holding one narrow block (a form, a single plan) can opt into
  *     --center: title, lede and the __narrow block share the content box's
  *     centre line instead of hanging off its left edge;
@@ -154,6 +156,42 @@
     grid-column: 1;
     grid-row: 2;
   }
+}
+
+/* Stacked hero: one centred column at every width, the visual under the text.
+   The title gets the full text width, the lede keeps the reading width so a
+   centred paragraph does not run 1400px wide. --mctl-site-hero-text-width
+   sizes the text column the way --mctl-site-narrow-width sizes a narrow
+   block. */
+.mctl-site-hero--stacked {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  text-align: center;
+}
+
+.mctl-site-hero--stacked .mctl-site-hero__text {
+  width: 100%;
+  max-width: var(--mctl-site-hero-text-width, 960px);
+  justify-items: center;
+}
+
+/* A centred title wrapping to one short last word reads as a mistake. */
+.mctl-site-hero--stacked .mctl-site-hero__title {
+  text-wrap: balance;
+}
+
+.mctl-site-hero--stacked .mctl-site-hero__lede {
+  max-width: var(--mctl-layout-prose-width);
+}
+
+.mctl-site-hero--stacked .mctl-site-hero__actions {
+  justify-content: center;
+}
+
+.mctl-site-hero--stacked .mctl-site-hero__visual {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
 }
 
 /* ===== Sections ===== */
