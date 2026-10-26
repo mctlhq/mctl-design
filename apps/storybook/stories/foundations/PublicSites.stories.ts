@@ -36,7 +36,9 @@ export const ShellAndReading: Story = {
 // sections and grid; full-bleed header and footer backgrounds. The play
 // function checks the contract rather than only screenshotting it — the brand,
 // hero title, section title and first card must share one left edge, which is
-// exactly what drifted between mctl.ai, docs and tg before 0.15.0.
+// exactly what drifted between mctl.ai, docs and tg before 0.15.0. A --center
+// section's title, lede and narrow block must instead share the content box's
+// centre line, the layout mctl.ai lost for its forms and single plan in 0.15.0.
 export const SiteShell: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => ({
@@ -77,6 +79,14 @@ export const SiteShell: Story = {
               </div>
             </div>
           </section>
+          <section class="mctl-site-container mctl-site-section mctl-site-section--center" data-centre="section">
+            <h2 class="mctl-site-section__title" data-centre="title">Request access</h2>
+            <p class="mctl-site-section__lede" data-centre="lede">A section holding one narrow block centres it, with its title, instead of leaving the row empty beside it.</p>
+            <form class="mctl-site-section__narrow" data-centre="narrow" style="display:grid;gap:12px;background:var(--surface-card);border:1px solid var(--surface-line);padding:20px" onsubmit="return false">
+              <input aria-label="Email" placeholder="you@company.com" style="font:inherit;background:var(--control-bg);color:var(--surface-fg);border:1px solid var(--control-border);padding:12px" />
+              <button type="submit" style="font:inherit;background:var(--accent);color:var(--accent-fg);border:0;padding:12px">Request access</button>
+            </form>
+          </section>
           <section class="mctl-site-container mctl-site-section">
             <div class="mctl-site-prose mctl-prose" data-edge="prose">
               <h2>Reading column</h2>
@@ -106,6 +116,39 @@ export const SiteShell: Story = {
       if (left(name) !== edge) {
         throw new Error(`site shell: ${name} starts at ${left(name)}px, brand at ${edge}px`);
       }
+    }
+    const centre = (name: string) => {
+      const el = canvasElement.querySelector(`[data-centre="${name}"]`);
+      if (!el) throw new Error(`site shell: no [data-centre="${name}"]`);
+      const box = el.getBoundingClientRect();
+      if (name === 'section') {
+        const pad = parseFloat(getComputedStyle(el).paddingLeft);
+        return Math.round(box.left + pad + (box.width - 2 * pad) / 2);
+      }
+      // Text centred in its box: measure the text itself, not the block box.
+      if (name === 'title' || name === 'lede') {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const text = range.getBoundingClientRect();
+        return Math.round(text.left + text.width / 2);
+      }
+      return Math.round(box.left + box.width / 2);
+    };
+    const axis = centre('section');
+    for (const name of ['title', 'lede', 'narrow']) {
+      // One pixel of slack: text widths are fractional.
+      if (Math.abs(centre(name) - axis) > 1) {
+        throw new Error(
+          `site shell: centred ${name} at ${centre(name)}px, content centre ${axis}px`,
+        );
+      }
+    }
+    if (
+      Math.round(
+        canvasElement.querySelector('[data-centre="narrow"]')!.getBoundingClientRect().width,
+      ) > 600
+    ) {
+      throw new Error('site shell: the narrow block is wider than 600px');
     }
   },
 };

@@ -9,6 +9,25 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.16.0 — 2026-10-26
+
+### Added
+
+- `site.css`: `.mctl-site-section--center` and `.mctl-site-section__narrow`.
+  0.15.0 made every section title left-aligned, which reads right above a
+  full card grid but not above a section whose content is one narrow block:
+  on mctl.ai the request-access form, the single pricing plan and the contact
+  form sat on the left edge with most of the row empty beside them. The
+  modifier centres the title and lede, and `__narrow` is a centred block up to
+  `--mctl-site-narrow-width` (default 600px) wide. Sections with a full grid
+  are unchanged and stay left-aligned.
+- The Site Shell story gains a centred section, and its play function fails
+  when that section's title, lede or narrow block leave the content box's
+  centre line.
+
+No token or theme value changed; `mctl.css`, `global.css` and `prose.css` are
+identical to 0.15.0 apart from the version line.
+
 ## 0.15.0 — 2026-10-23
 
 ### Added

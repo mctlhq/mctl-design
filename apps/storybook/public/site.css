@@ -1,4 +1,4 @@
-/* @mctlhq/css 0.15.0 — site.css. */
+/* @mctlhq/css 0.16.0 — site.css. */
 /*
  * Public-site layout: the one shell mctl.ai, docs.mctl.ai and tg.mctl.ai
  * share. theme.css already carries the tokens (page width, gutter, header,
@@ -20,6 +20,9 @@
  *   - the header brand, the hero, every section title and the card grid all
  *     start on the content box's left edge;
  *   - hero: text left, optional visual right; one column below 960px;
+ *   - a section holding one narrow block (a form, a single plan) can opt into
+ *     --center: title, lede and the __narrow block share the content box's
+ *     centre line instead of hanging off its left edge;
  *   - long-form reading text is capped at --mctl-layout-prose-width;
  *   - footer: full-bleed, centred.
  */
@@ -179,6 +182,27 @@
   font-size: var(--text-body-size);
   line-height: var(--text-body-leading);
   color: var(--surface-fg-muted);
+}
+
+/* A section whose content is one narrow block (a sign-up form, a single plan)
+   left-aligned would leave most of the row empty beside it, so it centres the
+   whole column instead: title, lede and the block. Sections with a full grid
+   stay left-aligned. --mctl-site-narrow-width lets a site size the block
+   (a pricing card is narrower than a form) without overriding the class. */
+.mctl-site-section--center .mctl-site-section__title {
+  text-align: center;
+}
+
+.mctl-site-section--center .mctl-site-section__lede {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.mctl-site-section__narrow {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--mctl-site-narrow-width, 600px);
+  margin-inline: auto;
 }
 
 /* ===== Card grid ===== */
