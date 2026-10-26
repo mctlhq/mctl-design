@@ -9,6 +9,23 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.17.0 — 2026-10-26
+
+### Added
+
+- `site.css`: `.mctl-site-hero--stacked`, a hero that stays one centred
+  column at every width: title and lede centred, the actions centred, and the
+  visual under the text instead of to its right. The lede keeps the 720px
+  reading width; `--mctl-site-hero-text-width` (default 960px) caps the text
+  column. mctl.ai asked for its hero centred above the terminal; the default
+  two-column hero is unchanged, so docs.mctl.ai and tg.mctl.ai do not move.
+- The Site Shell story gains a stacked hero, and its play function fails when
+  that hero's title, lede, actions or visual leave the centre line, or when
+  the visual is not under the text.
+
+No token or theme value changed; `mctl.css`, `global.css` and `prose.css` are
+identical to 0.16.0 apart from the version line.
+
 ## 0.16.0 — 2026-10-26
 
 ### Added

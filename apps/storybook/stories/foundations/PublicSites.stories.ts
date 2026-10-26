@@ -39,6 +39,8 @@ export const ShellAndReading: Story = {
 // exactly what drifted between mctl.ai, docs and tg before 0.15.0. A --center
 // section's title, lede and narrow block must instead share the content box's
 // centre line, the layout mctl.ai lost for its forms and single plan in 0.15.0.
+// The same holds for a --stacked hero, whose visual must also sit under the
+// text rather than beside it.
 export const SiteShell: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => ({
@@ -79,6 +81,18 @@ export const SiteShell: Story = {
               </div>
             </div>
           </section>
+          <div class="mctl-site-container mctl-site-hero mctl-site-hero--stacked" data-centre="stacked">
+            <div class="mctl-site-hero__text">
+              <h2 class="mctl-site-hero__title" data-centre="stacked-title">Stacked hero</h2>
+              <p class="mctl-site-hero__lede" data-centre="stacked-lede">One centred column at every width, with the visual under the text.</p>
+              <div class="mctl-site-hero__actions" data-centre="stacked-actions">
+                <a href="#" style="background:var(--accent);color:var(--accent-fg);padding:12px 20px;text-decoration:none;font-weight:600">Get started</a>
+              </div>
+            </div>
+            <div class="mctl-site-hero__visual">
+              <pre data-centre="stacked-visual" style="margin:0;width:100%;max-width:560px;overflow:auto;background:var(--surface-card);border:1px solid var(--surface-line);padding:16px;font-family:var(--font-mono);font-size:var(--text-code-size)">mctl_rollback_service my-api</pre>
+            </div>
+          </div>
           <section class="mctl-site-container mctl-site-section mctl-site-section--center" data-centre="section">
             <h2 class="mctl-site-section__title" data-centre="title">Request access</h2>
             <p class="mctl-site-section__lede" data-centre="lede">A section holding one narrow block centres it, with its title, instead of leaving the row empty beside it.</p>
@@ -121,12 +135,12 @@ export const SiteShell: Story = {
       const el = canvasElement.querySelector(`[data-centre="${name}"]`);
       if (!el) throw new Error(`site shell: no [data-centre="${name}"]`);
       const box = el.getBoundingClientRect();
-      if (name === 'section') {
+      if (name === 'section' || name === 'stacked') {
         const pad = parseFloat(getComputedStyle(el).paddingLeft);
         return Math.round(box.left + pad + (box.width - 2 * pad) / 2);
       }
       // Text centred in its box: measure the text itself, not the block box.
-      if (name === 'title' || name === 'lede') {
+      if (/(^|-)(title|lede|actions)$/.test(name)) {
         const range = document.createRange();
         range.selectNodeContents(el);
         const text = range.getBoundingClientRect();
@@ -142,6 +156,20 @@ export const SiteShell: Story = {
           `site shell: centred ${name} at ${centre(name)}px, content centre ${axis}px`,
         );
       }
+    }
+    const stackedAxis = centre('stacked');
+    for (const name of ['stacked-title', 'stacked-lede', 'stacked-actions', 'stacked-visual']) {
+      if (Math.abs(centre(name) - stackedAxis) > 1) {
+        throw new Error(
+          `site shell: stacked hero ${name} at ${centre(name)}px, content centre ${stackedAxis}px`,
+        );
+      }
+    }
+    const below = (upper: string, lower: string) =>
+      canvasElement.querySelector(`[data-centre="${lower}"]`)!.getBoundingClientRect().top >=
+      canvasElement.querySelector(`[data-centre="${upper}"]`)!.getBoundingClientRect().bottom;
+    if (!below('stacked-actions', 'stacked-visual')) {
+      throw new Error('site shell: the stacked hero visual is not under its text');
     }
     if (
       Math.round(
