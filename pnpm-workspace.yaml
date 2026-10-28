@@ -8,7 +8,7 @@ packages:
 # The vitest packages move together: a partial bump would put two vitest
 # majors in one lockfile.
 catalog:
-  vite: ^8.3.4
+  vite: ^8.3.5
   '@vitejs/plugin-vue': ^6.0.10
   vitest: ^5.0.5
   '@vitest/browser': ^5.0.5
