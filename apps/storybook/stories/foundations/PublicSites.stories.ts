@@ -59,12 +59,14 @@ export const SiteShell: Story = {
         <main>
           <div class="mctl-site-container mctl-site-hero">
             <div class="mctl-site-hero__text">
-              <h1 class="mctl-site-hero__title" data-edge="hero">Ship services, not tickets</h1>
-              <p class="mctl-site-hero__lede">One platform for deploys, secrets and observability, driven from your AI assistant.</p>
-              <div class="mctl-site-hero__actions">
+              <p class="mctl-site-hero__eyebrow" data-rhythm="eyebrow">Platform</p>
+              <h1 class="mctl-site-hero__title" data-edge="hero" data-rhythm="title">Ship services, not tickets</h1>
+              <p class="mctl-site-hero__lede" data-rhythm="lede">One platform for deploys, secrets and observability, driven from your AI assistant.</p>
+              <div class="mctl-site-hero__actions" data-rhythm="actions">
                 <a href="#" style="background:var(--accent);color:var(--accent-fg);padding:12px 20px;text-decoration:none;font-weight:600">Get started</a>
-                <a href="#" style="color:var(--accent-text)">Read the docs</a>
+                <a href="#" style="color:var(--surface-fg)">Read the docs</a>
               </div>
+              <p data-rhythm="meta" style="margin-bottom:0;font-size:var(--text-caption-size);color:var(--surface-fg-muted)">Free for one tenant</p>
             </div>
             <div class="mctl-site-hero__visual">
               <pre style="margin:0;width:100%;overflow:auto;background:var(--surface-card);border:1px solid var(--surface-line);padding:16px;font-family:var(--font-mono);font-size:var(--text-code-size)">mctl_deploy_service my-api 1.4.0</pre>
@@ -110,7 +112,7 @@ export const SiteShell: Story = {
           <section class="mctl-site-container mctl-site-section" data-centre="prose-section">
             <div class="mctl-site-prose mctl-prose" data-centre="prose">
               <h2>Reading column</h2>
-              <p>Security, privacy, terms and docs articles keep the 720px reading width, centred in the same container.</p>
+              <p>Security, privacy, terms and docs articles keep the 720px reading width, centred in the same container. Inline <code>code</code> and <a href="#">links</a> stay neutral; only the underline carries the accent.</p>
             </div>
           </section>
           <section class="mctl-site-container mctl-site-section mctl-site-section--start">
@@ -121,7 +123,7 @@ export const SiteShell: Story = {
         <footer class="mctl-site-footer">
           <div class="mctl-site-container mctl-site-footer__inner">
             <nav class="mctl-site-footer__links" aria-label="Footer">
-              <a href="#">Security</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Status</a>
+              <a href="#" data-footer-link>Security</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Status</a>
             </nav>
             <p class="mctl-site-footer__copy">MCTL</p>
           </div>
@@ -195,6 +197,39 @@ export const SiteShell: Story = {
       canvasElement.querySelector(`[data-centre="${upper}"]`)!.getBoundingClientRect().bottom;
     if (!below('stacked-actions', 'stacked-visual')) {
       throw new Error('site shell: the stacked hero visual is not under its text');
+    }
+    // Hero rhythm (0.19.0): the gaps grow down the stack.
+    const rhythm = (name: string) =>
+      canvasElement.querySelector(`[data-rhythm="${name}"]`)!.getBoundingClientRect();
+    const gaps: [string, string, number][] = [
+      ['eyebrow', 'title', 20],
+      ['title', 'lede', 24],
+      ['lede', 'actions', 40],
+      ['actions', 'meta', 32],
+    ];
+    for (const [upper, lower, px] of gaps) {
+      const gap = Math.round(rhythm(lower).top - rhythm(upper).bottom);
+      if (gap !== px) {
+        throw new Error(`site shell: ${upper} to ${lower} is ${gap}px, want ${px}px`);
+      }
+    }
+    // Accent discipline: footer links and inline code are not accent-coloured.
+    const colour = (el: Element) => getComputedStyle(el).color;
+    const probe = document.createElement('span');
+    probe.style.color = 'var(--accent-text)';
+    canvasElement.appendChild(probe);
+    const accentText = colour(probe);
+    probe.style.color = 'var(--accent)';
+    const accent = colour(probe);
+    probe.remove();
+    for (const [what, el] of [
+      ['footer link', canvasElement.querySelector('[data-footer-link]')!],
+      ['inline code', canvasElement.querySelector('[data-centre="prose"] code')!],
+      ['prose link', canvasElement.querySelector('[data-centre="prose"] a')!],
+    ] as const) {
+      if (colour(el) === accent || colour(el) === accentText) {
+        throw new Error(`site shell: ${what} is accent-coloured (${colour(el)})`);
+      }
     }
     if (
       Math.round(

@@ -22,6 +22,17 @@ export const layout = {
   gutter: '20px',
   stack: '24px',
   proseWidth: '720px',
+  // Reading measures in characters, so they track the font size: a hero
+  // lede and a section lede (or a long paragraph) respectively.
+  measureLede: '58ch',
+  measureProse: '65ch',
+  // Hero rhythm, top to bottom: eyebrow, title, lede, actions, meta line.
+  // The gaps grow down the stack so the title reads as one block with its
+  // lede and the call to action gets air of its own.
+  heroEyebrowGap: '20px',
+  heroTitleGap: '24px',
+  heroActionsGap: '40px',
+  heroMetaGap: '32px',
   pageWidth: '1400px',
   // MPageLayout's maxWidth steps; MFooter centres on containerMd. Not
   // exposed as Tailwind container-* utilities: v4 already owns that scale

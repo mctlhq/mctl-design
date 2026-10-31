@@ -50,14 +50,19 @@
   margin: var(--mctl-space-4) 0;
 }
 
+/* A link reads as text with an accent underline; the accent fills in on
+   hover. A fully accented link in every paragraph competed with the one
+   accented call to action (0.19.0). */
 .mctl-prose a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid var(--surface-line-strong);
+  color: var(--surface-fg);
+  text-decoration: underline;
+  text-decoration-color: var(--link-underline);
+  text-underline-offset: 4px;
 }
 
 .mctl-prose a:hover {
-  border-bottom-color: var(--accent);
+  color: var(--accent-text);
+  text-decoration-color: var(--accent);
 }
 
 .mctl-prose em {
@@ -67,11 +72,12 @@
 
 .mctl-prose code {
   font-family: var(--font-mono);
-  font-size: 0.9em;
-  color: var(--syntax-key);
-  background: var(--surface-card);
-  padding: 0.1em 0.35em;
-  border-radius: var(--mctl-radius-sm);
+  font-size: 0.875em;
+  color: var(--code-fg);
+  background: var(--code-bg);
+  border: 1px solid var(--surface-line);
+  padding: 0.12em 0.38em;
+  border-radius: var(--mctl-radius-md);
 }
 
 .mctl-prose pre {
@@ -86,6 +92,8 @@
 .mctl-prose pre code {
   color: inherit;
   background: none;
+  border: 0;
+  border-radius: 0;
   padding: 0;
 }
 

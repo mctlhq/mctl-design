@@ -9,6 +9,45 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.19.0 — 2026-10-31
+
+Accent discipline and vertical rhythm for the public sites. The terracotta
+accent was on headings, buttons, secondary buttons, inline code, step
+counters, table keys and footer links at once, so nothing stood out; the
+hero stack was spaced by one uniform 24px gap.
+
+### Added
+
+- Layout tokens: `--mctl-layout-measure-lede` (58ch) and
+  `--mctl-layout-measure-prose` (65ch); the hero rhythm
+  `--mctl-layout-hero-eyebrow-gap` (20px), `-title-gap` (24px),
+  `-actions-gap` (40px) and `-meta-gap` (32px).
+- Semantic colours, in both themes: `--code-fg` (the body foreground),
+  `--code-bg` (a 6.5% tint of it), `--marker-fg` (subtle text, for eyebrows
+  and step numbers) and `--link-underline` (the accent at 45%).
+- `site.css`: `.mctl-site-hero__eyebrow`, a neutral mono label above the
+  hero title.
+- The Site Shell story asserts the hero rhythm gap by gap and that footer
+  links, inline code and prose links are not accent-coloured. Baselines
+  changed for it and for the stories that render `prose.css` (Introduction,
+  MLogo, Product Scale, Surfaces).
+
+### Changed
+
+- `site.css`: the hero text stack has no uniform gap; the title sits 24px
+  above its lede, the actions 40px below it and a meta line 32px below the
+  actions. A hero child outside that sequence (a badge between the lede and
+  the actions, a second line after the meta) no longer gets the old 24px
+  gap; give it its own margin. A hero lede is capped at 58ch in either layout (was 720px when
+  centred, uncapped beside a visual), a section lede at 65ch (was 720px).
+- `site.css`: footer links are muted text, foreground on hover (were accent).
+- `prose.css`: inline code is `--code-fg` on `--code-bg` with a hairline
+  border (was `--syntax-key` on the card surface), which code inside `pre`
+  resets; links are foreground text
+  with a `--link-underline` underline, accent on hover (were accent text).
+
+Pinned `ui.mctl.ai/0.18.0/` URLs do not move.
+
 ## 0.18.0 — 2026-10-31
 
 ### Changed
