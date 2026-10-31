@@ -9,6 +9,32 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.18.0 — 2026-10-31
+
+### Changed
+
+- `site.css`: the public-site shell is centred by default. Section titles
+  (with balanced wrapping) and ledes sit on the content box's centre line, a
+  hero without a visual is one centred column like `--stacked`, and the
+  720px `.mctl-site-prose` column is centred in the container (its text stays
+  start-aligned). A left-aligned heading over a full-width, centred card grid
+  read as off-centre on mctl.ai, and tg.mctl.ai's reading pages hung their
+  720px column off the left of a 1440px container. A hero with a visual
+  keeps text left and visual right above 960px.
+
+### Added
+
+- `.mctl-site-section--start` opts one section back into the pre-0.18.0
+  left-aligned title, lede and reading column. `.mctl-site-section--center`
+  stays as an alias of the new default.
+- The Site Shell story asserts the new contract: centred section title, lede
+  and reading column, a centred hero without a visual, and a `--start`
+  section whose title is back on the brand's left edge.
+
+No token or theme value changed; `mctl.css`, `global.css` and `prose.css` are
+identical to 0.17.0 apart from the version line. Pinned `ui.mctl.ai/0.17.0/`
+URLs do not move; each site centres when it bumps its pin.
+
 ## 0.17.0 — 2026-10-26
 
 ### Added
