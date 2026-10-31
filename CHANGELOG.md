@@ -36,11 +36,14 @@ hero stack was spaced by one uniform 24px gap.
 
 - `site.css`: the hero text stack has no uniform gap; the title sits 24px
   above its lede, the actions 40px below it and a meta line 32px below the
-  actions. A hero lede is capped at 58ch in either layout (was 720px when
+  actions. A hero child outside that sequence (a badge between the lede and
+  the actions, a second line after the meta) no longer gets the old 24px
+  gap; give it its own margin. A hero lede is capped at 58ch in either layout (was 720px when
   centred, uncapped beside a visual), a section lede at 65ch (was 720px).
 - `site.css`: footer links are muted text, foreground on hover (were accent).
 - `prose.css`: inline code is `--code-fg` on `--code-bg` with a hairline
-  border (was `--syntax-key` on the card surface); links are foreground text
+  border (was `--syntax-key` on the card surface), which code inside `pre`
+  resets; links are foreground text
   with a `--link-underline` underline, accent on hover (were accent text).
 
 Pinned `ui.mctl.ai/0.18.0/` URLs do not move.

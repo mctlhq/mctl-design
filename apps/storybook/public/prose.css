@@ -93,6 +93,8 @@
 .mctl-prose pre code {
   color: inherit;
   background: none;
+  border: 0;
+  border-radius: 0;
   padding: 0;
 }
 
