@@ -115,7 +115,7 @@ export const SiteShell: Story = {
           </section>
           <section class="mctl-site-container mctl-site-section mctl-site-section--start">
             <h2 class="mctl-site-section__title" data-edge="start">Left-aligned section</h2>
-            <p class="mctl-site-section__lede">--start puts a section back on the brand's left edge.</p>
+            <p class="mctl-site-section__lede" data-edge="start-lede">--start puts a section back on the brand's left edge.</p>
           </section>
         </main>
         <footer class="mctl-site-footer">
@@ -136,7 +136,7 @@ export const SiteShell: Story = {
       return Math.round(el.getBoundingClientRect().left);
     };
     const edge = left('brand');
-    for (const name of ['hero', 'card', 'start']) {
+    for (const name of ['hero', 'card', 'start', 'start-lede']) {
       if (left(name) !== edge) {
         throw new Error(`site shell: ${name} starts at ${left(name)}px, brand at ${edge}px`);
       }
