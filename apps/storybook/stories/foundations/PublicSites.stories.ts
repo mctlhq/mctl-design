@@ -35,12 +35,12 @@ export const ShellAndReading: Story = {
 // site.css as the three public sites use it: one container for header, hero,
 // sections and grid; full-bleed header and footer backgrounds. The play
 // function checks the contract rather than only screenshotting it — the brand,
-// hero title, section title and first card must share one left edge, which is
-// exactly what drifted between mctl.ai, docs and tg before 0.15.0. A --center
-// section's title, lede and narrow block must instead share the content box's
-// centre line, the layout mctl.ai lost for its forms and single plan in 0.15.0.
-// The same holds for a --stacked hero, whose visual must also sit under the
-// text rather than beside it.
+// the title of a hero with a visual, the first card and a --start section's
+// title must share one left edge, which is exactly what drifted between
+// mctl.ai, docs and tg before 0.15.0. From 0.18.0 a section's title and lede,
+// the reading column and a hero without a visual are centred by default: they
+// must share the content box's centre line. The same holds for a --stacked
+// hero, whose visual must also sit under the text rather than beside it.
 export const SiteShell: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => ({
@@ -70,9 +70,9 @@ export const SiteShell: Story = {
               <pre style="margin:0;width:100%;overflow:auto;background:var(--surface-card);border:1px solid var(--surface-line);padding:16px;font-family:var(--font-mono);font-size:var(--text-code-size)">mctl_deploy_service my-api 1.4.0</pre>
             </div>
           </div>
-          <section class="mctl-site-container mctl-site-section">
-            <h2 class="mctl-site-section__title" data-edge="section">What you get</h2>
-            <p class="mctl-site-section__lede">Section titles start on the same edge as the hero and the header brand.</p>
+          <section class="mctl-site-container mctl-site-section" data-centre="grid-section">
+            <h2 class="mctl-site-section__title" data-centre="grid-title">What you get</h2>
+            <p class="mctl-site-section__lede" data-centre="grid-lede">Section titles and ledes are centred over the card grid.</p>
             <div class="mctl-site-grid">
               <div v-for="(t, i) in ['Deploys', 'Secrets', 'Observability']" :key="t" :data-edge="i === 0 ? 'card' : null"
                 style="background:var(--surface-card);border:1px solid var(--surface-line);padding:20px">
@@ -101,11 +101,21 @@ export const SiteShell: Story = {
               <button type="submit" style="font:inherit;background:var(--accent);color:var(--accent-fg);border:0;padding:12px">Request access</button>
             </form>
           </section>
-          <section class="mctl-site-container mctl-site-section">
-            <div class="mctl-site-prose mctl-prose" data-edge="prose">
-              <h2>Reading column</h2>
-              <p>Security, privacy, terms and docs articles keep the 720px reading width inside the same container.</p>
+          <div class="mctl-site-container mctl-site-hero" data-centre="plain">
+            <div class="mctl-site-hero__text">
+              <h2 class="mctl-site-hero__title" data-centre="plain-title">Hero without a visual</h2>
+              <p class="mctl-site-hero__lede" data-centre="plain-lede">Without a visual the hero is one centred column, like a stacked one.</p>
             </div>
+          </div>
+          <section class="mctl-site-container mctl-site-section" data-centre="prose-section">
+            <div class="mctl-site-prose mctl-prose" data-centre="prose">
+              <h2>Reading column</h2>
+              <p>Security, privacy, terms and docs articles keep the 720px reading width, centred in the same container.</p>
+            </div>
+          </section>
+          <section class="mctl-site-container mctl-site-section mctl-site-section--start">
+            <h2 class="mctl-site-section__title" data-edge="start">Left-aligned section</h2>
+            <p class="mctl-site-section__lede" data-edge="start-lede">--start puts a section back on the brand's left edge.</p>
           </section>
         </main>
         <footer class="mctl-site-footer">
@@ -126,7 +136,7 @@ export const SiteShell: Story = {
       return Math.round(el.getBoundingClientRect().left);
     };
     const edge = left('brand');
-    for (const name of ['hero', 'section', 'card', 'prose']) {
+    for (const name of ['hero', 'card', 'start', 'start-lede']) {
       if (left(name) !== edge) {
         throw new Error(`site shell: ${name} starts at ${left(name)}px, brand at ${edge}px`);
       }
@@ -135,7 +145,7 @@ export const SiteShell: Story = {
       const el = canvasElement.querySelector(`[data-centre="${name}"]`);
       if (!el) throw new Error(`site shell: no [data-centre="${name}"]`);
       const box = el.getBoundingClientRect();
-      if (name === 'section' || name === 'stacked') {
+      if (/^(section|stacked|plain|grid-section|prose-section)$/.test(name)) {
         const pad = parseFloat(getComputedStyle(el).paddingLeft);
         return Math.round(box.left + pad + (box.width - 2 * pad) / 2);
       }
@@ -163,6 +173,21 @@ export const SiteShell: Story = {
         throw new Error(
           `site shell: stacked hero ${name} at ${centre(name)}px, content centre ${stackedAxis}px`,
         );
+      }
+    }
+    const axes: Record<string, string[]> = {
+      'grid-section': ['grid-title', 'grid-lede'],
+      plain: ['plain-title', 'plain-lede'],
+      'prose-section': ['prose'],
+    };
+    for (const [box, names] of Object.entries(axes)) {
+      const boxAxis = centre(box);
+      for (const name of names) {
+        if (Math.abs(centre(name) - boxAxis) > 1) {
+          throw new Error(
+            `site shell: ${name} centred at ${centre(name)}px, content centre ${boxAxis}px`,
+          );
+        }
       }
     }
     const below = (upper: string, lower: string) =>
