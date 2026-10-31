@@ -1,4 +1,4 @@
-/* @mctlhq/css 0.18.0 — raw tokens + semantic theme layer. */
+/* @mctlhq/css 0.19.0 — raw tokens + semantic theme layer. */
 :root {
   --mctl-color-ink: #0a0b0d;
   --mctl-color-ink2: #0f1114;
@@ -367,6 +367,12 @@
   --mctl-layout-gutter: 20px;
   --mctl-layout-stack: 24px;
   --mctl-layout-prose-width: 720px;
+  --mctl-layout-measure-lede: 58ch;
+  --mctl-layout-measure-prose: 65ch;
+  --mctl-layout-hero-eyebrow-gap: 20px;
+  --mctl-layout-hero-title-gap: 24px;
+  --mctl-layout-hero-actions-gap: 40px;
+  --mctl-layout-hero-meta-gap: 32px;
   --mctl-layout-page-width: 1400px;
   --mctl-layout-container-sm: 640px;
   --mctl-layout-container-md: 960px;
@@ -722,6 +728,14 @@
     var(--_pick-cyan, var(--_accent-cyan-text)) var(--_pick-lime, var(--_accent-lime-text))
     var(--_pick-lilac, var(--_accent-lilac-text));
   --focus-ring: var(--accent);
+  /* Accent discipline (0.19.0): the accent marks the primary action and the
+     hero highlight only. Inline code, step and section markers, secondary
+     actions and meta links stay neutral, so the one accented thing on a
+     screen is the one that matters. */
+  --code-fg: var(--surface-fg);
+  --code-bg: color-mix(in srgb, var(--surface-fg) 6.5%, transparent);
+  --marker-fg: var(--surface-fg-subtle);
+  --link-underline: color-mix(in srgb, var(--accent) 45%, transparent);
   --control-bg: var(--surface-bg);
   --control-disabled-bg: var(--surface-elevated);
   --control-border: var(--surface-control-border);

@@ -70,7 +70,7 @@ moves under you.
 
 | Path                                                     | Moves when            | Use for                                              |
 | -------------------------------------------------------- | --------------------- | ---------------------------------------------------- |
-| `https://ui.mctl.ai/0.18.0/{mctl,global,prose,site}.css` | never                 | anything shipped to users                            |
+| `https://ui.mctl.ai/0.19.0/{mctl,global,prose,site}.css` | never                 | anything shipped to users                            |
 | `https://ui.mctl.ai/{mctl,global,prose,site}.css`        | every merge to `main` | previews, internal tools, seeing a token change land |
 | `@mctlhq/css` on GitHub Packages                         | on a semver tag       | builds that already have a Packages token            |
 
@@ -82,7 +82,7 @@ All three sheets are versioned together. Pinning `mctl.css` alone leaves
 `global.css` — body typography and base element styles — floating, which is
 pinned in name only.
 
-Each sheet names its own version on line 1 (`/* @mctlhq/css 0.18.0 … */`), so a
+Each sheet names its own version on line 1 (`/* @mctlhq/css 0.19.0 … */`), so a
 vendored copy records what it was taken from and a mismatch shows up in a diff.
 
 **CSS — CDN, pinned (preferred).** No npm tag, no GitHub Packages token.
@@ -94,10 +94,10 @@ vendored copy records what it was taken from and a mismatch shows up in a diff.
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
 />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.18.0/mctl.css" />
-<link rel="stylesheet" href="https://ui.mctl.ai/0.18.0/global.css" />
-<!-- docs / markdown only: https://ui.mctl.ai/0.18.0/prose.css -->
-<!-- public sites (mctl.ai, docs, tg): https://ui.mctl.ai/0.18.0/site.css -->
+<link rel="stylesheet" href="https://ui.mctl.ai/0.19.0/mctl.css" />
+<link rel="stylesheet" href="https://ui.mctl.ai/0.19.0/global.css" />
+<!-- docs / markdown only: https://ui.mctl.ai/0.19.0/prose.css -->
+<!-- public sites (mctl.ai, docs, tg): https://ui.mctl.ai/0.19.0/site.css -->
 ```
 
 `site.css` (from 0.15.0) is the shared public-site shell: `.mctl-site-container`
@@ -111,7 +111,12 @@ from 0.17.0, is one centred column with any visual under the text),
 `.mctl-site-footer`. From 0.18.0 section titles, ledes and the reading
 column are centred by default; `.mctl-site-section--start` puts one section
 back on the left edge, and `.mctl-site-section--center` (0.16.0) is now an
-alias of the default. It only assembles tokens `mctl.css` already defines, so it
+alias of the default. From 0.19.0 the hero stack is spaced by the
+`--mctl-layout-hero-*-gap` rhythm (an optional mono `.mctl-site-hero__eyebrow`
+sits above the title), ledes are capped in characters
+(`--mctl-layout-measure-lede` 58ch, `--mctl-layout-measure-prose` 65ch), and
+the accent is kept for the primary action: `--code-fg` / `--code-bg`,
+`--marker-fg` and footer links are neutral. It only assembles tokens `mctl.css` already defines, so it
 needs `mctl.css` and nothing else; every class is `mctl-site-` prefixed and
 sets only what it owns, so it sits next to Nuxt or VitePress styles. The
 "Foundations/Public Sites/Site Shell" story shows the full page.
