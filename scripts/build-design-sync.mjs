@@ -112,7 +112,7 @@ function buildFonts() {
         copy(path.join(pkgDir, 'files', file), `fonts/files/${file}`);
         const rewritten = block
           .replace(/src:[^;]*;/, `src: url(./files/${file}) format('woff2');`)
-          .replace(/font-display:\s*\w+/, 'font-display: swap');
+          .replace(/font-display:\s*[^;]+/, 'font-display: swap');
         faces.push(`/* ${family} ${subset[1]} */\n${rewritten}`);
       }
     }
@@ -247,10 +247,16 @@ async function buildCards() {
 
 // ---------------------------------------------------------------------------------------------
 
-// `out` is wiped below: refuse the repo itself or any parent of it (`--out .`, `--out ..`).
+// `out` is wiped below. Refuse the repo itself, its parents, and any source directory inside it
+// (`--out .`, `--out ..`, `--out apps`): inside the repo only the gitignored ds-bundle/ is allowed.
 const repoInsideOut = path.relative(out, root);
-if (repoInsideOut === '' || !repoInsideOut.startsWith('..')) {
-  console.error(`refusing --out ${out}: it is, or contains, the repository at ${root}`);
+const insideRepo = path.relative(root, out);
+const inRepoButNotBundle =
+  !insideRepo.startsWith('..') &&
+  insideRepo !== 'ds-bundle' &&
+  !insideRepo.startsWith(`ds-bundle${path.sep}`);
+if (repoInsideOut === '' || !repoInsideOut.startsWith('..') || inRepoButNotBundle) {
+  console.error(`refusing --out ${out}: inside the repository only ds-bundle/ may be rebuilt`);
   process.exit(1);
 }
 rmSync(out, { recursive: true, force: true });
