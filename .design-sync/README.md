@@ -1,8 +1,8 @@
 # MCTL design system (tokens, CSS, fonts)
 
 This project ships the MCTL look only: tokens, stylesheets and self-hosted fonts.
-There are no component bundles. Build UI with plain HTML/React and the CSS custom
-properties below. Never hard-code a colour, radius or font that a token covers.
+There are no importable component bundles. Build UI with plain HTML/React, the CSS custom
+properties below, and the reference cards under `components/`. Never hard-code a colour, radius or font that a token covers.
 
 ## Setup (required)
 
@@ -11,8 +11,11 @@ Link `styles.css`, then set both attributes on `<html>`. The semantic variables
 and `[data-accent]`, so without them the page is unstyled.
 
 ```html
-<link rel="stylesheet" href="styles.css" />
-<html data-theme="dark" data-accent="terracotta"></html>
+<html data-theme="dark" data-accent="terracotta">
+  <head>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+</html>
 ```
 
 - `data-theme`: `dark` (default look, "Engineering") or `light` (paper).
@@ -38,6 +41,15 @@ Use `var(--name)` in your own CSS or inline `style`. Semantic names:
   `--text-hero`, `--text-section`, `--text-title`, `--text-subtitle`, `--text-body`,
   `--text-small`, `--text-caption`, `--text-label`, `--text-code`
 - Spacing and shape (raw): `--mctl-space-1..10`, `--mctl-radius-sm|md|lg|xl|2xl|pill`
+
+## Component reference cards
+
+`components/<Group>/<Name>/<Name>.html` holds a static render of each MCTL component
+(Vue source, so not importable): real markup, class names and variants in dark and light.
+Open the card for a component before building something similar, and copy its structure and
+`.m-*` class names; the styles come from `components/mctl-ui.css`, which each card links.
+Groups: `Components` (buttons, inputs, cards, tables, modals), `Brand` (`MLogo`, assets in
+`brand/`), `Telegram-Components` (`MTg*`, mini-app pieces).
 
 ## Where the truth lives
 

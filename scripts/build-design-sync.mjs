@@ -178,18 +178,34 @@ async function buildCards() {
 
   const cards = [];
   const failures = [];
+  const skipped = [];
   for (const file of listStoryFiles()) {
     const mod = await import(pathToFileURL(file).href);
     const meta = mod.default;
-    if (!meta?.component || !meta.title) continue;
+    if (!meta?.component) {
+      // Showcase stories (motion, tokens, patterns) have nothing to render as a component card.
+      skipped.push(path.basename(file));
+      continue;
+    }
+    if (!meta.title) {
+      failures.push({ id: path.basename(file), reason: 'meta has a component but no title' });
+      continue;
+    }
     const segments = meta.title.split('/');
     const name = segments.at(-1);
     const group = segments.slice(0, -1).join(' / ') || 'Components';
 
     const cells = [];
     for (const [exportName, story] of Object.entries(mod)) {
-      if (exportName === 'default' || typeof story !== 'object' || story === null) continue;
+      if (exportName === 'default') continue;
       const id = `${name}/${exportName}`;
+      if (typeof story !== 'object' || story === null) {
+        failures.push({
+          id,
+          reason: `export is a ${typeof story}, only object stories (CSF3) render`,
+        });
+        continue;
+      }
       try {
         const args = { ...meta.args, ...story.args };
         const render = story.render ?? meta.render;
@@ -226,11 +242,17 @@ async function buildCards() {
     write(`${dir}/${name}.html`, cardHtml({ name, group, panels }));
     cards.push({ name, group, stories: cells.length });
   }
-  return { cards, failures };
+  return { cards, failures, skipped };
 }
 
 // ---------------------------------------------------------------------------------------------
 
+// `out` is wiped below: refuse the repo itself or any parent of it (`--out .`, `--out ..`).
+const repoInsideOut = path.relative(out, root);
+if (repoInsideOut === '' || !repoInsideOut.startsWith('..')) {
+  console.error(`refusing --out ${out}: it is, or contains, the repository at ${root}`);
+  process.exit(1);
+}
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 buildStyles();
@@ -239,12 +261,16 @@ copy(
   need(path.join(root, '.design-sync/README.md'), 'README source is committed with the repo'),
   'README.md',
 );
-const { cards, failures } = await buildCards();
+const { cards, failures, skipped } = await buildCards();
 
 const unexpected = failures.filter((f) => !(f.id in KNOWN_UNRENDERABLE));
 console.log(
   `ds-bundle: ${cards.length} component cards, ${cards.reduce((n, c) => n + c.stories, 0)} stories -> ${path.relative(process.cwd(), out) || '.'}`,
 );
+if (skipped.length > 0)
+  console.log(
+    `  note ${skipped.length} story file(s) without a component, no card: ${skipped.join(', ')}`,
+  );
 for (const f of failures) {
   const known = f.id in KNOWN_UNRENDERABLE;
   console.log(
