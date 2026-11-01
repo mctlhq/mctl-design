@@ -12,3 +12,6 @@ coverage/
 # Playwright output (apps/storybook)
 test-results/
 playwright-report/
+
+# Claude Design sync output (scripts/build-design-sync.mjs)
+ds-bundle/
