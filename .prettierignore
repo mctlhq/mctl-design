@@ -5,3 +5,4 @@ apps/storybook/public/
 # The reviewer only runs when this file matches main byte for byte, so a
 # formatting-only edit would stop it reviewing the PR that makes it.
 .github/workflows/claude-review.yml
+ds-bundle/

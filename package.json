@@ -38,6 +38,7 @@
     "check:generated": "node scripts/check-generated.mjs",
     "check:component-tokens": "node scripts/check-component-tokens.mjs",
     "check:component-tokens:selftest": "node scripts/check-component-tokens.mjs --selftest",
+    "build:design-sync": "node scripts/build-design-sync.mjs",
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
