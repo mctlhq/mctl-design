@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <mask id="cut">
+      <path d="M256 60L435.263 158V354L256 452L76.7372 354V158L256 60Z" fill="#fff"/>
+      <path d="M256 130v252M196 175v162M316 175v162M136 215v82M376 215v82" stroke="#000" stroke-width="38" stroke-linecap="round"/>
+    </mask>
+  </defs>
+  <path d="M256 60L435.263 158V354L256 452L76.7372 354V158L256 60Z" fill="#e25a3c" mask="url(#cut)"/>
+</svg>
