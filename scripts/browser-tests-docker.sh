@@ -25,7 +25,8 @@ if [ "${1:-}" = "--update" ]; then update=1; fi
 # (node_modules, dist, storybook-static) is copied.
 cid=$(docker create -i --ipc=host -e CI -e UPDATE="$update" -e SHOTS="$shots" "$IMAGE" bash -euo pipefail -c '
   mkdir /work && tar -C /work -xf - && cd /work
-  corepack enable
+  # The image no longer ships corepack, so install the pinned pnpm directly.
+  npm install --global "$(node -p "require(\"./package.json\").packageManager")"
   CI=1 pnpm install --frozen-lockfile
   pnpm build
   pnpm build:storybook
