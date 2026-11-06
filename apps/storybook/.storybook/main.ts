@@ -34,11 +34,22 @@ const config: StorybookConfig = {
   managerHead: (head) =>
     `${head.replace(/<link rel="icon"[^>]*>/gi, '')}
     <title>MCTL UI</title>
-    <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg?v=9dc770313d10">
-    <meta property="og:title" content="MCTL UI">
+    <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg?v=2">
+    <link rel="icon" type="image/x-icon" href="/brand/favicon.ico?v=2">
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png?v=2">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MCTL">
+    <meta property="og:title" content="MCTL UI — Design System">
     <meta property="og:description" content="Design tokens, CSS theme, and Vue 3 components for MCTL products.">
-    <meta property="og:url" content="https://ui.mctl.ai">
-    <meta property="og:image" content="https://ui.mctl.ai/brand/sidebar-dark.svg">
+    <meta property="og:url" content="https://ui.mctl.ai/">
+    <meta property="og:image" content="https://ui.mctl.ai/brand/og-image.png?v=2">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MCTL UI — Design System">
+    <meta name="twitter:description" content="Design tokens, CSS theme, and Vue 3 components for MCTL products.">
+    <meta name="twitter:image" content="https://ui.mctl.ai/brand/og-image.png?v=2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
