@@ -160,7 +160,8 @@
    .mctl-site-header--app adds three slots next to the shared brand and nav:
      __context  a context picker after the brand ("/ Course name v"),
      __badge    a counter pill (open mistakes, unread),
-     __actions  trailing controls (theme toggle, avatar).
+     __actions  trailing controls (theme toggle, avatar, and the burger: put
+                the burger inside __actions so the pair keeps its 8px gap).
    The brand stops pushing everything right; the nav takes that job instead. */
 .mctl-site-header--app .mctl-site-brand {
   margin-right: 0;
@@ -369,7 +370,8 @@
     gap: 8px;
   }
 
-  .mctl-site-header--drawer-wide:has(.mctl-site-header__actions):has(.mctl-site-burger) .mctl-site-burger {
+  .mctl-site-header--drawer-wide:has(.mctl-site-header__actions):has(.mctl-site-burger)
+    .mctl-site-burger {
     margin-left: 0;
   }
 

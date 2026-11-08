@@ -168,42 +168,61 @@ export const DefaultDrawerEndsBelow768: Story = {
   },
 };
 
-// 0.20.2: an actions slot (theme toggle, avatar) next to the burger. The pair
-// sits at the right edge, in order, with the brand on one line.
+// 0.20.2: an actions slot (theme toggle, avatar) with the burger INSIDE it. The
+// pair sits at the right edge, in order, with the brand on one line. Placing
+// the burger as a sibling after __actions is not covered: it would get the
+// __inner gap (16px), not the actions gap (8px).
+const actionsTemplate = (extraClass: string) => `
+  <header class="mctl-site-header mctl-site-header--app${extraClass}" :data-nav-open="open ? '' : null">
+    <div class="mctl-site-container mctl-site-header__inner">
+      <a class="mctl-site-brand" href="#"><span class="mctl-site-brand__accent">M</span>CTL</a>
+      <nav class="mctl-site-nav" id="site-nav" aria-label="Main">
+        <a href="#" aria-current="page">Platform</a>
+        <a href="#">Docs</a>
+      </nav>
+      <div class="mctl-site-header__actions" data-actions>
+        <button type="button" aria-label="Toggle theme" data-theme-btn style="width:32px;height:32px;border:1px solid var(--surface-line);border-radius:var(--mctl-radius-pill);background:transparent;color:var(--surface-fg)">&#9680;</button>
+        <button class="mctl-site-burger" type="button" aria-label="Menu" aria-controls="site-nav"
+          :aria-expanded="open" data-burger @click="open = !open"></button>
+      </div>
+    </div>
+  </header>`;
+
+const checkActionsWithBurger = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  const innerEl = canvasElement.querySelector('.mctl-site-header__inner')!;
+  const inner = innerEl.getBoundingClientRect();
+  const gutter = parseFloat(getComputedStyle(innerEl).paddingRight) || 0;
+  const brandEl = canvasElement.querySelector('.mctl-site-brand')!;
+  const brand = brandEl.getBoundingClientRect();
+  const theme = canvasElement.querySelector('[data-theme-btn]')!.getBoundingClientRect();
+  const burgerEl = canvasElement.querySelector('[data-burger]')!;
+  const burger = burgerEl.getBoundingClientRect();
+  if (getComputedStyle(brandEl).whiteSpace !== 'nowrap') throw new Error('the brand can wrap');
+  if (getComputedStyle(burgerEl).flexShrink !== '0') throw new Error('the burger can shrink');
+  if (theme.left < brand.right) throw new Error('actions overlap the brand');
+  if (burger.left < theme.right) throw new Error('burger overlaps the theme toggle');
+  if (burger.left - theme.right > 12) throw new Error('burger is not next to the actions');
+  if (Math.abs(inner.right - gutter - burger.right) > 2)
+    throw new Error('the burger is not at the right edge of the header content');
+  if (burger.width < 39) throw new Error('burger is squashed');
+};
+
 export const ActionsWithBurger: Story = {
   globals: { viewport: { value: 'mobile1', isRotated: false } },
   parameters: { viewport: { defaultViewport: 'mobile1' } },
+  render: () => ({ data: () => ({ open: false }), template: page(actionsTemplate('')) }),
+  play: checkActionsWithBurger,
+};
+
+// The same pair under --drawer-wide, in the 768-980px range.
+export const WideActionsWithBurger: Story = {
+  globals: { viewport: { value: 'tablet', isRotated: false } },
+  parameters: { viewport: { defaultViewport: 'tablet' } },
   render: () => ({
     data: () => ({ open: false }),
-    template: page(`
-      <header class="mctl-site-header mctl-site-header--app" :data-nav-open="open ? '' : null">
-        <div class="mctl-site-container mctl-site-header__inner">
-          <a class="mctl-site-brand" href="#"><span class="mctl-site-brand__accent">M</span>CTL</a>
-          <nav class="mctl-site-nav" id="site-nav" aria-label="Main">
-            <a href="#" aria-current="page">Platform</a>
-            <a href="#">Docs</a>
-          </nav>
-          <div class="mctl-site-header__actions" data-actions>
-            <button type="button" aria-label="Toggle theme" data-theme-btn style="width:32px;height:32px;border:1px solid var(--surface-line);border-radius:var(--mctl-radius-pill);background:transparent;color:var(--surface-fg)">&#9680;</button>
-            <button class="mctl-site-burger" type="button" aria-label="Menu" aria-controls="site-nav"
-              :aria-expanded="open" data-burger @click="open = !open"></button>
-          </div>
-        </div>
-      </header>`),
+    template: page(actionsTemplate(' mctl-site-header--drawer-wide')),
   }),
-  play: async ({ canvasElement }) => {
-    const inner = canvasElement.querySelector('.mctl-site-header__inner')!.getBoundingClientRect();
-    const brand = canvasElement.querySelector('.mctl-site-brand')!.getBoundingClientRect();
-    const theme = canvasElement.querySelector('[data-theme-btn]')!.getBoundingClientRect();
-    const burger = canvasElement.querySelector('[data-burger]')!.getBoundingClientRect();
-    if (brand.height > 40) throw new Error('the brand wrapped onto two lines');
-    if (theme.left < brand.right) throw new Error('actions overlap the brand');
-    if (burger.left < theme.right) throw new Error('burger overlaps the theme toggle');
-    if (burger.left - theme.right > 12) throw new Error('burger is not next to the actions');
-    if (Math.abs(inner.right - burger.right) > 12)
-      throw new Error('the burger is not at the right edge of the header');
-    if (burger.width < 39) throw new Error('burger is squashed');
-  },
+  play: checkActionsWithBurger,
 };
 
 export const StaticRecipe: Story = {

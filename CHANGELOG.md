@@ -18,7 +18,9 @@ overrides.
 
 - A header with a `.mctl-site-header__actions` slot and a burger now keeps the
   pair together: the actions take the right-edge push (`margin-left: auto`,
-  8px gap) and the burger follows with no margin. Before, every consumer
+  8px gap) and the burger, placed inside `__actions`, follows with no margin
+  (a burger placed as a sibling after `__actions` gets the 16px `__inner` gap
+  instead). Before, every consumer
   (alice, seerrsense, academy, mctl.ai) repeated this locally, and a bare
   `.mctl-site-burger { margin-left: 0 }` lost to the `:has()` rule on
   specificity.
