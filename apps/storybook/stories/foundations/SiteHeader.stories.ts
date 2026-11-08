@@ -127,7 +127,7 @@ export const MobileDrawer: Story = {
 };
 
 // 0.20.1: --drawer-wide keeps the drawer up to 980px. The tablet viewport is
-// 768px wide, which the default drawer (below 768px) does not cover.
+// 800px wide, which the default drawer (below 768px) does not cover.
 export const DrawerWide: Story = {
   globals: { viewport: { value: 'tablet', isRotated: false } },
   parameters: { viewport: { defaultViewport: 'tablet' } },
@@ -147,13 +147,13 @@ export const DrawerWide: Story = {
       throw new Error(`run at a 768-980px viewport, got ${window.innerWidth}px`);
     }
     if (getComputedStyle(burger).display === 'none')
-      throw new Error('burger is hidden at 768px with --drawer-wide');
+      throw new Error('burger is hidden at the tablet width with --drawer-wide');
     if (getComputedStyle(nav).position !== 'fixed')
-      throw new Error('nav is not a drawer at 768px with --drawer-wide');
+      throw new Error('nav is not a drawer at the tablet width with --drawer-wide');
   },
 };
 
-// Regression: without --drawer-wide the same header is inline at 768px.
+// Regression: without --drawer-wide the same header is inline at the tablet width (800px).
 export const DefaultDrawerEndsBelow768: Story = {
   globals: { viewport: { value: 'tablet', isRotated: false } },
   parameters: { viewport: { defaultViewport: 'tablet' } },
@@ -165,6 +165,44 @@ export const DefaultDrawerEndsBelow768: Story = {
     const nav = canvasElement.querySelector<HTMLElement>('.mctl-site-nav')!;
     if (getComputedStyle(nav).position === 'fixed')
       throw new Error('the default drawer reached 768px');
+  },
+};
+
+// 0.20.2: an actions slot (theme toggle, avatar) next to the burger. The pair
+// sits at the right edge, in order, with the brand on one line.
+export const ActionsWithBurger: Story = {
+  globals: { viewport: { value: 'mobile1', isRotated: false } },
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
+  render: () => ({
+    data: () => ({ open: false }),
+    template: page(`
+      <header class="mctl-site-header mctl-site-header--app" :data-nav-open="open ? '' : null">
+        <div class="mctl-site-container mctl-site-header__inner">
+          <a class="mctl-site-brand" href="#"><span class="mctl-site-brand__accent">M</span>CTL</a>
+          <nav class="mctl-site-nav" id="site-nav" aria-label="Main">
+            <a href="#" aria-current="page">Platform</a>
+            <a href="#">Docs</a>
+          </nav>
+          <div class="mctl-site-header__actions" data-actions>
+            <button type="button" aria-label="Toggle theme" data-theme-btn style="width:32px;height:32px;border:1px solid var(--surface-line);border-radius:var(--mctl-radius-pill);background:transparent;color:var(--surface-fg)">&#9680;</button>
+            <button class="mctl-site-burger" type="button" aria-label="Menu" aria-controls="site-nav"
+              :aria-expanded="open" data-burger @click="open = !open"></button>
+          </div>
+        </div>
+      </header>`),
+  }),
+  play: async ({ canvasElement }) => {
+    const inner = canvasElement.querySelector('.mctl-site-header__inner')!.getBoundingClientRect();
+    const brand = canvasElement.querySelector('.mctl-site-brand')!.getBoundingClientRect();
+    const theme = canvasElement.querySelector('[data-theme-btn]')!.getBoundingClientRect();
+    const burger = canvasElement.querySelector('[data-burger]')!.getBoundingClientRect();
+    if (brand.height > 40) throw new Error('the brand wrapped onto two lines');
+    if (theme.left < brand.right) throw new Error('actions overlap the brand');
+    if (burger.left < theme.right) throw new Error('burger overlaps the theme toggle');
+    if (burger.left - theme.right > 12) throw new Error('burger is not next to the actions');
+    if (Math.abs(inner.right - burger.right) > 12)
+      throw new Error('the burger is not at the right edge of the header');
+    if (burger.width < 39) throw new Error('burger is squashed');
   },
 };
 

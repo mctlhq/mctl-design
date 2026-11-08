@@ -9,6 +9,29 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.20.2 — 2026-11-08
+
+Spacing follow-ups to the 0.20.1 header, so consumers stop carrying local
+overrides.
+
+### Fixed
+
+- A header with a `.mctl-site-header__actions` slot and a burger now keeps the
+  pair together: the actions take the right-edge push (`margin-left: auto`,
+  8px gap) and the burger follows with no margin. Before, every consumer
+  (alice, seerrsense, academy, mctl.ai) repeated this locally, and a bare
+  `.mctl-site-burger { margin-left: 0 }` lost to the `:has()` rule on
+  specificity.
+- The brand no longer wraps and the burger no longer shrinks in a narrow bar
+  (`flex: none`, `white-space: nowrap`).
+
+### Notes
+
+- `__context` truncation (max-width 40vw, ellipsis) applies only inside a
+  header that contains a `.mctl-site-burger`, since 0.20.1 gated it with
+  `:has()`; a header without a burger keeps its context picker untruncated.
+- The `DrawerWide` story comment named the tablet viewport 768px; it is 800px.
+
 ## 0.20.1 — 2026-11-08
 
 Follow-ups to the 0.20.0 header, found in review.

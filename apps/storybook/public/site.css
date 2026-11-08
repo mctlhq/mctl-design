@@ -1,4 +1,4 @@
-/* @mctlhq/css 0.20.1 — site.css. */
+/* @mctlhq/css 0.20.2 — site.css. */
 /*
  * Public-site layout: the one shell mctl.ai, docs.mctl.ai and tg.mctl.ai
  * share. theme.css already carries the tokens (page width, gutter, header,
@@ -87,6 +87,8 @@
 .mctl-site-brand {
   display: inline-flex;
   align-items: center;
+  flex: none;
+  white-space: nowrap;
   margin-right: auto;
   line-height: 1;
   color: var(--surface-fg);
@@ -234,6 +236,7 @@
    the burger. */
 .mctl-site-burger {
   display: none;
+  flex: none;
   position: relative;
   z-index: 3;
   width: 40px;
@@ -283,6 +286,18 @@
   .mctl-site-header:has(.mctl-site-burger) .mctl-site-burger {
     display: inline-block;
     margin-left: auto;
+  }
+
+  /* Actions slot beside the burger (theme toggle, avatar): the actions take the
+     right-edge push and the burger follows them, so the pair stays together
+     and the bar never wraps. */
+  .mctl-site-header:has(.mctl-site-burger) .mctl-site-header__actions {
+    margin-left: auto;
+    gap: 8px;
+  }
+
+  .mctl-site-header:has(.mctl-site-header__actions):has(.mctl-site-burger) .mctl-site-burger {
+    margin-left: 0;
   }
 
   .mctl-site-header--app:has(.mctl-site-burger) .mctl-site-nav {
@@ -344,6 +359,18 @@
   .mctl-site-header--drawer-wide:has(.mctl-site-burger) .mctl-site-burger {
     display: inline-block;
     margin-left: auto;
+  }
+
+  /* Actions slot beside the burger (theme toggle, avatar): the actions take the
+     right-edge push and the burger follows them, so the pair stays together
+     and the bar never wraps. */
+  .mctl-site-header--drawer-wide:has(.mctl-site-burger) .mctl-site-header__actions {
+    margin-left: auto;
+    gap: 8px;
+  }
+
+  .mctl-site-header--drawer-wide:has(.mctl-site-header__actions):has(.mctl-site-burger) .mctl-site-burger {
+    margin-left: 0;
   }
 
   .mctl-site-header--drawer-wide.mctl-site-header--app:has(.mctl-site-burger) .mctl-site-nav {
