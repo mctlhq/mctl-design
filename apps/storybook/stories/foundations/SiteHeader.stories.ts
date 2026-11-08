@@ -126,6 +126,48 @@ export const MobileDrawer: Story = {
   },
 };
 
+// 0.20.1: --drawer-wide keeps the drawer up to 980px. The tablet viewport is
+// 768px wide, which the default drawer (below 768px) does not cover.
+export const DrawerWide: Story = {
+  globals: { viewport: { value: 'tablet', isRotated: false } },
+  parameters: { viewport: { defaultViewport: 'tablet' } },
+  render: () => ({
+    data: () => ({ open: false }),
+    template: page(
+      drawerTemplate.replace(
+        'class="mctl-site-header mctl-site-header--app"',
+        'class="mctl-site-header mctl-site-header--app mctl-site-header--drawer-wide"',
+      ),
+    ),
+  }),
+  play: async ({ canvasElement }) => {
+    const nav = canvasElement.querySelector<HTMLElement>('.mctl-site-nav')!;
+    const burger = canvasElement.querySelector<HTMLButtonElement>('[data-burger]')!;
+    if (window.innerWidth < 768 || window.innerWidth > 980) {
+      throw new Error(`run at a 768-980px viewport, got ${window.innerWidth}px`);
+    }
+    if (getComputedStyle(burger).display === 'none')
+      throw new Error('burger is hidden at 768px with --drawer-wide');
+    if (getComputedStyle(nav).position !== 'fixed')
+      throw new Error('nav is not a drawer at 768px with --drawer-wide');
+  },
+};
+
+// Regression: without --drawer-wide the same header is inline at 768px.
+export const DefaultDrawerEndsBelow768: Story = {
+  globals: { viewport: { value: 'tablet', isRotated: false } },
+  parameters: { viewport: { defaultViewport: 'tablet' } },
+  render: () => ({
+    data: () => ({ open: false }),
+    template: page(drawerTemplate),
+  }),
+  play: async ({ canvasElement }) => {
+    const nav = canvasElement.querySelector<HTMLElement>('.mctl-site-nav')!;
+    if (getComputedStyle(nav).position === 'fixed')
+      throw new Error('the default drawer reached 768px');
+  },
+};
+
 export const StaticRecipe: Story = {
   name: 'Static HTML recipe (alice, seerrsense)',
   render: () => ({

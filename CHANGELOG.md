@@ -9,6 +9,25 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.20.1 — 2026-11-08
+
+Follow-ups to the 0.20.0 header, found in review.
+
+### Added
+
+- `.mctl-site-header--drawer-wide`: the same burger drawer up to 980px instead
+  of 768px, for apps whose inline nav needs the room (the academy kept a local
+  copy of the rules for 768-980px). Pair it with a `(min-width: 981px)` resize
+  listener.
+
+### Fixed
+
+- The burger is now shown only inside a header that `:has()` confirms contains
+  it, like the drawer, so a browser without `:has()` no longer shows a dead
+  burger over an inline nav.
+- `prefers-reduced-motion` now cancels the drawer slide: the reduced-motion
+  rule lost to the drawer's `:has()` selector on specificity.
+
 ## 0.20.0 — 2026-11-08
 
 One header for every platform site. The academy, alice, seerrsense and docs
