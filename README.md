@@ -125,7 +125,8 @@ without one is untouched, so nothing changes until a site adds the burger. The
 CSS owns the look; the site owns the behaviour: toggle `data-nav-open` on the
 header with `aria-expanded` / `aria-controls` on the burger, close on Escape, on
 a click outside the nav (the scrim is a `::after`, so listen on the header or
-document), on route change and when the viewport passes 768px, and return focus
+document), on route change and when the viewport passes 768px (981px with
+`.mctl-site-header--drawer-wide`, which extends the drawer to 980px), and return focus
 to the burger. It only assembles tokens `mctl.css` already defines, so it
 needs `mctl.css` and nothing else; every class is `mctl-site-` prefixed and
 sets only what it owns, so it sits next to Nuxt or VitePress styles. The
