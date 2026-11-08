@@ -9,6 +9,35 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.20.0 — 2026-11-08
+
+One header for every platform site. The academy, alice, seerrsense and docs
+each carried their own nav, with an orange active underline in one and a local
+mobile drawer in another; the shared shell now covers all of them.
+
+### Added
+
+- `.mctl-site-header--app` variant with `__context` (context picker),
+  `.mctl-site-badge` (counter pill) and `__actions` slots.
+- `.mctl-site-burger` and a right-hand drawer below 768px (70% wide, 300px
+  max, over an `--overlay-scrim` overlay); toggle `data-nav-open` on the header.
+- `.mctl-site-chip` (BETA status chip) and `.mctl-site-brand__mark` (inline SVG
+  mark before the wordmark).
+- Storybook: Foundations/Site Header with play checks for the active item, the
+  app variant and the mobile drawer, plus a static-HTML recipe.
+
+### Changed
+
+- The active nav item (`aria-current="page"`) is neutral: text colour plus a
+  2px underline in `currentColor`, never the accent. `MNav` follows.
+- `MFooter` renders the `.mctl-site-footer` look: a centred column in the
+  display font, muted links, an elevated full-bleed background and 48px
+  vertical padding. Props are unchanged. It was a mono-type left/right bar, so
+  an app on `MFooter` (academy) no longer differs from the plain-class sites.
+- The header's translucent background and blur moved from the header to its
+  `::before`, so the fixed mobile drawer is not clipped by the header's
+  `backdrop-filter`. The rendered header is unchanged.
+
 ## 0.19.0 — 2026-10-31
 
 Accent discipline and vertical rhythm for the public sites. The terracotta
