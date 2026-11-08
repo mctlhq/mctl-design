@@ -144,3 +144,28 @@ export const StaticRecipe: Story = {
       </header>`),
   }),
 };
+
+// Regression: /site.css floats with main, so a header with no burger (every
+// site that has not migrated) must keep its inline nav below 768px.
+export const NoBurgerKeepsInlineNav: Story = {
+  globals: { viewport: { value: 'mobile1', isRotated: false } },
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
+  render: () => ({
+    template: page(`
+      <header class="mctl-site-header">
+        <div class="mctl-site-container mctl-site-header__inner">
+          <a class="mctl-site-brand" href="#"><span class="mctl-site-brand__accent">M</span>CTL</a>
+          <nav class="mctl-site-nav" aria-label="Main" data-nav>
+            <a href="#" aria-current="page">Docs</a>
+          </nav>
+        </div>
+      </header>`),
+  }),
+  play: async ({ canvasElement }) => {
+    const nav = canvasElement.querySelector<HTMLElement>('[data-nav]')!;
+    const cs = getComputedStyle(nav);
+    if (cs.visibility !== 'visible' || cs.position === 'fixed') {
+      throw new Error('a header without a burger lost its inline nav below 768px');
+    }
+  },
+};

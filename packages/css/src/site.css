@@ -223,10 +223,13 @@
 }
 
 /* ===== Mobile navigation: burger + right drawer =====
-   Below 768px the nav becomes a fixed right drawer (70% wide, 300px max) over a
-   scrim. The consumer toggles data-nav-open on the header and keeps
-   aria-expanded/aria-controls on the burger in step; the contract is CSS-only,
-   so the drawer works in Nuxt, VitePress, Astro and static HTML alike. */
+   Below 768px a header that contains a .mctl-site-burger turns its nav into a
+   fixed right drawer (70% wide, 300px max) over a scrim; a header without one
+   is untouched. The CSS owns the look only. The consumer owns the behaviour:
+   toggle data-nav-open on the header and keep aria-expanded / aria-controls on
+   the burger in step; close on Escape, on a click outside the nav (the scrim
+   is a ::after, so listen on the header or document), on route change and when
+   the viewport grows past 768px; return focus to the burger. */
 .mctl-site-burger {
   display: none;
   position: relative;
@@ -275,7 +278,7 @@
     margin-left: auto;
   }
 
-  .mctl-site-header--app .mctl-site-nav {
+  .mctl-site-header--app:has(.mctl-site-burger) .mctl-site-nav {
     margin-left: 0;
   }
 
@@ -286,7 +289,10 @@
     white-space: nowrap;
   }
 
-  .mctl-site-nav {
+  /* Opt-in: only a header that contains a .mctl-site-burger gets the drawer.
+     /site.css floats with main, so a site that has not migrated yet (a plain
+     inline nav, or its own local burger) keeps its nav exactly as it was. */
+  .mctl-site-header:has(.mctl-site-burger) .mctl-site-nav {
     position: fixed;
     top: 0;
     right: 0;
@@ -298,6 +304,8 @@
     width: 70%;
     max-width: 300px;
     height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     padding: calc(var(--site-header-height) + 16px) 24px 24px;
     background: var(--surface-bg);
     border-left: 1px solid var(--surface-line);

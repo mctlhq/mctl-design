@@ -35,10 +35,17 @@ withDefaults(defineProps<MFooterProps>(), { links: () => [], copyright: '' });
 }
 
 .m-footer__inner {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  width: 100%;
+  /* The same box as .mctl-site-container (the plain-class footer's inner div):
+     content width plus both gutters, centred. */
+  max-width: calc(var(--site-content-width) + 2 * var(--site-gutter));
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
 }
 
 .m-footer__links {

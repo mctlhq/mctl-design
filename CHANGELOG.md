@@ -20,7 +20,9 @@ mobile drawer in another; the shared shell now covers all of them.
 - `.mctl-site-header--app` variant with `__context` (context picker),
   `.mctl-site-badge` (counter pill) and `__actions` slots.
 - `.mctl-site-burger` and a right-hand drawer below 768px (70% wide, 300px
-  max, over an `--overlay-scrim` overlay); toggle `data-nav-open` on the header.
+  max, over an `--overlay-scrim` overlay); toggle `data-nav-open` on the
+  header. Opt-in: only a header that contains a burger gets the drawer, so a
+  site that has not migrated keeps its nav.
 - `.mctl-site-chip` (BETA status chip) and `.mctl-site-brand__mark` (inline SVG
   mark before the wordmark).
 - Storybook: Foundations/Site Header with play checks for the active item, the
