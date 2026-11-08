@@ -116,7 +116,17 @@ alias of the default. From 0.19.0 the hero stack is spaced by the
 sits above the title), ledes are capped in characters
 (`--mctl-layout-measure-lede` 58ch, `--mctl-layout-measure-prose` 65ch), and
 the accent is kept for the primary action: `--code-fg` / `--code-bg`,
-`--marker-fg` and footer links are neutral. It only assembles tokens `mctl.css` already defines, so it
+`--marker-fg` and footer links are neutral. From 0.20.0 the active nav item
+(`aria-current="page"`) is neutral with a 2px underline, `.mctl-site-header--app`
+adds `__context`, `.mctl-site-badge` and `__actions` slots, `.mctl-site-chip`
+is a status chip and `.mctl-site-brand__mark` an inline SVG mark. A header that
+contains a `.mctl-site-burger` gets a right-hand drawer below 768px; a header
+without one is untouched, so nothing changes until a site adds the burger. The
+CSS owns the look; the site owns the behaviour: toggle `data-nav-open` on the
+header with `aria-expanded` / `aria-controls` on the burger, close on Escape, on
+a click outside the nav (the scrim is a `::after`, so listen on the header or
+document), on route change and when the viewport passes 768px, and return focus
+to the burger. It only assembles tokens `mctl.css` already defines, so it
 needs `mctl.css` and nothing else; every class is `mctl-site-` prefixed and
 sets only what it owns, so it sits next to Nuxt or VitePress styles. The
 "Foundations/Public Sites/Site Shell" story shows the full page.

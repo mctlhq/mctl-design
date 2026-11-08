@@ -73,7 +73,7 @@ withDefaults(defineProps<MNavProps>(), { ariaLabel: 'Main' });
 }
 
 .m-nav__link--active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
+  color: var(--surface-fg);
+  border-bottom-color: currentColor;
 }
 </style>
