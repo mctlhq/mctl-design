@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
+import { ref } from 'vue';
+import { MSelect } from '@mctlhq/ui';
 
 // Public-site header, 0.20.0: neutral active item, the --app variant (context
 // picker, badge counter, actions) and the mobile burger + right drawer. The
@@ -81,6 +83,83 @@ export const AppVariant: Story = {
     if (badge.color === accent || badge.borderTopColor === accent) {
       throw new Error('badge counter uses the accent colour');
     }
+  },
+};
+
+// 0.21.0: __context--select wraps a native select (or an MSelect size="sm")
+// so a course switcher sits after the "/" separator in the header's type.
+const selectContext = `
+  <div class="mctl-site-header__context mctl-site-header__context--select" data-context>
+    <MSelect v-model="course" size="sm" :options="courses" aria-label="Course" data-select />
+  </div>`;
+
+// The real MSelect, so its scoped rules compete with site.css as in an app.
+const selectSetup = () => ({
+  course: ref('search'),
+  courses: [
+    { label: 'Agentic Web Search', value: 'search' },
+    { label: 'Kubernetes basics', value: 'k8s' },
+    { label: 'Terraform (coming soon)', value: 'tf', disabled: true },
+  ],
+});
+
+const selectHeader = (extraClass = '', burger = false) => `
+  <header class="mctl-site-header mctl-site-header--app ${extraClass}">
+    <div class="mctl-site-container mctl-site-header__inner">
+      <a class="mctl-site-brand" href="#"><span class="mctl-site-brand__accent">M</span>CTL</a>
+      ${selectContext}
+      <nav class="mctl-site-nav" id="site-nav-select" aria-label="Main">
+        <a href="#" aria-current="page">Learn</a>
+        <a href="#">Mistakes</a>
+      </nav>
+      ${burger ? '<button class="mctl-site-burger" type="button" aria-label="Menu" aria-controls="site-nav-select" aria-expanded="false"></button>' : ''}
+    </div>
+  </header>`;
+
+const checkSelectContext = (canvasElement: HTMLElement) => {
+  const ctx = canvasElement.querySelector<HTMLElement>('[data-context]')!;
+  const select = canvasElement.querySelector<HTMLSelectElement>('[data-context] select')!;
+  const cs = getComputedStyle(ctx);
+  if (parseFloat(cs.paddingLeft) !== 0 || parseFloat(cs.paddingTop) !== 0)
+    throw new Error('the select context keeps the button padding');
+  if (cs.overflow !== 'visible') throw new Error(`the select context clips (${cs.overflow})`);
+  const navSize = getComputedStyle(document.documentElement)
+    .getPropertyValue('--site-nav-size')
+    .trim();
+  const probe = document.createElement('span');
+  probe.style.fontSize = navSize;
+  ctx.append(probe);
+  const want = getComputedStyle(probe).fontSize;
+  probe.remove();
+  if (getComputedStyle(select).fontSize !== want)
+    throw new Error(`select is ${getComputedStyle(select).fontSize}, --site-nav-size is ${want}`);
+  if (!getComputedStyle(select).fontFamily.includes('Onest'))
+    throw new Error('select does not use the display family');
+  select.focus();
+  const focused = getComputedStyle(select);
+  if (focused.boxShadow === 'none') throw new Error('focused select has no focus shadow');
+  if (focused.outlineStyle !== 'none') throw new Error('focused select draws an outline ring');
+  select.blur();
+};
+
+export const ContextSelect: Story = {
+  render: () => ({ components: { MSelect }, setup: selectSetup, template: page(selectHeader()) }),
+  play: async ({ canvasElement }) => checkSelectContext(canvasElement),
+};
+
+// Below 768px with a burger, a plain __context is truncated with overflow
+// hidden; the --select variant must not clip the focus shadow.
+export const ContextSelectMobile: Story = {
+  globals: { viewport: { value: 'mobile1', isRotated: false } },
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
+  render: () => ({
+    components: { MSelect },
+    setup: selectSetup,
+    template: page(selectHeader('', true)),
+  }),
+  play: async ({ canvasElement }) => {
+    if (window.innerWidth > 767) throw new Error(`run below 768px, got ${window.innerWidth}px`);
+    checkSelectContext(canvasElement);
   },
 };
 

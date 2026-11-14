@@ -127,7 +127,8 @@ header with `aria-expanded` / `aria-controls` on the burger, close on Escape, on
 a click outside the nav (the scrim is a `::after`, so listen on the header or
 document), on route change and when the viewport passes 768px (981px with
 `.mctl-site-header--drawer-wide`, which extends the drawer to 980px), and return focus
-to the burger. It only assembles tokens `mctl.css` already defines, so it
+to the burger. From 0.21.0 `.mctl-site-header__context--select` holds a
+`<select>` or an `MSelect size="sm"` as the context picker. It only assembles tokens `mctl.css` already defines, so it
 needs `mctl.css` and nothing else; every class is `mctl-site-` prefixed and
 sets only what it owns, so it sits next to Nuxt or VitePress styles. The
 "Foundations/Public Sites/Site Shell" story shows the full page.
