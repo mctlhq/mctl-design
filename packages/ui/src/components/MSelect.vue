@@ -2,6 +2,8 @@
 export interface MSelectOption {
   label: string;
   value: string;
+  /** Shown but not selectable. */
+  disabled?: boolean;
 }
 
 export interface MSelectProps {
@@ -14,6 +16,8 @@ export interface MSelectProps {
   id?: string;
   /** Shown while no value is chosen; not selectable again. */
   placeholder?: string;
+  /** 'sm' is the 32px control height, for toolbars and the site header. */
+  size?: 'sm' | 'md';
 }
 </script>
 
@@ -31,6 +35,7 @@ const props = withDefaults(defineProps<Omit<MSelectProps, 'modelValue'>>(), {
   invalid: false,
   id: undefined,
   placeholder: '',
+  size: 'md',
 });
 
 const model = defineModel<string>({ default: '' });
@@ -58,7 +63,11 @@ function normalize(opt: string | MSelectOption): MSelectOption {
 <template>
   <div
     class="m-select"
-    :class="[wrapperClass, { 'm-select--invalid': isInvalid, 'm-select--disabled': disabled }]"
+    :class="[
+      wrapperClass,
+      `m-select--${size}`,
+      { 'm-select--invalid': isInvalid, 'm-select--disabled': disabled },
+    ]"
     :style="wrapperStyle"
   >
     <select
@@ -73,7 +82,12 @@ function normalize(opt: string | MSelectOption): MSelectOption {
       @change="model = ($event.target as HTMLSelectElement).value"
     >
       <option v-if="placeholder" value="" disabled>{{ placeholder }}</option>
-      <option v-for="opt in options.map(normalize)" :key="opt.value" :value="opt.value">
+      <option
+        v-for="opt in options.map(normalize)"
+        :key="opt.value"
+        :value="opt.value"
+        :disabled="opt.disabled || undefined"
+      >
         {{ opt.label }}
       </option>
     </select>
@@ -101,6 +115,17 @@ function normalize(opt: string | MSelectOption): MSelectOption {
   transition:
     border-color var(--mctl-motion-duration-fast) var(--mctl-motion-easing-standard),
     box-shadow var(--mctl-motion-duration-fast) var(--mctl-motion-easing-standard);
+}
+
+.m-select--sm .m-select__control {
+  box-sizing: border-box;
+  height: var(--mctl-control-height-sm);
+  padding: 0 var(--mctl-space-6) 0 var(--mctl-space-3);
+  font-size: var(--mctl-typography-font-size-sm);
+}
+
+.m-select--sm .m-select__chevron {
+  right: var(--mctl-space-3);
 }
 
 .m-select__control:hover:not(:disabled) {
