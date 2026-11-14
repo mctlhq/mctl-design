@@ -148,6 +148,38 @@ const courses = [
   },
 ];
 
+// Text inside the media banner (a course code, a label) keeps its own
+// line-height: two wrapped lines must not overlap.
+export const MediaWithText: Story = {
+  render: () => ({
+    components: { MCard },
+    template: `
+      <MCard font="sans" style="max-width:240px;">
+        <template #media>
+          <div data-banner style="padding:var(--mctl-space-5); background:linear-gradient(135deg,var(--surface-elevated),color-mix(in srgb,var(--accent) 18%,var(--surface-card)));">
+            <span style="font-size:var(--mctl-typography-font-size-xs); color:var(--surface-fg-muted);">K8S-101</span>
+            <p data-two-lines style="margin:var(--mctl-space-1) 0 0; font-size:var(--mctl-typography-font-size-lg); font-weight:var(--mctl-typography-font-weight-semibold); color:var(--surface-fg);">Kubernetes basics for platform teams</p>
+          </div>
+        </template>
+        Pods, deployments and services.
+      </MCard>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const p = canvasElement.querySelector<HTMLElement>('[data-two-lines]')!;
+    const cs = getComputedStyle(p);
+    // 'normal' is the only non-numeric value; a collapsed 0px must stay 0.
+    const lh =
+      cs.lineHeight === 'normal' ? parseFloat(cs.fontSize) * 1.2 : parseFloat(cs.lineHeight);
+    if (!(lh >= parseFloat(cs.fontSize)))
+      throw new Error(`media text line-height is ${cs.lineHeight}`);
+    const lines = Math.round(p.getBoundingClientRect().height / lh);
+    if (lines < 2) throw new Error(`banner title should wrap to two lines, got ${lines}`);
+    if (p.getBoundingClientRect().height < 2 * parseFloat(cs.fontSize))
+      throw new Error('wrapped lines in media overlap');
+  },
+};
+
 // A whole-card link: as="a" with interactive. No actions slot, since links
 // cannot nest.
 export const InteractiveLink: Story = {

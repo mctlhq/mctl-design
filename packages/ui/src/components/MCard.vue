@@ -113,10 +113,11 @@ defineSlots<MCardSlots>();
 }
 
 /* Full bleed: the card's radius and overflow clip it, so it needs none of
-   its own, and it carries no divider. */
+   its own, and it carries no divider. Direct images are blocks, which removes
+   the inline baseline gap without touching the line-height of any text a
+   banner carries. */
 .m-card__media {
   display: block;
-  line-height: 0;
 }
 
 .m-card__media > :deep(img),
