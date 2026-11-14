@@ -91,9 +91,21 @@ describe('MButton', () => {
     expect(wrapper.classes()).toEqual(expect.arrayContaining(['m-button', 'extra']));
   });
 
+  it('renders each variant as its own class', () => {
+    for (const variant of ['primary', 'ghost', 'neutral'] as const) {
+      expect(mount(MButton, { props: { variant } }).classes()).toContain(`m-button--${variant}`);
+    }
+  });
+
   it('has no axe violations', async () => {
-    const wrapper = mount(MButton, { slots: { default: 'Save' }, attachTo: document.body });
-    await expectNoAxeViolations(wrapper.element);
-    wrapper.unmount();
+    for (const variant of ['primary', 'ghost', 'neutral'] as const) {
+      const wrapper = mount(MButton, {
+        props: { variant },
+        slots: { default: 'Save' },
+        attachTo: document.body,
+      });
+      await expectNoAxeViolations(wrapper.element);
+      wrapper.unmount();
+    }
   });
 });

@@ -6,7 +6,7 @@ const meta: Meta<typeof MButton> = {
   component: MButton,
   tags: ['autodocs'],
   argTypes: {
-    variant: { control: 'select', options: ['primary', 'ghost'] },
+    variant: { control: 'select', options: ['primary', 'ghost', 'neutral'] },
     size: { control: 'select', options: ['sm', 'md'] },
     type: { control: 'select', options: ['button', 'submit', 'reset'] },
     disabled: { control: 'boolean' },
@@ -25,6 +25,10 @@ type Story = StoryObj<typeof MButton>;
 
 export const Primary: Story = {};
 export const Ghost: Story = { args: { variant: 'ghost' } };
+// 0.21.0: a text-colour fill (dark on paper, light on ink) for a main action
+// that should not spend the accent, e.g. "Continue" on a course card.
+export const Neutral: Story = { args: { variant: 'neutral' } };
+export const NeutralDisabled: Story = { args: { variant: 'neutral', disabled: true } };
 export const Small: Story = { args: { size: 'sm' } };
 export const Disabled: Story = { args: { disabled: true } };
 
