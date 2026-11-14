@@ -60,6 +60,27 @@ describe('MSelect', () => {
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['prod']);
   });
 
+  it('disables an option that asks for it and leaves the rest selectable', () => {
+    const wrapper = mount(MSelect, {
+      props: {
+        options: [
+          { label: 'Kubernetes', value: 'k8s' },
+          { label: 'Terraform (soon)', value: 'tf', disabled: true },
+          'Go',
+        ],
+      },
+    });
+    const options = wrapper.findAll('option');
+    expect(options.map((o) => o.attributes('disabled'))).toEqual([undefined, '', undefined]);
+  });
+
+  it('defaults to md and takes size="sm"', () => {
+    expect(mount(MSelect, { props: { options: ['a'] } }).classes()).toContain('m-select--md');
+    const sm = mount(MSelect, { props: { options: ['a'], size: 'sm' } });
+    expect(sm.classes()).toContain('m-select--sm');
+    expect(sm.classes()).not.toContain('m-select--md');
+  });
+
   it('forwards attributes to the native select and keeps class on the wrapper', () => {
     const wrapper = mount(MSelect, {
       props: { options: ['a'] },

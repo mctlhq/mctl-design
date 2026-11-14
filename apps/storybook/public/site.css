@@ -1,4 +1,4 @@
-/* @mctlhq/css 0.20.2 — site.css. */
+/* @mctlhq/css 0.21.0 — site.css. */
 /*
  * Public-site layout: the one shell mctl.ai, docs.mctl.ai and tg.mctl.ai
  * share. theme.css already carries the tokens (page width, gutter, header,
@@ -158,7 +158,8 @@
 
 /* ===== App header variant (academy-style) =====
    .mctl-site-header--app adds three slots next to the shared brand and nav:
-     __context  a context picker after the brand ("/ Course name v"),
+     __context  a context picker after the brand ("/ Course name v"); add
+                --select when it wraps a <select> or an MSelect size="sm",
      __badge    a counter pill (open mistakes, unread),
      __actions  trailing controls (theme toggle, avatar, and the burger: put
                 the burger inside __actions so the pair keeps its 8px gap).
@@ -201,6 +202,45 @@
 .mctl-site-burger:focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
+}
+
+/* Context as a select (0.21.0): wrap a native <select> or an MSelect
+   size="sm" in .mctl-site-header__context--select, e.g.
+     <div class="mctl-site-header__context mctl-site-header__context--select">
+       <MSelect size="sm" aria-label="Course" ... />
+     </div>
+   The wrapper keeps the "/" separator and the 8px gap but drops the button
+   padding and pointer, since the select inside is the control. The select
+   takes the header's type (display family, --site-nav-size) and the shared
+   field focus (accent border plus --control-focus-shadow, no offset ring).
+   Selectors carry .mctl-site-header first, and the type rule names
+   .m-select .m-select__control as well, so they outrank MSelect's scoped
+   rules (up to 0,3,0 for the sm size) whichever sheet loads last; an invalid
+   MSelect keeps its own red focus shadow, which is more specific still. */
+.mctl-site-header__context--select {
+  padding: 0;
+  cursor: auto;
+}
+
+.mctl-site-header .mctl-site-header__context--select select,
+.mctl-site-header .mctl-site-header__context--select .m-select .m-select__control {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--site-nav-size);
+  text-overflow: ellipsis;
+}
+
+.mctl-site-header .mctl-site-header__context--select .m-select {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.mctl-site-header .mctl-site-header__context--select select:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--control-focus-shadow);
 }
 
 .mctl-site-badge {
@@ -312,6 +352,12 @@
     white-space: nowrap;
   }
 
+  /* The select truncates its own label; clipping the wrapper would cut the
+     focus shadow, which is drawn outside the control. */
+  .mctl-site-header:has(.mctl-site-burger) .mctl-site-header__context--select {
+    overflow: visible;
+  }
+
   .mctl-site-header:has(.mctl-site-burger) .mctl-site-nav {
     position: fixed;
     top: 0;
@@ -384,6 +430,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .mctl-site-header--drawer-wide:has(.mctl-site-burger) .mctl-site-header__context--select {
+    overflow: visible;
   }
 
   .mctl-site-header--drawer-wide:has(.mctl-site-burger) .mctl-site-nav {

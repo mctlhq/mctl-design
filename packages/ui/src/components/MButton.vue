@@ -1,6 +1,11 @@
 <script lang="ts">
 export interface MButtonProps {
-  variant?: 'primary' | 'ghost';
+  /**
+   * 'primary' fills with the accent, 'ghost' is outlined, 'neutral' fills
+   * with the text colour (a dark button on paper, a light one on ink) for a
+   * main action that should not spend the accent.
+   */
+  variant?: 'primary' | 'ghost' | 'neutral';
   size?: 'sm' | 'md';
   /** Render as a different element or component, e.g. 'a' or RouterLink. */
   as?: string | Component;
@@ -122,6 +127,22 @@ const bindings = computed(() => {
 .m-button--ghost:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.m-button--neutral {
+  background: var(--surface-fg);
+  color: var(--surface-bg);
+  border-color: var(--surface-fg);
+}
+
+.m-button--neutral:hover {
+  background: color-mix(in srgb, var(--surface-fg) 85%, var(--surface-bg));
+  border-color: color-mix(in srgb, var(--surface-fg) 85%, var(--surface-bg));
+}
+
+.m-button--neutral:active {
+  background: color-mix(in srgb, var(--surface-fg) 75%, var(--surface-bg));
+  border-color: color-mix(in srgb, var(--surface-fg) 75%, var(--surface-bg));
 }
 
 .m-button[disabled],

@@ -9,6 +9,33 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## 0.21.0 — 2026-11-14
+
+Card, button and select primitives for course catalogues (the academy's
+course cards and header course switcher), so consumers stop building them
+locally. Every addition is opt-in; existing markup renders as before.
+
+### Added
+
+- `MCard`: a `media` slot rendered full bleed above the header (no padding,
+  no divider, clipped by the card radius), an `actions` slot (a button row
+  under the body that wraps on narrow widths), `as` (default `div`; e.g.
+  `article`, `a` or `RouterLink`), `interactive` (stronger border and
+  `--shadow-md` on hover and focus-within, the shared focus ring when the card
+  itself is focused) and `font` (`mono` by default; `sans` sets
+  `--font-display`).
+- `MButton`: a `neutral` variant, filled with `--surface-fg` and lettered in
+  `--surface-bg` (dark on paper, light on ink), with hover and active fills
+  mixed 85% and 75% toward the page. `check:contrast` now measures all three
+  states in both themes.
+- `MSelect`: options take `disabled`, and `size="sm"` sets the 32px
+  `--mctl-control-height-sm`.
+- `site.css`: `.mctl-site-header__context--select`, for a `<select>` or an
+  `MSelect size="sm"` in the header context slot. It keeps the `/` separator,
+  drops the button padding, sets the select in the display family at
+  `--site-nav-size`, focuses with `--control-focus-shadow` (no outline ring),
+  and is not clipped by the below-768px truncation.
+
 ## 0.20.2 — 2026-11-08
 
 Spacing follow-ups to the 0.20.1 header, so consumers stop carrying local

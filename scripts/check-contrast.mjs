@@ -172,6 +172,16 @@ for (const theme of ['dark', 'light']) {
     add(`${theme} surface.fg on accent.${name}.soft`, s.fg, a[theme].soft);
   }
 
+  // MButton neutral: the page colour on a text-colour fill, at rest and on
+  // the hover (85%) and active (75%) mixes toward the page.
+  add(`${theme} MButton neutral bg on fg`, s.bg, s.fg);
+  add(`${theme} MButton neutral bg on fg 85% over bg (hover)`, s.bg, over(s.fg, 0.85, s.bg));
+  add(`${theme} MButton neutral bg on fg 75% over bg (active)`, s.bg, over(s.fg, 0.75, s.bg));
+  // Its fill is its edge: it must stand out from every surface it sits on.
+  for (const [bgName, bg] of Object.entries(backgrounds)) {
+    add(`${theme} MButton neutral fill vs ${bgName}`, s.fg, bg, UI);
+  }
+
   // Code renders on the card surface (MCodeBlock, MYamlBlock, prose code).
   for (const [name, value] of Object.entries(syntax[theme])) {
     add(`${theme} syntax.${name} on card`, value, s.card);
