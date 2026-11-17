@@ -240,3 +240,116 @@ export const SiteShell: Story = {
     }
   },
 };
+
+// Language switcher (.mctl-site-lang) and the recipe around it. The switcher
+// is only the visible half: a crawler needs the head and sitemap halves to
+// treat each language as its own page. The recipes are shown as text so a
+// consumer copies the markup, and the play function checks the CSS contract
+// (targets, current-language marker, focus ring), not the prose.
+const LANG_HTML = `<header class="mctl-site-header">
+  <div class="mctl-site-container mctl-site-header__inner">
+    <a class="mctl-site-brand" href="/ru/">...</a>
+    <nav class="mctl-site-lang" aria-label="Язык">
+      <a href="/en/" lang="en" hreflang="en">English</a>
+      <a href="/ru/" lang="ru" hreflang="ru" aria-current="page">Русский</a>
+    </nav>
+  </div>
+</header>`;
+
+const LANG_HEAD = `<!-- https://example.mctl.ai/ru/ -->
+<html lang="ru">
+<head>
+  <link rel="canonical" href="https://example.mctl.ai/ru/">
+  <link rel="alternate" hreflang="en" href="https://example.mctl.ai/en/">
+  <link rel="alternate" hreflang="ru" href="https://example.mctl.ai/ru/">
+  <link rel="alternate" hreflang="x-default" href="https://example.mctl.ai/en/">
+</head>`;
+
+const LANG_SITEMAP = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://example.mctl.ai/en/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.mctl.ai/en/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://example.mctl.ai/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://example.mctl.ai/en/"/>
+  </url>
+  <url>
+    <loc>https://example.mctl.ai/ru/</loc>
+    <!-- the same three xhtml:link lines: every URL lists all of them, itself included -->
+  </url>
+</urlset>`;
+
+export const MultilingualSites: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => ({
+    setup: () => ({ LANG_HTML, LANG_HEAD, LANG_SITEMAP }),
+    template: `
+      <div style="background:var(--surface-bg);color:var(--surface-fg);font-family:var(--font-display)">
+        <header class="mctl-site-header">
+          <div class="mctl-site-container mctl-site-header__inner">
+            <a class="mctl-site-brand" href="#"><span class="mctl-site-brand__accent">M</span>CTL</a>
+            <nav class="mctl-site-lang" aria-label="Language" data-lang-nav>
+              <a href="#en" lang="en" hreflang="en" aria-current="page" data-lang-current>English</a>
+              <a href="#ru" lang="ru" hreflang="ru" data-lang-idle>Русский</a>
+            </nav>
+          </div>
+        </header>
+        <main class="mctl-site-container" style="padding-block:32px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px;max-width:960px">
+          <section>
+            <h2 style="font-size:var(--text-prose-section-size);margin:0 0 8px">One URL per language</h2>
+            <ul style="margin:0;padding-left:1.2em;line-height:1.7;color:var(--surface-fg-muted)">
+              <li>Give every language its own crawlable URL. Prefer a subpath (<code>/en/</code>, <code>/ru/</code>); never <code>?lang=</code> on a site meant for search.</li>
+              <li>Serve the translated text in the HTML, not from a script. Do not redirect by <code>Accept-Language</code>; send <code>Vary: Accept-Language</code> only if one URL really negotiates.</li>
+              <li>Link every language with a real <code>&lt;a&gt;</code>: <code>lang</code>, <code>hreflang</code>, its own-language name, <code>aria-current="page"</code> on the current one.</li>
+              <li>Each page: <code>&lt;html lang&gt;</code> matching its text, a self-referencing canonical, and reciprocal hreflang that includes itself plus <code>x-default</code>.</li>
+              <li>The sitemap lists every language URL with the same set as <code>xhtml:link</code> alternates.</li>
+            </ul>
+          </section>
+          <section><h3 style="margin:0 0 8px">Switcher markup</h3>
+            <pre tabindex="0" style="margin:0;overflow:auto;background:var(--surface-card);border:1px solid var(--surface-line);padding:16px;font-family:var(--font-mono);font-size:var(--text-code-size)">{{ LANG_HTML }}</pre></section>
+          <section><h3 style="margin:0 0 8px">Head of each language page</h3>
+            <pre tabindex="0" style="margin:0;overflow:auto;background:var(--surface-card);border:1px solid var(--surface-line);padding:16px;font-family:var(--font-mono);font-size:var(--text-code-size)">{{ LANG_HEAD }}</pre></section>
+          <section><h3 style="margin:0 0 8px">Sitemap</h3>
+            <pre tabindex="0" style="margin:0;overflow:auto;background:var(--surface-card);border:1px solid var(--surface-line);padding:16px;font-family:var(--font-mono);font-size:var(--text-code-size)">{{ LANG_SITEMAP }}</pre></section>
+        </main>
+      </div>
+    `,
+  }),
+  play: async ({ canvasElement }) => {
+    const links = [...canvasElement.querySelectorAll<HTMLElement>('[data-lang-nav] a')];
+    if (links.length < 2) throw new Error('language switcher: expected at least two links');
+    for (const a of links) {
+      const box = a.getBoundingClientRect();
+      if (box.width < 24 || box.height < 24) {
+        throw new Error(
+          `language switcher: ${a.textContent} is ${box.width}x${box.height}px, want at least 24x24`,
+        );
+      }
+    }
+    const current = canvasElement.querySelector('[data-lang-current]')!;
+    const idle = canvasElement.querySelector('[data-lang-idle]')!;
+    const cs = getComputedStyle(current);
+    if (
+      !cs.textDecorationLine.includes('underline') ||
+      parseFloat(cs.textDecorationThickness) !== 2
+    ) {
+      throw new Error('language switcher: the current language is not underlined at 2px');
+    }
+    if (cs.color === getComputedStyle(idle).color) {
+      throw new Error('language switcher: the current language looks like an idle one');
+    }
+    const probe = document.createElement('span');
+    probe.style.color = 'var(--accent)';
+    canvasElement.appendChild(probe);
+    const accent = getComputedStyle(probe).color;
+    probe.remove();
+    if (cs.color === accent)
+      throw new Error('language switcher: the current language is accent-coloured');
+    // Keyboard focus must be visible (WCAG 2.4.7): a ring on the focused link.
+    (idle as HTMLElement).focus({ focusVisible: true } as FocusOptions);
+    const ring = getComputedStyle(idle);
+    if (ring.outlineStyle === 'none' || parseFloat(ring.outlineWidth) < 2) {
+      throw new Error('language switcher: a focused link shows no focus ring');
+    }
+  },
+};

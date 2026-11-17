@@ -291,6 +291,48 @@ The CSS interface is `--site-header-{height,bg,blur,border}`,
 `--site-wordmark-{size,weight,tracking,accent-gap}` and
 `--site-nav-{size,weight}`.
 
+## Multilingual sites
+
+A site meant for search gives each language its own URL and says so in three
+places: the page, the head and the sitemap. Footgun to avoid: a language that
+lives only in a script, a cookie or `?lang=` has no address, so it is not
+indexed and cannot be linked.
+
+Rules:
+
+- One crawlable URL per language. Prefer a subpath (`/en/`, `/ru/`); never
+  `?lang=` on an index-intended site.
+- Put the translated text in the served HTML. A script that swaps a dictionary
+  in the browser leaves the other language invisible to a crawler.
+- No hard redirect by `Accept-Language`. Send `Vary: Accept-Language` only if a
+  single URL really negotiates its language.
+- `<html lang>` matches the page text.
+- Every page carries a self-referencing `rel="canonical"` for its own language
+  and reciprocal `rel="alternate" hreflang` links: one per language, itself
+  included, plus `x-default`.
+- The sitemap lists every language URL, each with the same set as
+  `xhtml:link` alternates.
+- Language links are real `<a>` elements with `lang` and `hreflang`, labelled
+  with the language's own name as visible text (`English`, `Русский`; no
+  `aria-label` that differs from it, axe flags that), and `aria-current="page"` on the current one.
+
+The switcher is `.mctl-site-lang`: a `<nav aria-label>` of links, no script.
+The current language is neutral text with a 2px underline (never the accent),
+every link is at least 24px square, and keyboard focus uses the shared ring.
+
+```html
+<nav class="mctl-site-lang" aria-label="Language">
+  <a href="/en/" lang="en" hreflang="en" aria-current="page">English</a>
+  <a href="/ru/" lang="ru" hreflang="ru">Русский</a>
+</nav>
+```
+
+Checklist before shipping a language: own URL; text in the HTML; `html lang`;
+canonical to itself; hreflang set with self and `x-default` on every language
+page; sitemap alternates; switcher links with `lang`, `hreflang`, `aria-current`;
+no `?lang=`; no redirect by `Accept-Language`. See **Foundations/Public Sites >
+Multilingual Sites** in Storybook for the head and sitemap recipes.
+
 ## Public typography and state colors
 
 The public sites pin the same version of `mctl.css`. Families are `--font-display`

@@ -41,7 +41,13 @@
  *     colour plus a 2px underline), the header gains an --app variant with
  *     context, badge and actions slots, and below 768px the nav is a right
  *     drawer behind a burger (toggle data-nav-open on the header);
- *   - footer: full-bleed, centred.
+ *   - footer: full-bleed, centred;
+ *   - language switcher (.mctl-site-lang): a <nav aria-label> of real links,
+ *     one per language, each a[lang][hreflang] pointing at that language's own
+ *     URL, the current one marked aria-current="page" (neutral text colour and
+ *     a 2px underline, like the active nav item). Every link is at least 24px
+ *     in both directions. No script is involved. See Foundations/Public Sites
+ *     > MultilingualSites and the README's "Multilingual sites".
  */
 
 .mctl-site-container {
@@ -129,6 +135,56 @@
   text-decoration-thickness: 2px;
   text-decoration-color: currentColor;
   text-underline-offset: 8px;
+}
+
+/* ===== Language switcher =====
+     <nav class="mctl-site-lang" aria-label="Language">
+       <a href="/en/" lang="en" hreflang="en" aria-current="page">English</a>
+       <a href="/ru/" lang="ru" hreflang="ru">Русский</a>
+     </nav>
+   Real links to real per-language URLs, so a crawler and a no-JS reader both
+   follow them. Place it inside .mctl-site-header__inner (or __actions) or in
+   the footer. Targets are at least 24px square (WCAG 2.2 SC 2.5.8). */
+.mctl-site-lang {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: 4px;
+  font-family: var(--font-display);
+  font-size: var(--site-nav-size);
+  font-weight: var(--site-nav-weight);
+}
+
+.mctl-site-lang a {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: var(--mctl-radius-md);
+  color: var(--surface-fg-muted);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.mctl-site-lang a:hover {
+  color: var(--surface-fg);
+}
+
+.mctl-site-lang a:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Current language: neutral, never the accent (same rule as the nav). */
+.mctl-site-lang a[aria-current='page'] {
+  color: var(--surface-fg);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: currentColor;
+  text-underline-offset: 4px;
 }
 
 /* Brand mark: an inline SVG before the wordmark (alice, seerrsense). */

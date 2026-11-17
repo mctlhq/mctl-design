@@ -88,6 +88,14 @@ jobs:
           pnpm check:contrast:selftest
           pnpm check:contrast
 
+      - name: Check the site.css contract
+        # The language switcher class exists, is named in the sheet's contract
+        # comment and keeps its 24px targets and neutral current marker. The
+        # selftest mutates the sheet and requires each mutation to fail.
+        run: |
+          pnpm check:site-contract:selftest
+          pnpm check:site-contract
+
       - name: Check nested theme scopes
         # data-theme and data-accent nest at any depth in any combination;
         # resolves the cascade over the built theme.css (no browser in CI).
