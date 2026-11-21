@@ -33,6 +33,8 @@
     "check:token-version": "node scripts/check-token-version-bump.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:contrast:selftest": "node scripts/check-contrast.mjs --selftest",
+    "check:site-contract": "node scripts/check-site-contract.mjs",
+    "check:site-contract:selftest": "node scripts/check-site-contract.mjs --selftest",
     "check:themes": "node scripts/check-themes.mjs",
     "check:themes:selftest": "node scripts/check-themes.mjs --selftest",
     "check:generated": "node scripts/check-generated.mjs",

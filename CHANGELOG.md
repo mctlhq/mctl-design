@@ -9,6 +9,16 @@ packages are published to GitHub Packages when the version is tagged.
 goes from 0.5.0 straight to 0.8.0. Their changes are listed under their own
 headings below and are all included in 0.8.0.
 
+## Unreleased
+
+### Added
+
+- `site.css`: `.mctl-site-lang`, a no-script language switcher (a `nav` of
+  `a[lang][hreflang]` links, 24px minimum targets, neutral `aria-current`
+  underline, focus ring). The Multilingual Sites story and README section
+  document the head, sitemap and URL rules. `pnpm check:site-contract` guards
+  the class and its contract comment.
+
 ## 0.21.0 — 2026-11-14
 
 Card, button and select primitives for course catalogues (the academy's
