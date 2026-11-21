@@ -164,6 +164,13 @@ jobs:
             exit 1
           fi
 
+      - name: Check nginx routes (robots.txt, sitemap.xml, soft 404s)
+        # Starts the pinned runtime image with the real nginx.conf and asks it:
+        # /sitemap.xml and other unknown file-looking paths must be a 404, not
+        # the SPA shell with 200, and /robots.txt must be a real text/plain
+        # file. Needs docker, which ubuntu-latest has.
+        run: pnpm check:nginx
+
       - name: Story tests in a browser (a11y, play, visual)
         # Every story in real Chromium, in both themes: its play function runs
         # and axe must pass (story a11y), then a full-page screenshot must
