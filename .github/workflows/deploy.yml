@@ -34,27 +34,29 @@ permissions:
 
 jobs:
   deploy:
+    # The only job that mints; the key is released here and nowhere else.
+    environment: app-dispatch
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     steps:
-      # Uses mctl-agents, the backend-only automation App — deliberately
-      # NOT MCTL App (APP_CLIENT_ID). MCTL App is the App customers install
-      # themselves from mctl.ai/#request-access, and it is being narrowed to
-      # contents:read + metadata:read so its published least-privilege
-      # description is actually true (mctlhq/mctl-gitops#761). A GitHub App's
-      # permissions apply to every installation alike, so anything needing
-      # write — like actions:write on mctl-gitops to dispatch below — has to
-      # live on the internal App instead.
+      # Uses mctl-gitops-dispatch, a dedicated App with only actions:write +
+      # metadata:read, installed on mctl-gitops alone. Its private key lives
+      # ONLY in the main-only environment app-dispatch (mctlhq/mctl-gitops#1033),
+      # so a branch other than main cannot mint a token. Deliberately NOT
+      # MCTL App (APP_CLIENT_ID), the customer-installed App narrowed to
+      # contents:read + metadata:read (mctlhq/mctl-gitops#761), and no longer
+      # the broad mctl-agents App (AGENTS_APP_*), which stays for bot mints.
       - name: Generate Platform App token
         id: app
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
-          client-id: ${{ vars.AGENTS_APP_CLIENT_ID }}
-          private-key: ${{ secrets.AGENTS_APP_PRIVATE_KEY }}
+          client-id: ${{ vars.DISPATCH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.DISPATCH_APP_PRIVATE_KEY }}
           owner: mctlhq
           repositories: mctl-gitops
+          permission-actions: write
 
       # workflow_run fires when CI *finishes*, so two quick merges can finish
       # out of order and the older commit would deploy last. Deploy only if
